@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<ejs lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,7 +12,7 @@
 </head>
 <body>
     <main class="login-container">
-        <a href="index.html" class="primary-button back-button-position" aria-label="Voltar para a página inicial">&#8592; Voltar</a>
+        <a href="index.ejs" class="primary-button back-button-position" aria-label="Voltar para a página inicial">&#8592; Voltar</a>
         
         <section class="login-card">
             <h1>Login</h1>
@@ -26,16 +26,16 @@
                 <button type="button" id="entrar-btn" class="primary-button">Entrar</button>
             </form>
             
-            <div class="social-login-section">
-                <div class="separator">OU</div>
+            <section class="social-login-section">
+                <section class="separator">OU</section>
                 
-                <div id="g_id_onload"
+                <section id="g_id_onload"
                     data-client_id="SEU_CLIENT_ID_DO_GOOGLE" 
                     data-context="signin"
                     data-ux_mode="popup"
                     data-callback="handleGoogleLogin"
                     data-auto_prompt="false">
-                </div>
+                </section>
                 
                 <button type="button" id="google-custom-button" class="social-button google-button" aria-label="Entrar com o Google">
                     <i class="fab fa-google"></i> Entrar com Google
@@ -44,9 +44,9 @@
                 <button type="button" class="social-button facebook-button" aria-label="Entrar com o Facebook">
                     <i class="fab fa-facebook-f"></i> Entrar com Facebook
                 </button>
-            </div>
+            </section>
             
-            <p>Não tem uma conta? <a href="cadastro.html">Cadastre-se</a></p>
+            <p>Não tem uma conta? <a href="cadastro.ejs">Cadastre-se</a></p>
         </section>
     </main>
 
@@ -69,7 +69,7 @@
                 }));
 
                 alert(`Login com ${email} bem-sucedido via Google! Redirecionando para o perfil.`);
-                window.location.href = 'perfil.html';
+                window.location.href = 'perfil.ejs';
                 
             } catch (error) {
                 console.error("Erro ao decodificar o token do Google:", error);
@@ -95,7 +95,7 @@
             // 2. Compara o email e a senha digitados com os salvos
             if (savedProfile.email === emailInput && savedProfile.password === passwordInput) {
                 alert('Login com formulário bem-sucedido! Redirecionando para o perfil.');
-                window.location.href = 'perfil.html';
+                window.location.href = 'perfil.ejs';
             } else {
                 alert('Credenciais inválidas. Verifique seu email e senha.');
             }
@@ -115,4 +115,4 @@
         });
     </script>
 </body>
-</html>
+</ejs>

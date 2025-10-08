@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const accountLink = document.getElementById('account-link');
     const userProfile = localStorage.getItem('userProfile');
     if (accountLink) {
-        accountLink.href = userProfile ? 'perfil.html' : 'login.html';
+        accountLink.href = userProfile ? 'pages/perfil.ejs' : 'pages/login.ejs';
     }
 
 
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const createShowCard = (show) => {
-        const link = `detalhes.html?id=${show.id}`;
+        const link = `detalhes.ejs?id=${show.id}`;
 
         return `
             <a href="${link}" class="show-card">

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luthbox - Tenha Seguro no seu Show | Cordas Soltas</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/luthbox.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="header">
+        <a href="index.html" class="logo-link">
+            <img src="https://i.imgur.com/kR1cE5X.png" alt="Logo Cordas Soltas" class="logo">
+        </a>
+        <nav class="nav-icons">
+            <button class="hamburger-button" aria-label="Abrir menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+            <a href="login.ejs" id="account-link" class="account-icon" aria-label="Conta">&#128100;</a>
+            <a href="#" class="cart-icon" aria-label="Carrinho">&#128722;</a>
+        </nav>
+    </header>
+
+    <main class="luthbox-main-content">
+        <section class="luthbox-container">
+            
+            <header class="luthbox-header">
+                <p class="luthbox-tagline">tenha seguro no seu show</p>
+                <h1>Luthbox</h1>
+            </header>
+
+            <figure class="luthbox-hero-image">
+                <img src="https://i.pinimg.com/736x/4f/c2/5d/4fc25d6759a8fb2b65287ecf96aaced9.jpg" alt="Kit de bateria, amplificadores e guitarra em um palco escuro">
+            </figure>
+
+            <article class="luthbox-text-block">
+                <p>A **Luthbox** nasceu para oferecer suporte rápido e prático a músicos em situações de emergência. Problemas em instrumentos podem acontecer a qualquer momento, e nem sempre há uma equipe estruturada ou instrumentos reservas disponíveis. Por isso, disponibilizamos uma variedade de instrumentos para que o artista nunca precise cancelar ou comprometer sua apresentação.</p>
+            </article>
+
+            <figure class="luthbox-kit-image">
+                <img src="https://i.pinimg.com/736x/14/c1/a7/14c1a726ea43d619282e911726e13d4d.jpg" alt="Seleção de instrumentos musicais brancos: guitarras, amplificadores e bateria">
+            </figure>
+
+            <section class="luthbox-buy-section">
+                <h2>Garanta seu seguro no show :</h2>
+                <p>Com apenas um valor adicional, você garante a tranquilidade do seu show: se o seu instrumento acontecer, terá um instrumento à sua disposição.</p>
+                <a href="/luthbox-seguros.html" class="button-comprar">Comprar Seguro</a>
+            </section>
+
+        </section>
+    </main>
+
+    <footer class="luthbox-footer">
+        <p>Praça Muhammad Ali, Cambuci, 20220300 - SÃO PAULO - SP - brasil</p>
+        <p>contatoouvidoriadosartistas@email.com | +55 (11) 3200-0800</p>
+        <p class="politicas"><a href="#">Revisão de Disponibilidade</a></p>
+        <p class="copyright">© 2024. All rights reserved</p>
+        <section class="social-icons">
+            <a href="#"><img src="https://i.imgur.com/j0xG7zV.png" alt="Instagram"></a>
+            <a href="#"><img src="https://i.imgur.com/0uBv6nF.png" alt="WhatsApp"></a>
+        </section>
+    </footer>
+
+    <section id="menu-overlay" class="menu-overlay"></section>
+    <aside id="sidebar-menu" class="sidebar">
+        <button id="close-menu-btn" class="close-menu-btn" aria-label="Fechar menu">&times;</button>
+        <ul class="sidebar-links">
+            <li><a href="index.html">Início</a></li>
+            <li><a href="/sobre.html">Sobre</a></li>
+            <li><a href="seletivas.html">Seletivas</a></li>
+            <li><a href="luthbox.html">Luthbox</a></li>
+        </ul>
+    </aside>
+
+    <script src="js/script.js"></script>
+    <script>
+        // Script de verificação de login para o ícone de perfil
+        document.addEventListener('DOMContentLoaded', () => {
+            const accountLink = document.getElementById('account-link');
+            const userProfile = localStorage.getItem('userProfile');
+            if (userProfile) {
+                accountLink.href = 'perfil.html';
+            } else {
+                accountLink.href = 'login.html';
+            }
+        });
+    </script>
+       <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- 1. Lógica do ícone de perfil (MANTIDO) ---
+            const accountLink = document.getElementById('account-link');
+            const userProfileString = localStorage.getItem('userProfile');
+            let user = null;
+            
+            if (userProfileString) {
+                user = JSON.parse(userProfileString);
+                accountLink.href = 'perfil.html';
+            } else {
+                accountLink.href = 'login.html';
+            }
+
+            // --- 2. Lógica do botão "Comprar Seguro" (NOVA) ---
+            const buyButton = document.getElementById('buy-luthbox-btn');
+
+            if (buyButton) {
+                // O botão agora é sempre visível por padrão (via CSS/HTML)
+                
+                buyButton.addEventListener('click', (event) => {
+                    // Previne a navegação imediata
+                    event.preventDefault(); 
+                    
+                    if (user && user.role === 'artista') {
+                        // Artista: Redireciona para a página de pagamento
+                        window.location.href = 'pagamento.html';
+                    } else if (user && user.role === 'visitante') {
+                        // Visitante (logado): Exibe alerta
+                        alert('A Luthbox é um seguro exclusivo para Artistas e Bandas. Por favor, cadastre-se com o perfil de Artista para prosseguir.');
+                    } else {
+                        // Não Logado: Exibe alerta
+                        alert('Você precisa estar logado como Artista ou Banda para prosseguir com a compra do seguro Luthbox.');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

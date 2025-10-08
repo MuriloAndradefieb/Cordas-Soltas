@@ -12,7 +12,7 @@
 </head>
 <body>
     <main class="login-container">
-        <a href="index.html" class="primary-button back-button-position" aria-label="Voltar para a página inicial">&#8592; Voltar</a>
+        <a href="index.ejs" class="primary-button back-button-position" aria-label="Voltar para a página inicial">&#8592; Voltar</a>
 
         <section class="login-card">
             <h1>Crie sua conta</h1>
@@ -26,28 +26,28 @@
                 <label for="password">Senha</label>
                 <input type="password" id="password" name="password" placeholder="Sua senha" required>
 
-                <div class="role-selection">
+                <section        </section class="role-selection">
                     <p>Qual é o seu tipo de conta?</p>
                     <input type="radio" id="role-artist" name="role" value="Artista" required>
                     <label for="role-artist" class="radio-label">Artista</label>
                     
                     <input type="radio" id="role-visitor" name="role" value="Visitante" required>
                     <label for="role-visitor" class="radio-label">Visitante</label>
-                </div>
+            </section>
 
                 <button type="button" id="cadastrar-btn" class="primary-button">Cadastrar</button>
             </form>
             
-            <div class="social-login-section">
-                <div class="separator">OU</div>
+            <section        </section class="social-login-section">
+                <section        </section class="separator">OU</section        </section>
                 
-                <div id="g_id_onload"
+                <section        </section id="g_id_onload"
                     data-client_id="SEU_CLIENT_ID_DO_GOOGLE" 
                     data-context="signup"
                     data-ux_mode="popup"
                     data-callback="handleGoogleSignup"
                     data-auto_prompt="false">
-                </div>
+            </section>
                 
                 <button type="button" id="google-custom-button" class="social-button google-button" aria-label="Cadastrar com o Google">
                     <i class="fab fa-google"></i> Cadastrar com Google
@@ -56,9 +56,9 @@
                 <button type="button" class="social-button facebook-button" aria-label="Cadastrar com o Facebook">
                     <i class="fab fa-facebook-f"></i> Cadastrar com Facebook
                 </button>
-            </div>
+        </section>
 
-            <p>Já tem uma conta? <a href="login.html">Faça login</a></p>
+            <p>Já tem uma conta? <a href="login.ejs">Faça login</a></p>
         </section>
     </main>
 

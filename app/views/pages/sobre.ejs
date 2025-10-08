@@ -11,7 +11,7 @@
 <body>
 
     <header class="header">
-        <a href="index.html" class="logo-link">
+        <a href="index.ejs" class="logo-link">
             <img src="img/LOGO CORDAS SOLTAS SITE.png" alt="Logo Cordas Soltas" class="logo">
         </a>
         <nav class="nav-icons">
@@ -20,7 +20,7 @@
                 <span class="bar"></span>
                 <span class="bar"></span>
             </button>
-            <a href="login.html" id="account-link" class="account-icon" aria-label="Conta">&#128100;</a>
+            <a href="login.ejs" id="account-link" class="account-icon" aria-label="Conta">&#128100;</a>
             <a href="#" class="cart-icon" aria-label="Carrinho">&#128722;</a>
         </nav>
     </header>
@@ -39,7 +39,7 @@
 
             <article class="sobre-text-block">
                 <h2>O Elo Entre a Música e Você</h2>
-                <p>A <b>Cordas Soltas</b> é uma empresa dedicada à divulgação e valorização de eventos musicais de diversos estilos, atuando como um elo fundamental entre artistas, produtores e o público.</p>
+                <p>A <b>Cordas Soltas</b> é uma empresa dedicada à sectionulgação e valorização de eventos musicais de sectionersos estilos, atuando como um elo fundamental entre artistas, produtores e o público.</p>
                 <p>Nosso trabalho vai muito além da simples promoção: acreditamos que a música é uma das formas mais ricas de expressão cultural, capaz de aproximar pessoas, despertar emoções e criar memórias inesquecíveis.</p>
             </article>
 
@@ -65,7 +65,7 @@
                     <li>O público, que vivencia espetáculos de qualidade;</li>
                     <li>E os parceiros, que fortalecem sua imagem ao se associar à cultura.</li>
                 </ul>
-                <p>Mais do que divulgar shows, <b>queremos fazer parte de histórias.</b></p>
+                <p>Mais do que sectionulgar shows, <b>queremos fazer parte de histórias.</b></p>
             </article>
 
         </section>
@@ -75,20 +75,20 @@
         <p>Praça Muhammad Ali, Cambuci, 20220300 - SÃO PAULO - SP - brasil</p>
         <p>contatoouvidoriadosartistas@email.com | +55 (11) 3200-0800</p>
         <p>Todos os direitos reservados 2024.</p>
-        <div class="social-icons">
+        <section class="social-icons">
              <a href="#"><img src="https://i.imgur.com/a4gWf9W.png" alt="WhatsApp"></a>
             <a href="#"><img src="https://i.imgur.com/f9H6yXf.png" alt="Instagram"></a>
-        </div>
+        </section>
     </footer>
 
-    <div id="menu-overlay" class="menu-overlay"></div>
+    <section id="menu-overlay" class="menu-overlay"></section>
     <aside id="sidebar-menu" class="sidebar">
         <button id="close-menu-btn" class="close-menu-btn" aria-label="Fechar menu">&times;</button>
         <ul class="sidebar-links">
-            <li><a href="index.html">Início</a></li>
-            <li><a href="sobre.html">Sobre</a></li>
-            <li><a href="seletivas.html">Seletivas</a></li>
-            <li><a href="luthbox.html">Luthbox</a></li>
+            <li><a href="index.ejs">Início</a></li>
+            <li><a href="sobre.ejs">Sobre</a></li>
+            <li><a href="seletivas.ejs">Seletivas</a></li>
+            <li><a href="luthbox.ejs">Luthbox</a></li>
         </ul>
     </aside>
 
@@ -99,14 +99,14 @@
             const accountLink = document.getElementById('account-link');
             const userProfile = localStorage.getItem('userProfile');
             if (userProfile) {
-                accountLink.href = 'perfil.html';
+                accountLink.href = 'perfil.ejs';
             } else {
-                accountLink.href = 'login.html';
+                accountLink.href = 'login.ejs';
             }
         });
         
         // Adiciona classe de 'active' para o link "Sobre" no menu lateral
-        document.querySelector('.sidebar-links a[href="sobre.html"]').classList.add('active');
+        document.querySelector('.sidebar-links a[href="sobre.ejs"]').classList.add('active');
     </script>
 </body>
-</html>
+<html>

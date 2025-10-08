@@ -39,7 +39,7 @@
         </aside>
     </main>
 
-    <div id="menu-overlay" class="menu-overlay"></div>
+    <section id="menu-overlay" class="menu-overlay"></section>
     <aside id="sidebar-menu" class="sidebar">
         <button id="close-menu-btn" class="close-menu-btn" aria-label="Fechar menu">&times;</button>
         <ul class="sidebar-links">
@@ -73,48 +73,48 @@
 
                 // Monta o HTML dinâmico do show
                 container.innerHTML = `
-                    <div class="show-image-wrapper">
+                    <section class="show-image-wrapper">
                         <img src="${foundShow.image}" alt="${foundShow.title}" class="show-image">
-                    </div>
-                    <div class="show-info-wrapper">
-                        <div class="show-info">
+                    </section>
+                    <section class="show-info-wrapper">
+                        <section class="show-info">
                             <h1>${foundShow.title}</h1>
                             <p>📅 ${foundShow.date}</p>
                             <p>📍 ${foundShow.location}</p>
-                        </div>
+                        </section>
                         <section class="purchase-section">
-                            <div class="ticket-option">
-                                <div class="ticket-name">
+                            <section class="ticket-option">
+                                <section class="ticket-name">
                                     <h3>Inteira</h3>
                                     <span class="ticket-count" data-ticket-type="full"></span>
                                     <span class="ticket-price">${formatCurrency(foundShow.priceFull)}</span>
-                                </div>
-                                <div class="quantity-control">
+                                </section>
+                                <section class="quantity-control">
                                     <button class="quantity-btn minus" data-type="full">-</button>
                                     <input type="number" id="qty-full" value="0" min="0" max="10" readonly>
                                     <button class="quantity-btn plus" data-type="full">+</button>
-                                </div>
-                            </div>
-                            <div class="ticket-option">
-                                <div class="ticket-name">
+                                </section>
+                            </section>
+                            <section class="ticket-option">
+                                <section class="ticket-name">
                                     <h3>Meia-Entrada</h3>
                                     <span class="ticket-count" data-ticket-type="half"></span>
                                     <span class="ticket-price">${formatCurrency(foundShow.priceHalf)}</span>
-                                </div>
-                                <div class="quantity-control">
+                                </section>
+                                <section class="quantity-control">
                                     <button class="quantity-btn minus" data-type="half">-</button>
                                     <input type="number" id="qty-half" value="0" min="0" max="10" readonly>
                                     <button class="quantity-btn plus" data-type="half">+</button>
-                                </div>
-                            </div>
-                            <div class="total-summary">
+                                </section>
+                            </section>
+                            <section class="total-summary">
                                 <h3>Total:</h3>
                                 <span id="total-value" class="total-price">R$ 0,00</span>
-                            </div>
+                            </section>
                             <button id="buy-button" class="buy-button">
                                 Comprar Ingressos</button>
-                            <div id="error-message" class="error-message"></div> </section>
-                    </div>
+                            <section id="error-message" class="error-message"></section> </section>
+                    </section>
                 `;
 
                 // NOVO CÓDIGO PARA GERENCIAR A CONTAGEM E MOSTRAR/OCULTAR NO NOME DO INGRESSO
