@@ -9,7 +9,7 @@
     <script>
         if (!localStorage.getItem('userProfile')) {
             // Se não houver perfil salvo, redireciona para a página de login
-            window.location.href = 'login.html';
+            window.location.href = '/login';
         }
     </script>
     
@@ -18,7 +18,7 @@
 <body>
     <main>
         <section class="profile-card">
-            <a href="index.html" class="primary-button back-button-position" aria-label="Voltar para a página inicial">&#8592; Voltar</a>
+            <a href="/" class="primary-button back-button-position" aria-label="Voltar para a página inicial">&#8592; Voltar</a>
 
             <header>
                 <figure class="profile-picture">
@@ -85,7 +85,7 @@
                 </form>
             </article>
 
-            <a href="sair.html" class="logout-link" aria-label="Sair da conta">Sair</a>
+            <a href="/sair" class="logout-link" aria-label="Sair da conta">Sair</a>
         </section>
     </main>
 </body>

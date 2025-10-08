@@ -11,7 +11,7 @@
 <body>
 
     <header class="header">
-        <a href="index.ejs" class="logo-link">
+        <a href="/" class="logo-link">
             <img src="img/LOGO CORDAS SOLTAS SITE.png" alt="Logo Cordas Soltas" class="logo">
         </a>
         <nav class="nav-icons">
@@ -20,7 +20,7 @@
                 <span class="bar"></span>
                 <span class="bar"></span>
             </button>
-            <a href="login.ejs" id="account-link" class="account-icon" aria-label="Conta">&#128100;</a>
+            <a href="/login" id="account-link" class="account-icon" aria-label="Conta">&#128100;</a>
             <a href="#" class="cart-icon" aria-label="Carrinho">&#128722;</a>
         </nav>
     </header>
@@ -85,10 +85,10 @@
     <aside id="sidebar-menu" class="sidebar">
         <button id="close-menu-btn" class="close-menu-btn" aria-label="Fechar menu">&times;</button>
         <ul class="sidebar-links">
-            <li><a href="index.ejs">Início</a></li>
-            <li><a href="sobre.ejs">Sobre</a></li>
-            <li><a href="seletivas.ejs">Seletivas</a></li>
-            <li><a href="luthbox.ejs">Luthbox</a></li>
+            <li><a href="/">Início</a></li>
+            <li><a href="/sobre">Sobre</a></li>
+            <li><a href="/seletivas">Seletivas</a></li>
+            <li><a href="/luthbox">Luthbox</a></li>
         </ul>
     </aside>
 
@@ -99,14 +99,14 @@
             const accountLink = document.getElementById('account-link');
             const userProfile = localStorage.getItem('userProfile');
             if (userProfile) {
-                accountLink.href = 'perfil.ejs';
+                accountLink.href = '/perfil';
             } else {
-                accountLink.href = 'login.ejs';
+                accountLink.href = '/login';
             }
         });
         
         // Adiciona classe de 'active' para o link "Sobre" no menu lateral
-        document.querySelector('.sidebar-links a[href="sobre.ejs"]').classList.add('active');
+        document.querySelector('.sidebar-links a[href="/sobre"]').classList.add('active');
     </script>
 </body>
 <html>

@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const showData = JSON.parse(localStorage.getItem('selectedShow'));
 
         if (!showData) {
-            console.error("Dados do show não encontrados. O script de detalhes.js não pode ser executado.");
+            console.error("Dados do show não encontrados. O script de detalhes.ejs não pode ser executado.");
             return; 
         }
 
@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!userProfile) {
                     // Mantém o alert para login (ou você pode mudar este também para uma mensagem na página)
                     alert("Você precisa estar logado para comprar ingressos.");
-                    window.location.href = 'login.html'; // Redireciona para o login
+                    window.location.href = '/login'; // Redireciona para o login
                     return;
                 }
 
@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 localStorage.setItem('currentOrder', JSON.stringify(currentOrder)); 
                 // REDIRECIONAMENTO PARA PAGAMENTOS
-                window.location.href = 'pagamento.html';
+                window.location.href = '/pagamento';
             });
         }
 

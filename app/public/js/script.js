@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const accountLink = document.getElementById('account-link');
     const userProfile = localStorage.getItem('userProfile');
     if (accountLink) {
-        accountLink.href = userProfile ? 'pages/perfil.ejs' : 'pages/login.ejs';
+        accountLink.href = userProfile ? '/perfil' : '/login';
     }
 
 

@@ -11,8 +11,8 @@
 <body>
 
     <header class="header">
-        <a href="index.html" class="logo-link">
-            <img src="https://i.imgur.com/kR1cE5X.png" alt="Logo Cordas Soltas" class="logo">
+        <a href="/" class="logo-link">
+            <img src="img/LOGO CORDAS SOLTAS SITE.png" alt="Logo Cordas Soltas" class="logo">
         </a>
         <nav class="nav-icons">
             <button class="hamburger-button" aria-label="Abrir menu">
@@ -20,7 +20,7 @@
                 <span class="bar"></span>
                 <span class="bar"></span>
             </button>
-            <a href="login.ejs" id="account-link" class="account-icon" aria-label="Conta">&#128100;</a>
+            <a href="/login" id="account-link" class="account-icon" aria-label="Conta">&#128100;</a>
             <a href="#" class="cart-icon" aria-label="Carrinho">&#128722;</a>
         </nav>
     </header>
@@ -48,7 +48,7 @@
             <section class="luthbox-buy-section">
                 <h2>Garanta seu seguro no show :</h2>
                 <p>Com apenas um valor adicional, você garante a tranquilidade do seu show: se o seu instrumento acontecer, terá um instrumento à sua disposição.</p>
-                <a href="/luthbox-seguros.html" class="button-comprar">Comprar Seguro</a>
+                <a href="/luthbox-seguros" class="button-comprar">Comprar Seguro</a>
             </section>
 
         </section>
@@ -69,10 +69,10 @@
     <aside id="sidebar-menu" class="sidebar">
         <button id="close-menu-btn" class="close-menu-btn" aria-label="Fechar menu">&times;</button>
         <ul class="sidebar-links">
-            <li><a href="index.html">Início</a></li>
-            <li><a href="/sobre.html">Sobre</a></li>
-            <li><a href="seletivas.html">Seletivas</a></li>
-            <li><a href="luthbox.html">Luthbox</a></li>
+            <li><a href="/">Início</a></li>
+            <li><a href="/sobre">Sobre</a></li>
+            <li><a href="/seletivas">Seletivas</a></li>
+            <li><a href="/luthbox">Luthbox</a></li>
         </ul>
     </aside>
 
@@ -83,9 +83,9 @@
             const accountLink = document.getElementById('account-link');
             const userProfile = localStorage.getItem('userProfile');
             if (userProfile) {
-                accountLink.href = 'perfil.html';
+                accountLink.href = '/perfil';
             } else {
-                accountLink.href = 'login.html';
+                accountLink.href = '/login';
             }
         });
     </script>
@@ -98,16 +98,16 @@
             
             if (userProfileString) {
                 user = JSON.parse(userProfileString);
-                accountLink.href = 'perfil.html';
+                accountLink.href = '/perfil';
             } else {
-                accountLink.href = 'login.html';
+                accountLink.href = '/login';
             }
 
             // --- 2. Lógica do botão "Comprar Seguro" (NOVA) ---
             const buyButton = document.getElementById('buy-luthbox-btn');
 
             if (buyButton) {
-                // O botão agora é sempre visível por padrão (via CSS/HTML)
+             
                 
                 buyButton.addEventListener('click', (event) => {
                     // Previne a navegação imediata
@@ -115,7 +115,7 @@
                     
                     if (user && user.role === 'artista') {
                         // Artista: Redireciona para a página de pagamento
-                        window.location.href = 'pagamento.html';
+                        window.location.href = '/pagamento';
                     } else if (user && user.role === 'visitante') {
                         // Visitante (logado): Exibe alerta
                         alert('A Luthbox é um seguro exclusivo para Artistas e Bandas. Por favor, cadastre-se com o perfil de Artista para prosseguir.');

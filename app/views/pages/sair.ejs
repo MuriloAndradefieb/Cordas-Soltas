@@ -12,7 +12,7 @@
             <h1>Tem certeza de que deseja sair?</h1>
             <p>Você será desconectado da sua conta.</p>
             <article class="actions">
-                <a href="perfil.html" class="secondary-button" aria-label="Cancelar e voltar ao perfil">Cancelar</a>
+                <a href="/perfil" class="secondary-button" aria-label="Cancelar e voltar ao perfil">Cancelar</a>
                 <button class="primary-button" onclick="logout()" aria-label="Confirmar e sair da conta">Sair</button>
             </article>
         </section>
@@ -23,7 +23,7 @@
             localStorage.removeItem('userProfile'); 
             
             alert('Você foi desconectado da sua conta. Redirecionando para a página inicial...');
-            window.location.href = 'index.html'; 
+            window.location.href = '/'; 
         }
     </script>
 </body>

@@ -10,12 +10,12 @@
 <body>
 
     <header class="header">
-        <a href="index.html" class="logo-link">
+        <a href="/" class="logo-link">
             <img src="img/LOGO CORDAS SOLTAS SITE.png" alt="Logo Cordas Soltas" class="logo">
         </a>
         <nav class="nav-icons">
             <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu">&#9776;</button>
-            <a href="login.html" id="account-link" class="account-icon" aria-label="Conta">&#128100;</a>
+            <a href="/perfil" id="account-link" class="account-icon" aria-label="Conta">&#128100;</a>
             <a href="#" class="cart-icon" aria-label="Carrinho">&#128722;</a>
         </nav>
     </header>
@@ -26,7 +26,7 @@
         </aside>
 
         <section class="details-and-back-container">
-            <a href="index.html" class="back-link">&larr; Voltar para Eventos</a>
+            <a href="/" class="back-link">&larr; Voltar para Eventos</a>
             
             <section id="show-details-container" class="show-details-container">
                 <p>Carregando detalhes do show...</p>
@@ -43,16 +43,16 @@
     <aside id="sidebar-menu" class="sidebar">
         <button id="close-menu-btn" class="close-menu-btn" aria-label="Fechar menu">&times;</button>
         <ul class="sidebar-links">
-            <li><a href="index.html">Início</a></li>
-            <li><a href="rock.html">Rock</a></li>
-            <li><a href="samba.html">Samba</a></li>
-            <li><a href="jazz.html">Jazz/Blues</a></li>
+            <li><a href="/">Início</a></li>
+            <li><a href="/rock.html">Rock</a></li>
+            <li><a href="/samba.html">Samba</a></li>
+            <li><a href="/jazz.html">Jazz/Blues</a></li>
             <li><a href="login.html" id="sidebar-account-link">Conta</a></li>
             <li><a href="#">Sair</a></li> 
         </ul>
     </aside>
 
-    <script src="js/shows.js"></script> 
+    <script src="/shows"></script> 
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -154,11 +154,30 @@
         });
     </script>
     
+    <script src="js/shows.js"></script> 
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('show-details-container');
+            const params = new URLSearchParams(window.location.search);
+            const showId = params.get('id');
+
+            // Procura o show no array 'shows' (que AGORA ESTÁ CARREGADO)
+            const foundShow = shows.find(show => show.id === showId);
+
+            if (foundShow) {
+                // ... (RESTANTE DO SEU CÓDIGO INLINE ESTÁ CORRETO) ...
+            } else {
+                container.innerHTML = '<h2>Show não encontrado</h2><p>O evento que você está procurando não foi localizado. Por favor, volte para a página inicial.</p>';
+            }
+        });
+    </script>
+    
     <script src="js/detalhes.js"></script> 
     
     <script>
         // ... (seu código do menu hambúrguer e checagem de login aqui) ...
     </script>
 
-    </body>
+</body>
 </html>
