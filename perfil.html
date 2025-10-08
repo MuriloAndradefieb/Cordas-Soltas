@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil do Usuário</title>
+    <link rel="stylesheet" href="css/perfil.css">
+
+    <script>
+        if (!localStorage.getItem('userProfile')) {
+            // Se não houver perfil salvo, redireciona para a página de login
+            window.location.href = 'login.html';
+        }
+    </script>
+    
+    <script src="js/perfil.js" defer></script>
+</head>
+<body>
+    <main>
+        <section class="profile-card">
+            <a href="index.html" class="primary-button back-button-position" aria-label="Voltar para a página inicial">&#8592; Voltar</a>
+
+            <header>
+                <figure class="profile-picture">
+                    <img id="profile-image" src="https://via.placeholder.com/150/000000/FFFFFF/?text=P" alt="Foto de perfil">
+                    
+                    <input type="file" id="photo-upload" accept="image/*" style="display: none;">
+                    
+                    <button id="edit-photo-btn" class="edit-photo-button" aria-label="Alterar foto de perfil">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M149.1 64.8L138.7 96H64C28.7 96 0 124.7 0 160V416C0 451.3 28.7 480 64 480H448C483.3 480 512 451.3 512 416V160C512 124.7 483.3 96 448 96H373.3L362.9 64.8C356.1 45.2 338.4 32 318.3 32H193.7C173.6 32 155.9 45.2 149.1 64.8zM256 320C202.9 320 160 277.1 160 224C160 170.9 202.9 128 256 128C309.1 128 352 170.9 352 224C352 277.1 309.1 320 256 320z"/></svg>
+                    </button>
+                </figure>
+                <h1 id="display-username-header">Usuário Padrão</h1>
+                <p class="user-role" id="display-role">Membro</p>
+            </header>
+
+            <article class="user-details">
+                <p><strong>Nome de Usuário:</strong> <span id="display-username">Usuário Padrão</span></p>
+                <p><strong>Email:</strong> <span id="display-email">email@exemplo.com</span></p>
+                <p><strong>Telefone:</strong> <span id="display-phone">N/A</span></p>
+                <p><strong>Senha:</strong> <span id="display-password">••••••••</span></p>
+            </article>
+            
+            <section id="actions" class="actions-section">
+                <button id="edit-profile-btn" class="secondary-button">Editar Perfil</button>
+                <button id="change-password-btn" class="secondary-button">Alterar Senha</button>
+            </section>
+
+            <article id="alterar-senha-form" class="form-section hidden">
+                <h2>Alterar Senha</h2>
+                <form>
+                    <fieldset>
+                        <legend class="sr-only">Formulário para Alterar Senha</legend>
+                        <label for="new-password">Nova senha</label>
+                        <input type="password" id="new-password" placeholder="Nova senha" required>
+                        
+                        <label for="confirm-password">Confirmar senha</label>
+                        <input type="password" id="confirm-password" placeholder="Confirmar Senha">
+                    </fieldset>
+                    <div class="form-actions-buttons">
+                        <button type="button" id="cancel-password-btn" class="secondary-button cancel-button">Cancelar</button>
+                        <button type="button" id="save-password-btn" class="primary-button">Concluído</button>
+                    </div>
+                </form>
+            </article>
+
+            <article id="editar-perfil-form" class="form-section hidden">
+                <h2>Editar Perfil</h2>
+                <form>
+                    <fieldset>
+                        <legend class="sr-only">Formulário para Editar Perfil</legend>
+                        <label for="edit-username">Nome de Usuário</label>
+                        <input type="text" id="edit-username" placeholder="Nome de usuário">
+
+                        <label for="edit-email">Alterar o email</label>
+                        <input type="email" id="edit-email" placeholder="Alterar o email">
+                        
+                        <label for="edit-phone">Telefone</label>
+                        <input type="tel" id="edit-phone" placeholder="(99) 99999-9999">
+                    </fieldset>
+                    <div class="form-actions-buttons">
+                        <button type="button" id="cancel-profile-btn" class="secondary-button cancel-button">Cancelar</button>
+                        <button type="button" id="save-profile-btn" class="primary-button">Salvar alterações</button>
+                    </div>
+                </form>
+            </article>
+
+            <a href="sair.html" class="logout-link" aria-label="Sair da conta">Sair</a>
+        </section>
+    </main>
+</body>
+</html>

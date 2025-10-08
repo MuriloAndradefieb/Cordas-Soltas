@@ -1,0 +1,126 @@
+/* Estilos para a página luthbox-seguros.html */
+
+body {
+    background-color: #000;
+    color: #fff;
+    font-family: 'Roboto', sans-serif;
+    
+    
+
+    background-image: url('/img/background-black.jpg'); 
+    background-repeat: no-repeat; /* Impede a repetição */
+    background-size: cover;      /* Garante que a imagem cubra toda a área */
+    background-attachment: fixed;/* Fixa o background para não mover com o scroll */
+    background-position: center; /* Centraliza a imagem */
+}
+
+.seguros-main-content {
+    /* Mantém transparente para que o fundo apareça */
+    background-color: transparent; 
+    padding: 1rem;
+}
+
+/* O restante do CSS permanece inalterado para manter o estilo dos cards e títulos */
+.seguros-container {
+    max-width: 350px; 
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* --- Header e Títulos --- */
+.seguros-header {
+    margin: 2rem 0 3rem 0;
+}
+
+.seguros-header h1 {
+    font-size: 3rem;
+    color: #FFD700;
+    font-weight: 700;
+    margin: 0;
+    text-transform: uppercase;
+    line-height: 1;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.7),
+                 0 0 15px rgba(255, 215, 0, 0.5);
+}
+
+.seguros-header p {
+    font-size: 0.9rem;
+    color: #fff;
+    margin: 0.5rem 0 0 0;
+    text-transform: uppercase;
+    font-weight: 400;
+}
+
+/* --- Seção de Cards por Estilo --- */
+.seguro-card-section {
+    margin-bottom: 3rem;
+}
+
+.seguro-card-section h2 {
+    font-size: 1.8rem;
+    color: #FFD700;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.6);
+}
+
+.seguro-card {
+    display: block;
+    background-color: #fff;
+    color: #000;
+    text-decoration: none;
+    padding: 0.5rem;
+    border-radius: 4px;
+    border: 1px solid #ddd; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.seguro-card:hover {
+    transform: translateY(-5px); 
+    box-shadow: 0 10px 20px rgba(255, 215, 0, 0.7); 
+}
+
+.seguro-card img {
+    max-width: 90%; 
+    height: auto;
+    margin: 0 auto;
+    display: block;
+}
+
+.card-description {
+    font-size: 1rem;
+    font-weight: 400;
+    margin: 0.5rem 0 0 0;
+    color: #333;
+}
+
+.card-price {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #FFD700;
+    margin-top: 0.2rem;
+    margin-bottom: 0.5rem;
+}
+
+/* --- Footer --- */
+.seguros-footer {
+    text-align: center;
+    padding: 2rem 1rem;
+    font-size: 0.8rem;
+    color: #888;
+    border-top: 1px solid #333;
+    line-height: 1.5;
+}
+
+/* Media Query para telas menores */
+@media (max-width: 400px) {
+    .seguros-container {
+        max-width: 100%;
+        padding: 0 1rem;
+    }
+    .seguros-header h1 {
+        font-size: 2rem;
+    }
+}

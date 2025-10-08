@@ -1,0 +1,166 @@
+/*
+Este é o CSS base, adaptado para usar seletores semânticos e 'flexbox'.
+*/
+
+/* Reset Básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    color: #f7f7f7;
+    background-color: #0d0d0d;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header (Cabeçalho) */
+.header {
+    background-color: #000000;
+    padding: 1rem 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #5a5a5a;
+}
+
+.logo-link {
+    display: block;
+}
+
+.logo {
+    height: 40px; /* Tamanho da logo */
+}
+
+/* Nav Icons (Ícones de Navegação) */
+.nav-icons {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.account-icon, .cart-icon {
+    font-size: 1.5rem;
+    text-decoration: none;
+    color: #f7f7f7;
+}
+
+/* Hamburger Button (Menu Mobile) */
+.hamburger-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    z-index: 1001;
+}
+
+.bar {
+    display: block;
+    width: 25px;
+    height: 3px;
+    background-color: #f7f7f7;
+    margin: 5px 0;
+    transition: 0.4s;
+}
+
+/* Main Content (Conteúdo Principal) */
+.seguros-main-content {
+    flex-grow: 1; /* Permite que o conteúdo principal ocupe o espaço restante */
+    padding: 2rem 5%;
+    display: flex;
+    justify-content: center;
+    /* Removemos a centralização vertical para permitir rolagem se o conteúdo for longo */
+}
+
+/* Footer (Rodapé) */
+.seguros-footer {
+    background-color: #000000;
+    text-align: center;
+    padding: 1.5rem 5%;
+    border-top: 2px solid #5a5a5a;
+    font-size: 0.8rem;
+    color: #a8a8a8;
+}
+
+.seguros-footer p {
+    margin: 0.3rem 0;
+}
+
+/* Sidebar Menu (Menu Lateral) */
+.menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 999;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.menu-overlay.open {
+    visibility: visible;
+    opacity: 1;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    right: -280px; /* Escondido por padrão */
+    width: 280px;
+    height: 100%;
+    background-color: #1a1a1a;
+    padding: 2rem;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    transition: right 0.3s;
+}
+
+.sidebar.open {
+    right: 0; /* Exibir */
+}
+
+.close-menu-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    font-size: 2rem;
+    color: #f7f7f7;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.sidebar-links {
+    list-style: none;
+    padding-top: 3rem;
+}
+
+.sidebar-links li {
+    margin-bottom: 1.5rem;
+}
+
+.sidebar-links a {
+    color: #f7f7f7;
+    text-decoration: none;
+    font-size: 1.2rem;
+    transition: color 0.2s;
+}
+
+.sidebar-links a:hover {
+    color: #ffcc00;
+}
+
+/* Media Query para Menu em telas menores */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 70%; /* Maior em telas menores */
+        right: -70%;
+    }
+}

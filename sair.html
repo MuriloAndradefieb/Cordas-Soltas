@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sair da Conta</title>
+    <link rel="stylesheet" href="css/sair.css">
+</head>
+<body>
+    <main class="logout-container">
+        <section class="logout-card"> 
+            <h1>Tem certeza de que deseja sair?</h1>
+            <p>Você será desconectado da sua conta.</p>
+            <article class="actions">
+                <a href="perfil.html" class="secondary-button" aria-label="Cancelar e voltar ao perfil">Cancelar</a>
+                <button class="primary-button" onclick="logout()" aria-label="Confirmar e sair da conta">Sair</button>
+            </article>
+        </section>
+    </main>
+    <script>
+        function logout() {
+            // AÇÃO CORRIGIDA: Limpa os dados do usuário do localStorage
+            localStorage.removeItem('userProfile'); 
+            
+            alert('Você foi desconectado da sua conta. Redirecionando para a página inicial...');
+            window.location.href = 'index.html'; 
+        }
+    </script>
+</body>
+</html>

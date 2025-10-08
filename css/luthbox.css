@@ -1,0 +1,172 @@
+/* Estilos para a página luthbox.html - Ajustado para harmonizar as imagens */
+
+body {
+    background-color: #000;
+    color: #fff;
+    font-family: 'Roboto', sans-serif;
+    /* Adiciona um background sutil de textura para seguir o protótipo */
+    background-image: url('https://i.pinimg.com/1200x/de/d2/d7/ded2d7ac9173cb81662a4037e64df8e6.jpg'); 
+    background-repeat: repeat;
+}
+
+.luthbox-main-content {
+    background-color: transparent; 
+    padding: 1rem;
+}
+
+.luthbox-container {
+    /* Aumentado de 500px para 600px para dar mais respiro ao conteúdo */
+    max-width: 600px; 
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* --- Header e Títulos --- */
+.luthbox-header {
+    margin: 3rem 0 1.5rem 0;
+}
+
+.luthbox-tagline {
+    font-size: 1rem;
+    color: #fff;
+    margin: 0;
+    text-transform: uppercase;
+    font-weight: 400;
+}
+
+.luthbox-header h1 {
+    font-size: 3rem;
+    color: #FFD700; /* Dourado */
+    font-weight: 700;
+    margin: 0;
+    text-transform: uppercase;
+    line-height: 1;
+    /* Efeito de luz (Neon/Brilho) */
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.7),
+                 0 0 15px rgba(255, 215, 0, 0.5);
+}
+
+/* --- Imagens --- */
+.luthbox-hero-image img,
+.luthbox-kit-image img {
+    max-width: 100%;
+    height: auto;
+    margin: 1.5rem 0;
+    border-radius: 0; /* Remove o border-radius para ser mais fiel ao protótipo */
+    /* Garante que a imagem se extenda por toda a largura do container */
+    width: 100%; 
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* --- Bloco de Texto --- */
+.luthbox-text-block {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #e0e0e0;
+    padding: 0 1rem;
+    /* Centraliza o bloco, mas o texto dentro é justificado/alinhado à esquerda como no protótipo */
+    text-align: left; 
+    margin-bottom: 3rem; /* Aumenta o espaçamento após o primeiro texto */
+}
+
+.luthbox-text-block strong {
+    color: #FFD700;
+    font-weight: 700;
+}
+
+/* --- Seção de Compra --- */
+.luthbox-buy-section {
+    margin: 3rem 0;
+    padding: 0 1rem;
+}
+
+.luthbox-buy-section h2 {
+    font-size: 1.5rem;
+    color: #fff; 
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+.luthbox-buy-section p {
+    color: #ccc;
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+}
+
+/* --- Botão de Compra --- */
+.button-comprar {
+    display: inline-block;
+    background-color: #FFD700; 
+    color: #000;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 1.2rem 3rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    font-size: 1rem;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.6); 
+}
+
+.button-comprar:hover {
+    background-color: #e6c300;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 1);
+}
+
+/* --- Footer da Luthbox --- */
+.luthbox-footer {
+    text-align: center;
+    padding: 2rem 1rem 1rem 1rem;
+    font-size: 0.8rem;
+    color: #888;
+    border-top: 1px solid #333;
+    line-height: 1.5;
+    position: relative; 
+}
+
+.luthbox-footer p {
+    margin: 0.2rem 0;
+}
+
+.luthbox-footer .politicas a {
+    color: #FFD700;
+    text-decoration: none;
+    font-style: italic;
+}
+
+.luthbox-footer .copyright {
+    margin-top: 0.5rem;
+}
+
+.social-icons {
+    position: absolute;
+    bottom: 20px; 
+    right: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.social-icons img {
+    width: 20px;
+    height: 20px;
+}
+
+/* Media Query para telas menores */
+@media (max-width: 600px) {
+    .luthbox-container {
+        max-width: 100%;
+    }
+    .luthbox-header h1 {
+        font-size: 2.5rem;
+    }
+    .social-icons {
+        position: relative;
+        justify-content: center;
+        margin-top: 1rem;
+        right: auto;
+        bottom: auto;
+        width: 100%;
+    }
+}

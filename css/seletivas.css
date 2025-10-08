@@ -1,0 +1,147 @@
+/* Estilos para a página seletivas.html */
+
+body {
+    background-color: #000;
+    color: #fff;
+    font-family: 'Roboto', sans-serif;
+}
+
+.seletivas-main-content {
+    background-color: #121212;
+    padding: 1rem;
+}
+
+.seletivas-container {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.seletivas-header {
+    margin: 2rem 0;
+}
+
+.seletivas-header p {
+    font-size: 1.2rem;
+    color: #ccc;
+    margin: 0;
+    text-transform: lowercase;
+}
+
+.seletivas-header h1 {
+    font-size: 4rem;
+    color: #FFD700; /* Dourado */
+    font-weight: 700;
+    margin: 0;
+    text-transform: uppercase;
+    line-height: 1;
+    /* NOVO: Efeito de luz amarela/neon */
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.7), /* Brilho mais próximo e forte */
+                 0 0 15px rgba(255, 215, 0, 0.5), /* Brilho médio e suave */
+                 0 0 25px rgba(255, 215, 0, 0.3); /* Brilho mais distante e difuso */
+}
+
+.seletivas-image-wrapper {
+    margin: 2rem 0;
+}
+
+.seletivas-image-wrapper img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.seletivas-text-block {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #e0e0e0;
+    max-width: 600px;
+    margin: 0 auto 2rem auto;
+    text-align: left;
+}
+
+.seletivas-signup-section {
+    margin: 4rem 0;
+}
+
+.seletivas-signup-section h2 {
+    font-size: 2.5rem;
+    color: #FFD700;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    /* Opcional: Adiciona um leve brilho no Inscreva-se também */
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+}
+
+.seletivas-signup-section h3 {
+    font-size: 1.2rem;
+    color: #fff;
+    font-weight: 400;
+    margin-bottom: 1rem;
+}
+
+.seletivas-signup-section p {
+    color: #ccc;
+    margin-bottom: 1.5rem;
+}
+
+.form-link img {
+    max-width: 100%;
+    border-radius: 4px;
+    border: 1px solid #444;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-link:hover img {
+    transform: scale(1.02);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+}
+
+.rules-prompt {
+    margin-top: 2rem;
+    font-style: italic;
+}
+
+.button-regulamento {
+    display: inline-block;
+    background-color: #FFD700;
+    color: #000;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 1rem 2.5rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+    /* ATUALIZADO: Adiciona box-shadow e transição para o efeito de brilho */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    margin-top: 0.5rem;
+    /* Brilho inicial sutil */
+    box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+}
+
+.button-regulamento:hover {
+    background-color: #e6c300;
+    /* NOVO: Aumenta o brilho ao passar o mouse */
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+}
+
+.seletivas-footer {
+    text-align: center;
+    padding: 2rem 1rem;
+    font-size: 0.8rem;
+    color: #888;
+    border-top: 1px solid #333;
+    line-height: 1.5;
+}
+
+/* Media Query para telas menores */
+@media (max-width: 768px) {
+    .seletivas-header h1 {
+        font-size: 3rem;
+    }
+    .seletivas-signup-section h2 {
+        font-size: 2rem;
+    }
+    .seletivas-text-block {
+        text-align: center;
+    }
+}

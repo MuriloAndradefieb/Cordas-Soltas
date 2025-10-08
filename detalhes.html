@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Show</title>
+    <link rel="stylesheet" href="css/detalhes.css"> 
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="header">
+        <a href="index.html" class="logo-link">
+            <img src="img/LOGO CORDAS SOLTAS SITE.png" alt="Logo Cordas Soltas" class="logo">
+        </a>
+        <nav class="nav-icons">
+            <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu">&#9776;</button>
+            <a href="login.html" id="account-link" class="account-icon" aria-label="Conta">&#128100;</a>
+            <a href="#" class="cart-icon" aria-label="Carrinho">&#128722;</a>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <aside class="banner-side left">
+            <img src="https://via.placeholder.com/150x600?text=ANUNCIO" alt="Anúncio Lateral Esquerdo">
+        </aside>
+
+        <section class="details-and-back-container">
+            <a href="index.html" class="back-link">&larr; Voltar para Eventos</a>
+            
+            <section id="show-details-container" class="show-details-container">
+                <p>Carregando detalhes do show...</p>
+            </section>
+
+        </section>
+
+        <aside class="banner-side right">
+            <img src="https://via.placeholder.com/150x600?text=ANUNCIO" alt="Anúncio Lateral Direito">
+        </aside>
+    </main>
+
+    <div id="menu-overlay" class="menu-overlay"></div>
+    <aside id="sidebar-menu" class="sidebar">
+        <button id="close-menu-btn" class="close-menu-btn" aria-label="Fechar menu">&times;</button>
+        <ul class="sidebar-links">
+            <li><a href="index.html">Início</a></li>
+            <li><a href="rock.html">Rock</a></li>
+            <li><a href="samba.html">Samba</a></li>
+            <li><a href="jazz.html">Jazz/Blues</a></li>
+            <li><a href="login.html" id="sidebar-account-link">Conta</a></li>
+            <li><a href="#">Sair</a></li> 
+        </ul>
+    </aside>
+
+    <script src="js/shows.js"></script> 
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('show-details-container');
+            const params = new URLSearchParams(window.location.search);
+            const showId = params.get('id');
+
+            // Procura o show no array 'shows' (que veio do shows.js)
+            const foundShow = shows.find(show => show.id === showId);
+
+            if (foundShow) {
+                // SALVA O SHOW ENCONTRADO NO LOCALSTORAGE
+                // Assim, o seu script 'detalhes.js' original vai funcionar sem alterações!
+                localStorage.setItem('selectedShow', JSON.stringify(foundShow));
+
+                // Formata os preços para exibição
+                const formatCurrency = (value) => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+                // Monta o HTML dinâmico do show
+                container.innerHTML = `
+                    <div class="show-image-wrapper">
+                        <img src="${foundShow.image}" alt="${foundShow.title}" class="show-image">
+                    </div>
+                    <div class="show-info-wrapper">
+                        <div class="show-info">
+                            <h1>${foundShow.title}</h1>
+                            <p>📅 ${foundShow.date}</p>
+                            <p>📍 ${foundShow.location}</p>
+                        </div>
+                        <section class="purchase-section">
+                            <div class="ticket-option">
+                                <div class="ticket-name">
+                                    <h3>Inteira</h3>
+                                    <span class="ticket-count" data-ticket-type="full"></span>
+                                    <span class="ticket-price">${formatCurrency(foundShow.priceFull)}</span>
+                                </div>
+                                <div class="quantity-control">
+                                    <button class="quantity-btn minus" data-type="full">-</button>
+                                    <input type="number" id="qty-full" value="0" min="0" max="10" readonly>
+                                    <button class="quantity-btn plus" data-type="full">+</button>
+                                </div>
+                            </div>
+                            <div class="ticket-option">
+                                <div class="ticket-name">
+                                    <h3>Meia-Entrada</h3>
+                                    <span class="ticket-count" data-ticket-type="half"></span>
+                                    <span class="ticket-price">${formatCurrency(foundShow.priceHalf)}</span>
+                                </div>
+                                <div class="quantity-control">
+                                    <button class="quantity-btn minus" data-type="half">-</button>
+                                    <input type="number" id="qty-half" value="0" min="0" max="10" readonly>
+                                    <button class="quantity-btn plus" data-type="half">+</button>
+                                </div>
+                            </div>
+                            <div class="total-summary">
+                                <h3>Total:</h3>
+                                <span id="total-value" class="total-price">R$ 0,00</span>
+                            </div>
+                            <button id="buy-button" class="buy-button">
+                                Comprar Ingressos</button>
+                            <div id="error-message" class="error-message"></div> </section>
+                    </div>
+                `;
+
+                // NOVO CÓDIGO PARA GERENCIAR A CONTAGEM E MOSTRAR/OCULTAR NO NOME DO INGRESSO
+                const updateTicketCountDisplay = (type, qty) => {
+                    const countSpan = document.querySelector(`.ticket-count[data-ticket-type="${type}"]`);
+                    const nameH3 = countSpan.previousElementSibling;
+                    
+                    if (qty > 0) {
+                        const ticketLabel = nameH3.textContent.trim().toLowerCase();
+                        countSpan.textContent = `${qty}x ${ticketLabel}`;
+                        countSpan.classList.add('visible');
+                    } else {
+                        countSpan.textContent = '';
+                        countSpan.classList.remove('visible');
+                    }
+                };
+
+                // Adiciona listeners para atualizar a contagem no display do nome do ingresso
+                document.querySelectorAll('.quantity-btn').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const type = event.target.dataset.type;
+                        const input = document.getElementById(`qty-${type}`);
+                        
+                        // O script `detalhes.js` (que carregaremos abaixo) cuidará da atualização do valor do input,
+                        // então aqui apenas esperamos um pequeno delay para ler o novo valor.
+                        setTimeout(() => {
+                            const newQty = parseInt(input.value);
+                            updateTicketCountDisplay(type, newQty);
+                        }, 50); // Pequeno atraso para garantir que 'detalhes.js' já atualizou o valor
+                    });
+                });
+                // FIM DO NOVO CÓDIGO
+                
+            } else {
+                container.innerHTML = '<h2>Show não encontrado</h2><p>O evento que você está procurando não foi localizado. Por favor, volte para a página inicial.</p>';
+            }
+        });
+    </script>
+    
+    <script src="js/detalhes.js"></script> 
+    
+    <script>
+        // ... (seu código do menu hambúrguer e checagem de login aqui) ...
+    </script>
+
+    </body>
+</html>

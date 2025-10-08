@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre Nós - Cordas Soltas</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/sobre.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="header">
+        <a href="index.html" class="logo-link">
+            <img src="img/LOGO CORDAS SOLTAS SITE.png" alt="Logo Cordas Soltas" class="logo">
+        </a>
+        <nav class="nav-icons">
+            <button class="hamburger-button" aria-label="Abrir menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+            <a href="login.html" id="account-link" class="account-icon" aria-label="Conta">&#128100;</a>
+            <a href="#" class="cart-icon" aria-label="Carrinho">&#128722;</a>
+        </nav>
+    </header>
+
+    <main class="sobre-main-content">
+        <section class="sobre-container">
+            
+            <header class="sobre-header">
+                <p>tudo sobre</p>
+                <h1>cordas soltas</h1>
+            </header>
+
+            <figure class="sobre-image-wrapper">
+                <img src="img/pessoas-num-festival_1160-736.jpg" alt="Multidão levantando as mãos em um show de música">
+            </figure>
+
+            <article class="sobre-text-block">
+                <h2>O Elo Entre a Música e Você</h2>
+                <p>A <b>Cordas Soltas</b> é uma empresa dedicada à divulgação e valorização de eventos musicais de diversos estilos, atuando como um elo fundamental entre artistas, produtores e o público.</p>
+                <p>Nosso trabalho vai muito além da simples promoção: acreditamos que a música é uma das formas mais ricas de expressão cultural, capaz de aproximar pessoas, despertar emoções e criar memórias inesquecíveis.</p>
+            </article>
+
+            <figure class="sobre-image-wrapper">
+                <img src="img/pexels-wendywei-1190297.jpg" alt="Multidão de braços levantados em um show">
+            </figure>
+
+            <article class="sobre-text-block">
+                <h2>Propósito: Fortalecer a Cena Musical</h2>
+                <p>Nosso propósito é fortalecer a cena musical, ampliando o acesso do público a experiências culturais únicas e incentivando a circulação da arte em todas as suas formas. Acreditamos no poder da música de unir pessoas, transformar realidades e criar memórias.</p>
+                <p>Por isso, investimos em estratégias criativas de comunicação e visibilidade, garantindo que cada show e artista alcancem o público certo no momento certo. Nosso diferencial está no apoio a bandas e artistas independentes. Valorizamos o talento, a autenticidade e a força da música autoral, oferecendo a esses profissionais um espaço digno e profissional para iniciar suas carreiras.</p>
+            </article>
+
+            <figure class="sobre-image-wrapper">
+                <img src="img/TNMRollingStone_FrontLine-3.webp" alt="Músicos tocando no palco com luzes coloridas">
+            </figure>
+
+            <article class="sobre-text-block">
+                <h2>Crescimento em Rede</h2>
+                <p>A Cordas Soltas também busca criar pontes entre produtores culturais, espaços de eventos, patrocinadores e a comunidade. Acreditamos que a música cresce em rede, onde todos se beneficiam:</p>
+                <ul>
+                    <li>O artista, que tem sua arte reconhecida;</li>
+                    <li>O público, que vivencia espetáculos de qualidade;</li>
+                    <li>E os parceiros, que fortalecem sua imagem ao se associar à cultura.</li>
+                </ul>
+                <p>Mais do que divulgar shows, <b>queremos fazer parte de histórias.</b></p>
+            </article>
+
+        </section>
+    </main>
+
+    <footer class="sobre-footer">
+        <p>Praça Muhammad Ali, Cambuci, 20220300 - SÃO PAULO - SP - brasil</p>
+        <p>contatoouvidoriadosartistas@email.com | +55 (11) 3200-0800</p>
+        <p>Todos os direitos reservados 2024.</p>
+        <div class="social-icons">
+             <a href="#"><img src="https://i.imgur.com/a4gWf9W.png" alt="WhatsApp"></a>
+            <a href="#"><img src="https://i.imgur.com/f9H6yXf.png" alt="Instagram"></a>
+        </div>
+    </footer>
+
+    <div id="menu-overlay" class="menu-overlay"></div>
+    <aside id="sidebar-menu" class="sidebar">
+        <button id="close-menu-btn" class="close-menu-btn" aria-label="Fechar menu">&times;</button>
+        <ul class="sidebar-links">
+            <li><a href="index.html">Início</a></li>
+            <li><a href="sobre.html">Sobre</a></li>
+            <li><a href="seletivas.html">Seletivas</a></li>
+            <li><a href="luthbox.html">Luthbox</a></li>
+        </ul>
+    </aside>
+
+    <script src="js/script.js"></script>
+    <script>
+        // Script de verificação de login para o ícone de perfil
+        document.addEventListener('DOMContentLoaded', () => {
+            const accountLink = document.getElementById('account-link');
+            const userProfile = localStorage.getItem('userProfile');
+            if (userProfile) {
+                accountLink.href = 'perfil.html';
+            } else {
+                accountLink.href = 'login.html';
+            }
+        });
+        
+        // Adiciona classe de 'active' para o link "Sobre" no menu lateral
+        document.querySelector('.sidebar-links a[href="sobre.html"]').classList.add('active');
+    </script>
+</body>
+</html>

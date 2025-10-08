@@ -1,0 +1,193 @@
+/* Estilos para a página regulamento.html - Ajustados para o protótipo */
+
+body {
+    background-color: #000;
+    color: #fff;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* O conteúdo principal deve ter um fundo escuro e padding */
+.regulamento-main-content {
+    background-color: #121212; /* Um cinza bem escuro, quase preto, para o fundo do bloco de conteúdo */
+    padding: 2rem 1rem;
+    line-height: 1.6;
+}
+
+.regulamento-container {
+    max-width: 850px;
+    margin: 0 auto;
+    text-align: left;
+    padding: 1rem; /* Padding interno para garantir que o texto não toque as bordas */
+}
+
+/* --- Header e Títulos --- */
+.regulamento-header {
+    margin: 2rem 0 3rem 0;
+    text-align: center;
+}
+
+.regulamento-header h1 {
+    /* Título maior: REGULAMENTO GERAL */
+    font-size: 2.5rem;
+    color: #FFD700; /* Dourado */
+    font-weight: 700;
+    margin: 0;
+    text-transform: uppercase;
+    line-height: 1.2;
+    /* Efeito de luz amarela */
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.7), /* Brilho mais próximo e forte */
+                 0 0 15px rgba(255, 215, 0, 0.5), /* Brilho médio e suave */
+                 0 0 25px rgba(255, 215, 0, 0.3); /* Brilho mais distante e difuso */
+}
+
+.regulamento-header h2 {
+    /* Título principal: CORDAS SOLTAS */
+    font-size: 3rem;
+    color: #fff; /* Branco, como no protótipo */
+    font-weight: 700;
+    margin: 0.2rem 0 0.5rem 0;
+    text-transform: uppercase;
+    line-height: 1.2;
+    /* Efeito de luz branca/amarela sutil para CORDAS SOLTAS */
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.7), /* Brilho mais próximo e forte (branco) */
+                 0 0 15px rgba(255, 255, 255, 0.5), /* Brilho médio e suave (branco) */
+                 0 0 25px rgba(255, 255, 255, 0.3); /* Brilho mais distante e difuso (branco) */
+}
+
+.regulamento-header p {
+    /* Subtítulo: REGULAMENTO SELETIVAS */
+    font-size: 1rem;
+    color: #FFD700;
+    margin-top: 0.5rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    /* Um pequeno brilho para o subtítulo também */
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.6);
+}
+
+/* --- Bloco de Conteúdo (Regulamento) --- */
+.regulamento-content-block {
+    color: #e0e0e0;
+    font-size: 0.95rem; /* Levemente menor para caber mais texto */
+}
+
+.regulamento-content-block p {
+    margin-bottom: 1.5rem;
+}
+
+.regulamento-section {
+    margin-bottom: 3rem;
+}
+
+.regulamento-section h3 {
+    /* Títulos das seções (OBJETIVOS, DAS ATIVIDADES, etc.) */
+    font-size: 1.25rem; /* Um pouco menor para o visual do protótipo */
+    color: #FFD700; /* Dourado */
+    font-weight: 700;
+    text-transform: uppercase;
+    /* Linha dourada no rodapé do título, como no protótipo */
+    border-bottom: 2px solid #FFD700;
+    padding-bottom: 0.4rem;
+    margin-top: 2rem;
+    margin-bottom: 1.5rem;
+    /* Adiciona um leve brilho aos títulos de seção */
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.4);
+}
+
+/* Estilo para listas */
+.regulamento-section ul,
+.regulamento-section ol {
+    padding-left: 0; /* Remove o padding padrão para alinhamento */
+    list-style-type: none; 
+    margin: 0;
+}
+
+.regulamento-section ul li,
+.regulamento-section ol li {
+    margin-bottom: 0.75rem;
+    padding-left: 1.5rem; /* Espaço para o bullet/número */
+    position: relative;
+}
+
+/* Custom bullet points (dourado) */
+.regulamento-section ul li::before {
+    content: "\2022"; /* Bullet point */
+    color: #FFD700; 
+    font-weight: bold;
+    font-size: 1.2em;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+/* Lista ordenada customizada (dourado) */
+.regulamento-section ol {
+    counter-reset: item;
+}
+
+.regulamento-section ol li::before {
+    content: counter(item) ". ";
+    counter-increment: item;
+    color: #FFD700; 
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+
+/* Para o texto em destaque (Cordas Soltas) no primeiro parágrafo */
+.regulamento-content-block strong {
+    color: #FFD700;
+    font-weight: 700;
+}
+
+/* --- Ações e Botões de Retorno --- */
+.regulamento-action-area {
+    text-align: center;
+    margin: 4rem 0 2rem 0; /* Espaçamento antes e depois do botão */
+}
+
+.button-voltar {
+    display: inline-block;
+    background-color: #FFD700; /* Cor Dourada */
+    color: #000;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 1rem 2.5rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    /* Efeito de brilho sutil para destacar */
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.4); 
+}
+
+.button-voltar:hover {
+    background-color: #e6c300; /* Dourado levemente mais escuro no hover */
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.8); /* Brilho mais intenso no hover */
+}
+
+
+/* --- Footer --- */
+.regulamento-footer {
+    text-align: center;
+    padding: 2rem 1rem;
+    font-size: 0.8rem;
+    color: #888;
+    border-top: 1px solid #333;
+    line-height: 1.5;
+}
+
+
+/* Media Query para telas menores */
+@media (max-width: 768px) {
+    .regulamento-header h1 {
+        font-size: 2rem;
+    }
+    .regulamento-header h2 {
+        font-size: 2.5rem;
+    }
+    .regulamento-section h3 {
+        font-size: 1.1rem;
+    }
+}

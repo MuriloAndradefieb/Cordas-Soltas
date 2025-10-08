@@ -1,0 +1,655 @@
+/* Estilos Gerais */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #000;
+    color: #fff;
+    line-height: 1.6;
+    background-image: url('/img/background-black.jpg'); 
+    background-repeat: repeat;
+}
+
+a {
+    text-decoration: none;
+    color: #fff;
+}
+
+/* Header */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    position: sticky;
+    top: 0;
+    background-color: #000000;
+    z-index: 1000;
+}
+
+.logo {
+    size: 60px; 
+    padding-left: 30px;
+}
+
+.nav-icons {
+    display: flex;
+    align-items: center; /* Alinha os ícones verticalmente */
+    gap: 1rem;
+}
+
+/* Estilo para o novo ícone de conta */
+.account-icon {
+    font-size: 1.5rem;
+    color: black;
+    transition: color 0.3s ease;
+    text-decoration: none;
+    background-color: #fff;
+    border-radius: 50%;
+    padding: 5px;
+    height: 30px;
+    width: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.account-icon:hover {
+    background-color: #FFD700;
+    color: #000;
+}
+
+.menu-toggle, .cart-icon {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.cart-icon {
+    text-decoration: none;
+}
+
+/* Main Content */
+.main-content {
+    background-color: #121212;
+}
+
+/* Banner Section */
+.banner-section {
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.banner-image {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Carousels */
+.carousels-container {
+    padding: 1rem;
+}
+
+.carousel-wrapper {
+    margin-bottom: 2rem;
+}
+
+.carousel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.carousel-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #FFD700;
+}
+
+.view-all {
+    color: #fff;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 400;
+    opacity: 0.7;
+}
+
+.carousel-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.carousel-cards {
+    display: flex;
+    gap: 1rem;
+    overflow-x: scroll;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.carousel-cards::-webkit-scrollbar {
+    display: none;
+}
+
+.card {
+    flex-shrink: 0;
+    width: 200px;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #282828;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.card-image {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+.card-info {
+    padding: 0.75rem;
+}
+
+.card-info h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #fff;
+}
+
+.card-date, .card-location {
+    display: flex;
+    align-items: center;
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+    opacity: 0.8;
+}
+
+.card-info .icon {
+    margin-right: 0.5rem;
+    font-size: 1rem;
+}
+
+.carousel-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    z-index: 10;
+    display: none;
+}
+
+.prev-btn {
+    left: 0;
+}
+
+.next-btn {
+    right: 0;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    z-index: 10;
+    color: #FFD700;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+/* Media Queries para Desktop */
+@media (min-width: 768px) {
+    .header {
+        padding: 1rem 3rem;
+    }
+
+    .logo {
+        height: 60px;
+    }
+
+    .nav-icons {
+        gap: 2rem;
+    }
+
+    .menu-toggle {
+        display: none;
+    }
+    
+    .hamburger-button {
+        display: none;
+    }
+
+    .main-content {
+        padding: 0 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .carousels-container {
+        padding: 1rem 0;
+    }
+
+    .carousel-cards {
+        overflow-x: hidden;
+        justify-content: space-between;
+    }
+    
+    .card {
+        width: 250px;
+    }
+
+    .card-image {
+        height: 200px;
+    }
+
+    .carousel-header h2 {
+        font-size: 2rem;
+    }
+
+    .carousel-nav {
+        display: block;
+    }
+
+    .account-icon {
+        font-size: 1.8rem;
+    }
+}
+
+/* ======================================= */
+/* ESTILOS DO MENU DE HAMBÚRGUER (SIDEBAR) */
+/* ======================================= */
+
+/* Oculta o ícone de menu antigo (o emoji) se ele for usado em outro lugar */
+.menu-toggle {
+    display: none; 
+}
+
+/* Ícone de Hambúrguer (O novo button) */
+.hamburger-button {
+    all: unset; /* Remove o estilo padrão do button */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    padding: 5px;
+    background: none;
+    border: none;
+    z-index: 1001; /* Garante que fique acima de tudo */
+    margin-right: 15px; 
+}
+
+.hamburger-button .bar {
+    display: block;
+    width: 100%;
+    height: 3px;
+    background-color: var(--text-light, #fff); /* Usa sua variável de cor clara, ou branco como fallback */
+    border-radius: 1px;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Menu Lateral (Sidebar) */
+.sidebar {
+    position: fixed;
+    top: 0;
+    right: -250px; /* Esconde o menu inicialmente */
+    width: 250px;
+    height: 100%;
+    background-color: var(--bg-dark, #1a1a1a); /* Usa seu fundo escuro */
+    border-left: 1px solid var(--border-gold, #c9a444);
+    box-shadow: -4px 0 10px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    transition: right 0.3s ease-in-out;
+    padding-top: 60px; /* Espaço para o header */
+}
+
+/* Classe para mostrar o menu */
+.sidebar.open {
+    right: 0;
+}
+
+.sidebar-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-links li a {
+    display: block;
+    padding: 15px 20px;
+    text-decoration: none;
+    color: var(--text-light, #fff);
+    font-size: 1.1rem;
+    border-bottom: 1px solid #333;
+    transition: background-color 0.2s;
+}
+
+.sidebar-links li a:hover {
+    background-color: #2a2a2a;
+    color: var(--accent-gold, #c9a444);
+}
+
+/* Overlay de fundo */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 999;
+    display: none;
+    cursor: pointer;
+}
+
+.overlay.visible {
+    display: block;
+}
+/* ======================================= */
+/* ESTILOS DE ÍCONES E BOTÕES NO HEADER    */
+/* ======================================= */
+
+/* Oculta o ícone de menu antigo (o emoji) */
+.menu-toggle {
+    display: none; 
+}
+
+/* Estilo para o novo ícone SVG do Perfil */
+.account-icon .icon-svg {
+    width: 25px; /* Define o tamanho do ícone */
+    height: 25px;
+    vertical-align: middle;
+    color: var(--text-light, #fff); /* Usa cor clara, ou branco como fallback */
+}
+
+/* Estilo para o ícone de carrinho (mantém o emoji, mas centraliza) */
+.cart-icon {
+    font-size: 25px;
+}
+
+/* ======================================= */
+/* ESTILOS DO MENU DE HAMBÚRGUER (SIDEBAR) */
+/* ======================================= */
+
+/* Ícone de Hambúrguer (O novo button, sem div) */
+.hamburger-button {
+    all: unset; /* Remove o estilo padrão do button */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    padding: 5px;
+    background: none;
+    border: none;
+    z-index: 1001;
+    margin-right: 15px; 
+}
+
+.hamburger-button .bar {
+    display: block;
+    width: 100%;
+    height: 3px;
+    background-color: var(--text-light, #fff);
+    border-radius: 1px;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Menu Lateral (Sidebar) */
+.sidebar {
+    position: fixed;
+    top: 0;
+    right: -250px; /* Esconde o menu inicialmente */
+    width: 250px;
+    height: 100%;
+    background-color: var(--bg-dark, #1a1a1a); 
+    border-left: 1px solid var(--border-gold, #c9a444);
+    box-shadow: -4px 0 10px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    transition: right 0.3s ease-in-out;
+    padding-top: 60px; /* Espaço para o header */
+}
+
+/* Classe para mostrar o menu */
+.sidebar.open {
+    right: 0;
+}
+
+.sidebar-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-links li a {
+    display: block;
+    padding: 15px 20px;
+    text-decoration: none;
+    color: var(--text-light, #fff);
+    font-size: 1.1rem;
+    border-bottom: 1px solid #333;
+    transition: background-color 0.2s;
+}
+
+.sidebar-links li a:hover {
+    background-color: #2a2a2a;
+    color: var(--)
+}/* Estilos Gerais */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #000;
+    color: #fff;
+    line-height: 1.6;
+    background-image: url('/img/background-black.jpg'); 
+    background-repeat: repeat;
+}
+
+a {
+    text-decoration: none;
+    color: #fff;
+}
+
+/* Header */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    position: sticky;
+    top: 0;
+    background-color: #000;
+    z-index: 1000;
+}
+
+.logo {
+    height: 50px;
+}
+
+.nav-icons {
+    display: flex;
+    align-items: center; /* Alinha os ícones verticalmente */
+    gap: 1rem;
+}
+
+/* Estilo para o novo ícone de conta */
+.account-icon {
+    font-size: 1.5rem;
+    color: black;
+    transition: color 0.3s ease;
+    text-decoration: none;
+    background-color: #fff;
+    border-radius: 50%;
+    padding: 5px;
+    height: 30px;
+    width: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.account-icon:hover {
+    background-color: #FFD700;
+    color: #000;
+    transform: scale(1.1);
+}
+
+/* Estilo para o ícone de carrinho */
+.cart-icon {
+    font-size: 1.5rem;
+    color: #FFD700;
+    transition: color 0.3s ease, transform 0.3s ease;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.cart-icon:hover {
+    color: #fff;
+    transform: scale(1.1);
+}
+
+/* Ícone de Hambúrguer (O novo button, sem div) */
+.hamburger-button {
+    all: unset; /* Remove o estilo padrão do button */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    padding: 5px;
+    background: none;
+    border: none;
+    z-index: 1001;
+    margin-right: 15px; 
+}
+
+.hamburger-button .bar {
+    display: block;
+    width: 100%;
+    height: 3px;
+    background-color: var(--text-light, #fff);
+    border-radius: 1px;
+    transition: all 0.3s ease-in-out;
+}
+
+
+/* ==================================================== */
+/* --- MENU LATERAL (SIDEBAR) E BOTÃO DE FECHAR (X) --- */
+/* ==================================================== */
+
+/* Menu Lateral (Sidebar) */
+.sidebar {
+    position: fixed;
+    top: 0;
+    right: -250px; /* Esconde o menu inicialmente */
+    width: 250px;
+    height: 100%;
+    background-color: var(--bg-dark, #1a1a1a); 
+    border-left: 1px solid rgba(255, 215, 0, 0.2); /* Borda dourada mais suave */
+    box-shadow: -6px 0 20px rgba(0, 0, 0, 0.7); /* Sombra mais intensa */
+    z-index: 2000; /* Garante que fique acima de tudo */
+    padding-top: 60px; /* Espaço para o botão de fechar */
+    transition: right 0.4s cubic-bezier(0.7, 0, 0.3, 1); /* Transição suave e elegante */
+}
+
+/* Estado ativo: Menu visível */
+.sidebar.open {
+    right: 0;
+}
+
+/* Botão de Fechar "X" */
+.close-menu-btn {
+    all: unset; /* Remove o estilo padrão do button */
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 2rem; /* Tamanho maior para o X */
+    color: #fff;
+    background-color: #2a2a2a; /* Fundo sutil para destaque */
+    border: 2px solid #FFD700; /* Borda dourada */
+    border-radius: 50%; /* Transforma em círculo */
+    width: 40px;
+    height: 40px;
+    line-height: 40px; /* Centraliza o 'X' */
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
+
+.close-menu-btn:hover {
+    background-color: #FFD700; /* Dourado no hover */
+    color: #000; /* Texto escuro no hover */
+    transform: rotate(90deg); /* Efeito visual interessante */
+}
+
+/* Lista de Links */
+.sidebar-links {
+    list-style: none;
+    padding: 20px 0;
+}
+
+.sidebar-links li {
+    padding: 0;
+}
+
+.sidebar-links a {
+    display: block;
+    padding: 15px 20px; /* Espaçamento interno maior */
+    font-size: 1.1rem;
+    color: #ccc; /* Cor de texto mais suave */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.sidebar-links a:hover {
+    background-color: #333; /* Fundo escuro no hover */
+    color: #FFD700; /* Dourado no hover */
+    border-left: 4px solid #FFD700; /* Destaque lateral */
+    padding-left: 16px; /* Ajuste para manter o alinhamento com a nova borda */
+}
+
+/* Overlay Escuro */
+.menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Fundo semi-transparente escuro */
+    z-index: 1999; /* Fica abaixo do menu */
+    display: none; /* Oculto por padrão, deve ser ativado por JS */
+}
+
+/* --- Footer --- */
+.footer {
+    text-align: center;
+    padding: 20px 10px;
+    background-color: #1a1a1a;
+    border-top: 1px solid #333;
+    color: #aaa;
+    font-size: 0.85rem;
+}

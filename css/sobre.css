@@ -1,0 +1,173 @@
+/* Estilos para a página sobre.html */
+
+/* O body e o header já usam estilos de style.css */
+
+.sobre-main-content {
+    background-color: #121212;
+    padding: 1rem;
+    /* Imagem de fundo sutil para simular a textura do protótipo */
+    background-image: url('https://i.imgur.com/D2nL3Lq.png'); 
+    background-repeat: repeat;
+    background-size: 50%;
+}
+
+.sobre-container {
+    max-width: 600px; /* Mantendo a largura do protótipo */
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* --- Título Principal --- */
+.sobre-header {
+    margin: 3rem 0 1.5rem 0;
+}
+
+.sobre-header p {
+    font-size: 1.1rem;
+    color: #ccc;
+    margin: 0;
+    text-transform: lowercase;
+    font-weight: 400;
+}
+
+.sobre-header h1 {
+    font-size: 3rem;
+    color: #FFD700; /* Dourado */
+    font-weight: 700;
+    margin: 0;
+    text-transform: uppercase;
+    line-height: 1;
+    /* Efeito de luz (Neon/Brilho) - Copiado do seletivas.css para harmonia */
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.7), 
+                 0 0 15px rgba(255, 215, 0, 0.5); 
+}
+
+/* --- Imagens --- */
+.sobre-image-wrapper {
+    margin: 2.5rem 0 1.5rem 0; /* Espaçamento entre blocos */
+    /* Garante que o wrapper não introduza margem lateral */
+    max-width: 100%;
+}
+
+.sobre-image-wrapper img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0; /* Mais fiel ao protótipo */
+    display: block;
+    margin: 0 auto;
+    /* Sombra sutil para destacar a imagem */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); 
+}
+
+/* --- Bloco de Texto --- */
+.sobre-text-block {
+    font-size: 0.95rem;
+    line-height: 1.8; /* Aumentado o line-height para maior legibilidade */
+    color: #e0e0e0;
+    padding: 0 1rem;
+    text-align: left; /* O texto é justificado/alinhado à esquerda no protótipo */
+    margin-bottom: 3rem; 
+}
+
+/* NOVO: Estilo para os subtítulos H2 */
+.sobre-text-block h2 {
+    color: #FFD700; /* Dourado */
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    border-bottom: 2px solid #333; /* Linha sutil para separar */
+    padding-bottom: 0.5rem;
+    text-align: center; /* Centraliza o H2 para destaque */
+    letter-spacing: 1px;
+}
+
+.sobre-text-block p {
+    margin-bottom: 1.5rem; /* Espaçamento entre parágrafos */
+}
+
+.sobre-text-block strong {
+    color: #FFD700;
+    font-weight: 700;
+}
+
+.sobre-text-block em {
+    color: #ccc;
+    font-style: italic;
+}
+
+/* NOVO: Estilo para lista (UL) */
+.sobre-text-block ul {
+    list-style: none; /* Remove bolinhas padrão */
+    padding: 0;
+    margin: 1.5rem 0;
+}
+
+.sobre-text-block ul li {
+    background-color: #1e1e1e; /* Fundo levemente mais claro para destaque */
+    margin-bottom: 0.5rem;
+    padding: 0.8rem 1rem;
+    border-left: 3px solid #FFD700; /* Destaque lateral dourado */
+    font-size: 1rem;
+    color: #f0f0f0;
+    text-align: left;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* --- Footer da Sobre Nós --- */
+.sobre-footer {
+    text-align: center;
+    padding: 2rem 1rem 1rem 1rem;
+    font-size: 0.8rem;
+    color: #888;
+    border-top: 1px solid #333;
+    line-height: 1.5;
+    background-color: #000; /* Fundo escuro para o footer */
+    position: relative; 
+}
+
+.sobre-footer p {
+    margin: 0.2rem 0;
+}
+
+.social-icons {
+    /* Posição no canto inferior direito do protótipo */
+    position: absolute;
+    bottom: 20px; 
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.social-icons img {
+    width: 25px; /* Tamanho ajustado */
+    height: 25px;
+    opacity: 0.8;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.social-icons img:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* Media Query para telas menores */
+@media (max-width: 768px) {
+    .sobre-header h1 {
+        font-size: 2.5rem;
+    }
+    .sobre-text-block h2 {
+        font-size: 1.3rem;
+    }
+    .sobre-text-block {
+        text-align: left; /* Mantém alinhamento em telas menores */
+    }
+    .social-icons {
+        position: relative;
+        justify-content: center;
+        margin-top: 1rem;
+        right: auto;
+        bottom: auto;
+        width: 100%;
+    }
+}

@@ -1,0 +1,112 @@
+:root {
+    --bg-dark: #1a1a1a;
+    --text-light: #f0f0f0;
+    --accent-gold: #c9a444;
+    --border-gold: #c9a444;
+    --button-bg-primary: #c9a444;
+    --button-bg-secondary: #333;
+    --link-color: #666;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-image: url('https://www.transparenttextures.com/patterns/black-linen.png');
+}
+
+.logout-container {
+    padding: 2rem;
+    width: 100%;
+    max-width: 500px;
+}
+
+.logout-card {
+    background: linear-gradient(145deg, #1c1c1c, #2a2a2a);
+    border: 1px solid #333;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    text-align: center;
+    padding: 3rem 2rem;
+}
+
+.logout-card h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin: 0 0 1rem;
+    color: var(--text-light);
+}
+
+.logout-card p {
+    font-size: 1.1rem;
+    color: #ccc;
+    margin: 0 0 2rem;
+}
+
+.actions {
+    /* CORREÇÃO: Alinhamento Horizontal (lado a lado) e espaçamento uniforme */
+    display: flex;
+    flex-direction: row; /* Alinha os itens horizontalmente */
+    gap: 1.5rem;
+    justify-content: center;
+}
+
+/* Garante que os botões ocupem o espaço de forma igual dentro do contêiner .actions */
+.actions .primary-button, 
+.actions .secondary-button {
+    width: 50%; /* Cada botão ocupa metade do espaço disponível */
+    max-width: 200px; /* Limita o crescimento em telas muito grandes */
+}
+
+/* MEDIA QUERY: Garante que em telas pequenas (celulares), os botões voltem a ficar empilhados */
+@media (max-width: 450px) {
+    .actions {
+        flex-direction: column;
+    }
+    .actions .primary-button, 
+    .actions .secondary-button {
+        width: 100%; /* Ocupa a largura total novamente */
+        max-width: none;
+    }
+}
+
+.primary-button, .secondary-button {
+    padding: 1rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    border-radius: 8px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.primary-button {
+    background-color: var(--button-bg-primary);
+    color: #000;
+}
+
+.primary-button:hover {
+    background-color: #dcb356;
+    transform: translateY(-2px);
+}
+
+.secondary-button {
+    background-color: var(--button-bg-secondary);
+    color: var(--text-light);
+    border: 1px solid #555;
+}
+
+.secondary-button:hover {
+    background-color: #444;
+    transform: translateY(-2px);
+}

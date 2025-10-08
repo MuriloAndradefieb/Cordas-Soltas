@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seletivas - Cordas Soltas</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/seletivas.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="header">
+        <a href="index.html" class="logo-link">
+            <img src="img/LOGO CORDAS SOLTAS SITE.png" alt="Logo Cordas Soltas" class="logo">
+        </a>
+        <nav class="nav-icons">
+            <button class="hamburger-button" aria-label="Abrir menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+            <a href="login.html" id="account-link" class="account-icon" aria-label="Conta">&#128100;</a>
+            <a href="#" class="cart-icon" aria-label="Carrinho">&#128722;</a>
+        </nav>
+    </header>
+
+    <main class="seletivas-main-content">
+        <section class="seletivas-container">
+            
+            <header class="seletivas-header">
+                <p>tudo sobre nossas</p>
+                <h1>seletivas</h1>
+            </header>
+
+            <figure class="seletivas-image-wrapper">
+                <img src="img/kiss.png" alt="Banda tocando no palco em um show">
+            </figure>
+
+            <article class="seletivas-text-block">
+                <p>O músico ou banda deve ter um projeto musical sólido. Para participar do evento, todos os integrantes precisam ter 18 anos ou mais. A seletiva acontece por meio de um formato criativo, em formato de concurso, com apresentações analisadas por jurados especializados e também pelo voto do público.</p>
+                <p>Embora não seja obrigatório, os candidatos podem ser indicados por uma escola de música, o que fortalece ainda mais sua participação no processo seletivo.</p>
+            </article>
+
+            <figure class="seletivas-image-wrapper">
+                <img src="img/Scorpions-Group-Seattle-2017-8480-e1511449885109-800x533.jpg" alt="Banda vista de trás no palco com a multidão ao fundo">
+            </figure>
+
+            <section class="seletivas-signup-section">
+                <h2>Inscreva-se</h2>
+                <h3>Atenção! Pela Primeira vez!</h3>
+                <p>As bandas que se inscreverem receberão as informações sobre as próximas etapas por e-mail. Fiquem atentos! Em breve, mais novidades.</p>
+                <a href="https://docs.google.com/forms/d/1LcHPziN1SnF5KP8lSCTUtPNYHy0b49EyNURUMvr-dZo/edit?pli=1" target="_blank" rel="noopener noreferrer" class="form-link">
+                    <img src="/img/formulario.png" alt="Imagem de um formulário de inscrição do Concurso Cordas Soltas" height="190px">
+                </a>
+                <p class="rules-prompt">leia atenciosamente o regulamento abaixo antes de preencher o formulário, por gentileza.</p>
+                <a href="/regulamento.html" class="button-regulamento">LER REGULAMENTO</a>
+            </section>
+
+        </section>
+    </main>
+
+    <footer class="seletivas-footer">
+        <p>Praça Muhammad Ali, Cambuci, 20220300 - SÃO PAULO - SP - brasil</p>
+        <p>contatoouvidoriadosartistas@email.com | +55 (11) 3200-0800</p>
+        <p>Todos os direitos reservados 2024.</p>
+    </footer>
+
+    <div id="menu-overlay" class="menu-overlay"></div>
+    <aside id="sidebar-menu" class="sidebar">
+        <button id="close-menu-btn" class="close-menu-btn" aria-label="Fechar menu">&times;</button>
+        <ul class="sidebar-links">
+            <li><a href="index.html">Início</a></li>
+            <li><a href="/sobre.html">Sobre</a></li>
+            <li><a href="seletivas.html">Seletivas</a></li>
+            <li><a href="luthbox.html">Luthbox</a></li>
+        </ul>
+    </aside>
+
+    <script src="js/script.js"></script>
+    <script>
+        // Script de verificação de login para o ícone de perfil
+        document.addEventListener('DOMContentLoaded', () => {
+            const accountLink = document.getElementById('account-link');
+            const userProfile = localStorage.getItem('userProfile');
+            if (userProfile) {
+                accountLink.href = 'perfil.html';
+            } else {
+                accountLink.href = 'login.html';
+            }
+        });
+    </script>
+</body>
+</html>

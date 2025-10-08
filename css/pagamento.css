@@ -1,0 +1,321 @@
+/*
+ * Arquivo: css/pagamento.css
+ * Estilos para a página de Pagamento (Checkout)
+ */
+
+/* ======================================= */
+/* ESTRUTURA E LAYOUT GERAL (SEMÂNTICA) */
+/* ======================================= */
+
+.main-content {
+    background-color: #0d0d0d;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+}
+
+.checkout-container {
+    background-color: #1a1a1a;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    padding: 30px;
+    max-width: 700px;
+    width: 100%;
+    color: #f7f7f7;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.checkout-container h1 {
+    color: #ffcc00;
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.back-link {
+    color: #ffcc00;
+    text-decoration: none;
+    font-size: 1rem;
+    margin-bottom: 15px;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: #e0b300;
+}
+
+
+/* ======================================= */
+/* STEPPER (PASSO A PASSO) */
+/* ======================================= */
+
+.steps {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 15px;
+}
+
+.step-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    text-align: center;
+    position: relative;
+    color: #5a5a5a;
+    font-weight: bold;
+}
+
+.step-circle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #333;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 5px;
+    transition: background-color 0.3s, border-color 0.3s;
+    border: 2px solid #5a5a5a;
+}
+
+.step-item.active .step-circle {
+    background-color: #ffcc00;
+    color: #1a1a1a;
+    border-color: #ffcc00;
+}
+
+.step-item.active p {
+    color: #ffcc00;
+}
+
+/* Linha de progresso entre os círculos (apenas para desktop) */
+.step-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    width: 100%;
+    height: 2px;
+    background-color: #5a5a5a;
+    z-index: -1;
+}
+
+.step-item.active:not(:last-child)::after {
+    background-color: #ffcc00;
+}
+
+
+/* ======================================= */
+/* FORMULÁRIOS E CAMPOS */
+/* ======================================= */
+
+#info-form, #payment-form {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+/* Usando <fieldset> para agrupar rótulo e input */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* <fieldset> para Endereço */
+.form-address {
+    border: 1px solid #333;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 10px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.form-address legend {
+    color: #ffcc00;
+    font-weight: bold;
+    padding: 0 10px;
+}
+
+.form-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #ccc;
+}
+
+.form-group input, .form-group select {
+    padding: 10px;
+    border: 1px solid #444;
+    border-radius: 4px;
+    background-color: #222;
+    color: #f7f7f7;
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus, .form-group select:focus {
+    border-color: #ffcc00;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.3);
+}
+
+/* Campo de erro e input */
+.input-error-border {
+    border-color: #f00 !important;
+}
+
+.error-message-checkout {
+    background-color: #490000;
+    color: #ff7777;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.half-width {
+    /* Em layouts de grid, isso deve ocupar uma coluna, mas ajuda no mobile */
+    min-width: 45%; 
+}
+
+/* Linha de Cartão (Validade e CVV) */
+.card-row {
+    display: flex;
+    gap: 20px;
+}
+
+/* ======================================= */
+/* BOTÕES E RESUMO */
+/* ======================================= */
+
+.buy-button {
+    background-color: #ffcc00;
+    color: #1a1a1a;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.buy-button:hover:not(:disabled) {
+    background-color: #e0b300;
+}
+
+.buy-button:disabled {
+    background-color: #5a5a5a;
+    cursor: not-allowed;
+}
+
+/* Botões no Passo 2 (Voltar e Finalizar) */
+#payment-form button {
+    margin-top: 10px;
+}
+#back-to-info {
+    background-color: #333;
+    color: #f7f7f7;
+    grid-column: 1 / 2; /* Ocupa a primeira coluna */
+}
+#back-to-info:hover:not(:disabled) {
+    background-color: #5a5a5a;
+}
+#submit-payment {
+    grid-column: 2 / 3; /* Ocupa a segunda coluna (em desktop) */
+}
+#payment-form {
+    grid-template-columns: 1fr 1fr; /* Duas colunas em desktop */
+}
+
+.summary-box {
+    background-color: #222;
+    border: 1px solid #444;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.summary-box h3 {
+    color: #ffcc00;
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.4rem;
+}
+
+.summary-box p {
+    margin: 5px 0;
+    color: #ccc;
+}
+
+.summary-total {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #f7f7f7;
+    border-top: 1px solid #444;
+    padding-top: 10px;
+    margin-top: 10px;
+}
+
+/* Estilo PIX/Confirmação */
+.pix-box img {
+    max-width: 250px !important;
+    height: auto;
+    border: 5px solid #ffcc00;
+    border-radius: 5px;
+}
+
+
+/* ======================================= */
+/* RESPONSIVIDADE */
+/* ======================================= */
+
+@media (max-width: 600px) {
+    .main-content {
+        padding: 20px 10px;
+        align-items: flex-start; /* Alinha ao topo em mobile */
+    }
+
+    .checkout-container {
+        padding: 20px;
+    }
+
+    .form-address {
+        /* Garante que o grid de endereço seja uma coluna única em telas pequenas */
+        grid-template-columns: 1fr;
+    }
+    
+    .card-row {
+        /* Força a quebra de linha para Validade e CVV em mobile */
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .form-group.half-width {
+        /* No mobile, campos que eram "half" voltam a ocupar a largura total */
+        min-width: 100%;
+    }
+    
+    /* Faz os botões ficarem em coluna no mobile */
+    #payment-form {
+        grid-template-columns: 1fr;
+    }
+    
+    #back-to-info, #submit-payment {
+        grid-column: 1 / -1; /* Ocupa a largura total */
+    }
+}
