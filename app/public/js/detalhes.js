@@ -22,6 +22,48 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Selecionadores para o menu (usam tags semânticas: button, aside e section)
+    const hamburgerButton = document.querySelector('.hamburger-button'); // Botão de abrir
+    const sidebar = document.getElementById('sidebar-menu');           // O menu lateral (tag <aside>)
+    const overlay = document.getElementById('menu-overlay');             // A camada escura (tag <section>)
+    const closeMenuBtn = document.getElementById('close-menu-btn');    // Botão de fechar
+
+    function toggleMenu() {
+        if (sidebar && overlay) {
+            const isMenuOpen = sidebar.classList.toggle('open');
+            
+            // Usa a classe 'open' em ambos
+            overlay.classList.toggle('open'); 
+
+            // Bloqueia ou libera o scroll do corpo da página
+            document.body.style.overflow = isMenuOpen ? 'hidden' : ''; 
+        }
+    }
+
+    // Adiciona os event listeners
+    if (hamburgerButton) {
+        hamburgerButton.addEventListener('click', toggleMenu);
+    }
+    
+    if (closeMenuBtn) { 
+        closeMenuBtn.addEventListener('click', toggleMenu);
+    }
+
+    if (overlay) {
+        overlay.addEventListener('click', toggleMenu);
+    }
+
+    // Fechar menu ao clicar em um link
+    const sidebarLinks = document.querySelectorAll('.sidebar-links a');
+    sidebarLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            if (sidebar && sidebar.classList.contains('open')) {
+                toggleMenu(); 
+            }
+        });
+    });
+
+
     // Função para ocultar a mensagem de erro
     function hideErrorMessage() {
         const errorMessageEl = document.getElementById('error-message');

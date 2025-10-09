@@ -114,7 +114,7 @@ function setupBuyButtonListener() {
             localStorage.setItem('currentOrder', JSON.stringify(orderData));
 
             // Agora, redireciona para o pagamento
-            window.location.href = 'pagamento.html'; 
+            window.location.href = '/pagamento'; 
         });
     }
 }

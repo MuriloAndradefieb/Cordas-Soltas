@@ -44,5 +44,8 @@ router.get("/cadastro", function (req, res) {
 router.get("/regulamento", function (req, res) {
     res.render("pages/regulamento", {titulo:"Regulamento"})
 });
+router.get("/pagamento", function (req, res) {
+    res.render("pages/pagamento", {titulo:"Pagamento"})
+});
 
 module.exports = router;
