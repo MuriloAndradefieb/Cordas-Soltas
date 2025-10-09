@@ -653,3 +653,52 @@ a {
     color: #aaa;
     font-size: 0.85rem;
 }
+/* style.css (Trecho focado no banner) */
+
+/* Banner Carousel - Container */
+.banner-carousel {
+    width: 100%;
+    position: relative; /* Container pai é relativo */
+    overflow: hidden; 
+    margin-bottom: 1rem;
+    /* Altura definida para evitar que o conteúdo "pule" durante o carregamento */
+    height: 350px; /* Altura de exemplo para celular */
+}
+
+/* Banner Slide - O próprio link <a> (Atua como o slide) */
+.banner-slide {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: absolute; /* Slides são absolutos para se sobreporem */
+    top: 0;
+    left: 0;
+    opacity: 0; /* Começa invisível */
+    pointer-events: none; /* Inativo quando invisível */
+    
+    /* Transição para o efeito fade */
+    transition: opacity 1s ease-in-out; 
+}
+
+/* Slide Ativo (Controlado pelo JavaScript) */
+.banner-slide.active {
+    opacity: 1; /* Torna o slide ativo visível */
+    pointer-events: auto; /* Torna o slide ativo clicável */
+    z-index: 1; /* Garante que o slide ativo esteja no topo */
+}
+
+/* Imagem dentro do Slide */
+.banner-slide .banner-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Garante que a imagem preencha o slide sem distorcer */
+    display: block;
+}
+
+/* Media Queries para Desktop/Telas Maiores */
+@media (min-width: 768px) {
+    /* Ajusta a altura para telas maiores */
+    .banner-carousel {
+        height: 450px; 
+    }
+}

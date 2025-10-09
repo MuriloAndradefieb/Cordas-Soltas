@@ -3,7 +3,7 @@
 body {
     background-color: #000;
     color: #fff;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Roboto', sans-serif; 
     /* Adiciona um background sutil de textura para seguir o protótipo */
     background-image: url('https://i.pinimg.com/1200x/de/d2/d7/ded2d7ac9173cb81662a4037e64df8e6.jpg'); 
     background-repeat: repeat;

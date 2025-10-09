@@ -47,5 +47,11 @@ router.get("/regulamento", function (req, res) {
 router.get("/pagamento", function (req, res) {
     res.render("pages/pagamento", {titulo:"Pagamento"})
 });
+router.get("/sair", function (req, res) {
+    res.render("pages/sair", {titulo:"Sair da conta"})
+});
+router.get("/mensalidade", function (req, res) {
+    res.render("pages/mensalidade", {titulo:"Sair da conta"})
+});
 
 module.exports = router;

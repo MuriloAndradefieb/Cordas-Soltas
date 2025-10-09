@@ -1,0 +1,233 @@
+/* Importação de Fonte Google (Oswald) para títulos */
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap');
+
+/* --- Variáveis e Reset Básico --- */
+:root {
+    --color-dark: #121212;
+    --color-light: #f5f5f5;
+    --color-accent: #ffcc00; /* Dourado/Amarelo dos destaques */
+    --color-text-body: #cccccc;
+    --color-price: #ffd700; /* Ouro */
+    --font-heading: 'Oswald', sans-serif;
+    --font-body: 'Arial', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-body);
+    background-color: var(--color-dark);
+    color: var(--color-light);
+    line-height: 1.6;
+    overflow-x: hidden; /* Previne scroll horizontal acidental */
+}
+
+/* --- Cabeçalho (Header e Navegação) --- */
+.main-header {
+    background-color: rgba(0, 0, 0, 0.8); /* Fundo escuro levemente transparente */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+}
+
+.logo-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: var(--color-light);
+    font-size: 1.4em;
+    font-family: var(--font-heading);
+}
+
+.logo-icon {
+    font-size: 2em;
+    transform: rotate(15deg); /* Leve inclinação como na imagem */
+    margin-right: 5px;
+    color: var(--color-light); /* Cor do ícone */
+}
+
+.logo-text {
+    font-size: 1.2em;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.menu-toggle, .cart-link {
+    background: none;
+    border: none;
+    color: var(--color-light);
+    font-size: 1.6em;
+    cursor: pointer;
+    text-decoration: none; /* Para o link do carrinho */
+}
+
+.menu-toggle {
+    order: 2; /* Coloca o menu no centro */
+}
+
+.cart-link {
+    order: 3; /* Coloca o carrinho à direita */
+}
+
+/* Esconde o botão de menu em telas maiores, se for usar um menu tradicional */
+@media (min-width: 768px) {
+    .menu-toggle {
+        display: none;
+    }
+}
+
+/* --- Seção Principal (Hero e Conteúdo) --- */
+main {
+    padding-top: 60px; /* Espaço para o cabeçalho fixo */
+}
+
+.subscription-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding-top: 20px;
+    padding-bottom: 40px;
+}
+
+.hero-text {
+    padding: 0 15px;
+    margin-bottom: 20px;
+}
+
+.subtitle {
+    font-size: 0.9em;
+    color: var(--color-text-body);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.title {
+    font-family: var(--font-heading);
+    font-size: 3.5em; /* Tamanho do título grande */
+    color: var(--color-accent);
+    text-transform: uppercase;
+    font-weight: 700;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+    line-height: 1;
+}
+
+/* Imagem e Container da Imagem */
+.hero-image-container {
+    width: 100%;
+    max-width: 400px; /* Limite de largura para a imagem */
+    margin: 10px auto;
+    overflow: hidden;
+    position: relative;
+}
+
+.hero-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    /* Estilo para simular o efeito de luz/fumaça da imagem original */
+    filter: brightness(0.8) contrast(1.2);
+}
+
+/* Descrição */
+.description-box {
+    padding: 20px 30px;
+    text-align: center;
+    font-size: 1em;
+    color: var(--color-text-body);
+}
+
+.description-box p {
+    margin-bottom: 15px;
+}
+
+.cta-prompt {
+    font-weight: bold;
+    color: var(--color-light);
+    margin-top: 20px;
+    font-size: 1.1em;
+}
+
+/* --- Card de Preço --- */
+.pricing-card-section {
+    display: flex;
+    justify-content: center;
+    padding: 20px 15px 40px;
+}
+
+.pricing-card {
+    background: rgba(0, 0, 0, 0.4);
+    border: 3px solid var(--color-price);
+    border-radius: 20px;
+    padding: 30px 20px;
+    text-align: center;
+    width: 100%;
+    max-width: 350px; /* Largura máxima para o card */
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+.price {
+    font-family: var(--font-heading);
+    font-size: 4em;
+    color: var(--color-price);
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+.features-list {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 30px;
+    color: var(--color-light);
+    font-size: 1.1em;
+}
+
+.features-list li {
+    margin-bottom: 10px;
+    padding: 5px 0;
+}
+
+/* Botão Assinar */
+.subscribe-button {
+    background-color: var(--color-accent);
+    color: var(--color-dark);
+    border: none;
+    padding: 15px 40px;
+    border-radius: 10px;
+    font-size: 1.2em;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s;
+    width: 90%;
+}
+
+.subscribe-button:hover {
+    background-color: #ffde57; /* Amarelo mais claro no hover */
+    transform: translateY(-2px);
+}
+
+/* --- Responsividade Adicional para Telas Maiores --- */
+@media (min-width: 600px) {
+    .title {
+        font-size: 4.5em;
+    }
+    .description-box {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+}

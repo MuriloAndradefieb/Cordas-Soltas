@@ -23,7 +23,6 @@ body {
     top: 0;
     background-color: #000;
     z-index: 1000;
-    background-image: ;
 }
 
 .logo {
@@ -262,7 +261,6 @@ body {
     font-size: 1.1rem;
     font-weight: 700;
     /* Remover setas de incremento/decremento (apenas visual, input é readonly) */
-    -moz-appearance: textfield; /* Firefox */
 }
 .quantity-control input[type="number"]::-webkit-outer-spin-button,
 .quantity-control input[type="number"]::-webkit-inner-spin-button {
@@ -383,7 +381,7 @@ body {
 
 
 /* ======================================= */
-/* MEDIA QUERIES (Desktop)                   */
+/* MEDIA QUERIES (Desktop)                   */
 /* ======================================= */
 
 @media (min-width: 1200px) {
@@ -401,10 +399,8 @@ body {
         height: 60px;
     }
 
-    .menu-toggle {
-        /* Esconde o menu de hambúrguer em desktop se você quiser um menu de navegação tradicional.
-           Se você ainda estiver usando a sidebar, deixe o display: block e ajuste o nav-icons. */
-    }
+    /* O menu-toggle permanece visível, pois a sidebar é o menu de navegação. */
+    /* .menu-toggle { display: block; } */ 
 
     .details-and-back-container {
         padding: 0; 
@@ -468,27 +464,6 @@ body {
     }
 
 }
-/* Arquivo: detalhes.css */
-
-/* ... (outros estilos) ... */
-
-/* Estilo do Ícone de Conta (CRÍTICO para o visual) */
-.account-icon {
-    font-size: 1.5rem;
-    color: black; 
-    background-color: #fff; /* Fundo branco/claro */
-    border-radius: 50%; /* Torna o botão circular */
-    padding: 5px;
-    height: 30px;
-    width: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-decoration: none;
-    flex-shrink: 0; 
-}
-
-/* Conteúdo anterior de detalhes.css ... */
 
 /* ======================================= */
 /* ESTILOS DO MODAL DE AVISO PERSONALIZADO */
@@ -569,9 +544,6 @@ body {
     background-color: #ff3333;
     border-color: #FFD700;
 }
-/* Conteúdo original de detalhes.css ... */
-
-/* ... (seus estilos existentes) ... */
 
 
 /* =============================== */
@@ -605,14 +577,3 @@ body {
     box-shadow: 0 0 15px rgba(229, 0, 0, 0.6); /* Sombra vermelha */
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
-
-/* REMOVA DAQUI OS SEGUINTES ESTILOS, SE EXISTIREM:
-    .custom-alert-modal
-    .custom-alert-modal.visible
-    .modal-content
-    .modal-content p
-    .close-btn
-    .close-btn:hover
-    .modal-ok-btn
-    .modal-ok-btn:hover 
-*/

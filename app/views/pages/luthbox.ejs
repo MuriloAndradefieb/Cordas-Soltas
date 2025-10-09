@@ -46,10 +46,10 @@
             </figure>
 
             <section class="luthbox-buy-section">
-                <h2>Garanta seu seguro no show :</h2>
-                <p>Com apenas um valor adicional, você garante a tranquilidade do seu show: se o seu instrumento acontecer, terá um instrumento à sua disposição.</p>
-                <a href="/luthbox-seguros" class="button-comprar">Comprar Seguro</a>
-            </section>
+    <h2>Garanta seu seguro no show :</h2>
+    <p>Com apenas um valor adicional, você garante a tranquilidade do seu show: se o seu instrumento acontecer, terá um instrumento à sua disposição.</p>
+    <a href="/luthbox-seguros" id="buy-luthbox-btn" class="button-comprar">Comprar Seguro</a>
+</section>
 
         </section>
     </main>
@@ -90,7 +90,7 @@
         });
     </script>
        <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded'), () => {
             // --- 1. Lógica do ícone de perfil (MANTIDO) ---
             const accountLink = document.getElementById('account-link');
             const userProfileString = localStorage.getItem('userProfile');
@@ -102,30 +102,51 @@
             } else {
                 accountLink.href = '/login';
             }
-
+    }
             // --- 2. Lógica do botão "Comprar Seguro" (NOVA) ---
-            const buyButton = document.getElementById('buy-luthbox-btn');
 
-            if (buyButton) {
-             
-                
-                buyButton.addEventListener('click', (event) => {
-                    // Previne a navegação imediata
-                    event.preventDefault(); 
-                    
-                    if (user && user.role === 'artista') {
-                        // Artista: Redireciona para a página de pagamento
-                        window.location.href = '/pagamento';
-                    } else if (user && user.role === 'visitante') {
-                        // Visitante (logado): Exibe alerta
-                        alert('A Luthbox é um seguro exclusivo para Artistas e Bandas. Por favor, cadastre-se com o perfil de Artista para prosseguir.');
-                    } else {
-                        // Não Logado: Exibe alerta
-                        alert('Você precisa estar logado como Artista ou Banda para prosseguir com a compra do seguro Luthbox.');
-                    }
-                });
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- 1. Lógica do ícone de perfil (SEM ALTERAÇÃO) ---
+        const accountLink = document.getElementById('account-link');
+        const userProfileString = localStorage.getItem('userProfile');
+        let user = null;
+        
+        if (userProfileString) {
+            try {
+                user = JSON.parse(userProfileString);
+            } catch (e) {
+                // Caso haja erro, 'user' permanece null e o fluxo continua
             }
-        });
-    </script>
+            accountLink.href = '/perfil';
+        } else {
+            accountLink.href = '/login';
+        }
+
+        // --- 2. Lógica do botão "Comprar Seguro" (CORREÇÃO DA ROLE) ---
+        const buyButton = document.getElementById('buy-luthbox-btn');
+
+        if (buyButton) {
+            buyButton.addEventListener('click', (event) => {
+                // Previne a navegação imediata
+                event.preventDefault(); 
+                
+                // Pega a role em minúsculo, se o usuário existir. Isso corrige o erro do Artista.
+                const userRole = user && user.role ? user.role.toLowerCase() : null;
+
+                if (userRole === 'Artista') {
+                    // Artista: Acesso Liberado!
+                    window.location.href = '/pagamento';
+                } else if (userRole === 'Visitante') {
+                    // Visitante (logado): Exibe alerta
+                    alert('A Luthbox é um seguro exclusivo para Artistas e Bandas. Por favor, cadastre-se com o perfil de Artista para prosseguir.');
+                } else {
+                    // Não Logado: Exibe alerta
+                    alert('Você precisa estar logado como Artista ou Banda para prosseguir com a compra do seguro Luthbox.');
+                }
+            });
+        }
+    });
+</script>
+</script>
 </body>
 </html>

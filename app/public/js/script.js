@@ -7,9 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Selecionadores para o menu (usam tags semânticas: button, aside e section)
     const hamburgerButton = document.querySelector('.hamburger-button'); // Botão de abrir
-    const sidebar = document.getElementById('sidebar-menu');           // O menu lateral (tag <aside>)
-    const overlay = document.getElementById('menu-overlay');             // A camada escura (tag <section>)
-    const closeMenuBtn = document.getElementById('close-menu-btn');    // Botão de fechar
+    const sidebar = document.getElementById('sidebar-menu');           // O menu lateral (tag <aside>)
+    const overlay = document.getElementById('menu-overlay');             // A camada escura (tag <section>)
+    const closeMenuBtn = document.getElementById('close-menu-btn');    // Botão de fechar
 
     function toggleMenu() {
         if (sidebar && overlay) {
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     /* ======================================= */
-    /* LÓGICA DOS CARROSSEIS (MANTIDA) */
+    /* LÓGICA DOS CARROSSEIS DE SCROLL (MANTIDA) */
     /* ======================================= */
 
     function initializeCarousel(carouselId) {
@@ -87,7 +87,38 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeCarousel('popular-carousel');
     initializeCarousel('recent-carousel');
 
+    
+    /* ============================================== */
+    /* LÓGICA DO CARROSSEL DE BANNER AUTOMÁTICO (FADE) */
+    /* ============================================== */
 
+    const bannerCarousel = document.getElementById('auto-banner-carousel');
+    if (bannerCarousel) {
+        // Seleciona todos os elementos <a> com a classe .banner-slide
+        const slides = bannerCarousel.querySelectorAll('.banner-slide');
+        
+        // Verifica se existem slides para evitar erros
+        if (slides.length > 1) {
+            let currentSlide = 0;
+            const slideInterval = 5000; // Troca a cada 5 segundos (5000ms)
+
+            function nextSlide() {
+                // 1. Desativa o slide atual
+                slides[currentSlide].classList.remove('active');
+                
+                // 2. Calcula o índice do próximo slide (usa o módulo para voltar ao 0)
+                currentSlide = (currentSlide + 1) % slides.length;
+
+                // 3. Ativa o novo slide
+                slides[currentSlide].classList.add('active');
+            }
+
+            // Inicia o carrossel automático
+            setInterval(nextSlide, slideInterval);
+        }
+    }
+    
+    
     /* ======================================= */
     /* LÓGICA DE RENDERIZAÇÃO DE SHOWS (MANTIDA) */
     /* ======================================= */
@@ -125,12 +156,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
+        // Supondo que a variável `shows` está definida no escopo global ou em outro arquivo
         renderShows('rock-carousel', show => show.title.toLowerCase().includes('rock'));
         renderShows('samba-carousel', show => show.title.toLowerCase().includes('samba') || show.title.toLowerCase().includes('pagode'));
-        renderShows('popular-carousel', () => true); 
-        renderShows('recent-carousel', () => true);
+        renderShows('popular-carousel', () => true); // Todos os shows (para Popular)
+        renderShows('recent-carousel', () => true);  // Todos os shows (para Recentes)
     } catch (e) {
         // Ignora se 'shows' não estiver definido
+        console.warn("Aviso: Variável 'shows' não encontrada. A renderização de cards não será executada.", e);
     }
     
 });
