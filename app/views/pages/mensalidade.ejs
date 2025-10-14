@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cordas Soltas - Mensalidade</title>
-    <link rel="stylesheet" href="css/mensalidade.css">
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-</head>
+    <title>Mensalidade - Cordas Soltas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css"> <link rel="stylesheet" href="css/mensalidade.css">
+    </head>
 <body>
 
-  <header class="header">
+    <header class="header">
         <a href="/" class="logo-link">
             <img src="img/LOGO CORDAS SOLTAS SITE.png" alt="Logo Cordas Soltas" class="logo">
         </a>
@@ -20,46 +19,77 @@
                 <span class="bar"></span>
                 <span class="bar"></span>
             </button>
-            <button class="menu-toggle" aria-label="Abrir menu">&#9776;</button>
             <a href="/login" id="account-link" class="account-icon" aria-label="Conta">&#128100;</a>
             <a href="#" class="cart-icon" aria-label="Carrinho">&#128722;</a>
         </nav>
     </header>
 
-    <main>
-        <section class="subscription-hero">
-            <hgroup class="hero-text">
+    <main class="mensalidade-main-content">
+        <section class="mensalidade-container">
+            
+            <header class="mensalidade-header">
                 <p class="subtitle">faça parte do nosso projeto assinando</p>
                 <h1 class="title">Mensalidade</h1>
-            </hgroup>
+            </header>
 
-            <figure class="hero-image-container">
-                <img src="drummer-placeholder.jpg" alt="Baterista no palco com luzes. Imagem representativa de música e performance." class="hero-image">
+            <figure class="hero-image-container mensalidade-image-wrapper">
+                <img src="img/genehoglan.jpg" alt="Baterista no palco com luzes. Imagem representativa de música e performance." class="hero-image">
             </figure>
 
-            <section class="description-box">
+            <article class="description-box mensalidade-text-block">
                 <p>
                     Os músicos poderão assinar nossa mensalidade de forma simples, sem precisar passar por processo seletivo, garantindo acesso exclusivo a festivais, shows, networking e conteúdos para seu desenvolvimento artístico. A mensalidade tem duração de 1 ano, promovendo um ambiente inclusivo e estrutura para que os músicos possam crescer e participar ativamente.
                 </p>
                 <p class="cta-prompt">Assine já sua mensalidade:</p>
-            </section>
-        </section>
+            </article>
 
-        <section class="pricing-card-section">
-            <section class="pricing-card">
-                <p class="price">320,99</p>
+            <section class="pricing-card-section">
+                <section class="pricing-card">
+                    <p class="price">R$ 320,99</p>
 
-                <ul class="features-list">
-                    <li>Acesso aos Festivais</li>
-                    <li>Contrato de um ano conosco</li>
-                    <li>Divulgaremos Suas Músicas e Shows</li>
-                    <li>Sem concurso!</li>
-                </ul>
+                    <ul class="features-list">
+                        <li>Acesso aos Festivais</li>
+                        <li>Contrato de um ano conosco</li>
+                        <li>Divulgaremos Suas Músicas e Shows</li>
+                        <li>Sem concurso!</li>
+                    </ul>
 
-                <button class="subscribe-button">Assinar</button>
+                    <button class="subscribe-button button-assinatura">Assinar</button>
+                </section>
             </section>
         </section>
     </main>
 
-    </body>
+    <footer class="mensalidade-footer">
+        <p>Barueri, Jandira - SÃO PAULO - SP - brasil</p>
+        <p>cordassoltascontatos@gmail.com | +55 (11) 1234-5678</p>
+        <p>Todos os direitos reservados 2025.</p>
+    </footer>
+
+    <section id="menu-overlay" class="menu-overlay"></section>
+    <aside id="sidebar-menu" class="sidebar">
+        <button id="close-menu-btn" class="close-menu-btn" aria-label="Fechar menu">&times;</button>
+        <ul class="sidebar-links">
+            <li><a href="/">Início</a></li>
+            <li><a href="/sobre">Sobre</a></li>
+            <li><a href="/seletivas">Seletivas</a></li>
+            <li><a href="/luthbox">Luthbox</a></li>
+            <li><a href="/mensalidade">Mensalidade</a></li>
+        </ul>
+    </aside>
+
+    <script src="js/script.js"></script>
+    <script>
+        // Script de verificação de login para o ícone de perfil
+        document.addEventListener('DOMContentLoaded', () => {
+            const accountLink = document.getElementById('account-link');
+            const userProfile = localStorage.getItem('userProfile');
+            if (userProfile) {
+                accountLink.href = '/perfil';
+            } else {
+                accountLink.href = '/login';
+            }
+        });
+    </script>
+</body>
 </html>
