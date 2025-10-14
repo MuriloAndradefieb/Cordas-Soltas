@@ -319,3 +319,20 @@
         grid-column: 1 / -1; /* Ocupa a largura total */
     }
 }
+/* Header (Cabeçalho) */
+.header {
+    background-color: #000000;
+    padding: 1rem 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #5a5a5a;
+}
+
+.logo-link {
+    display: block;
+}
+
+.logo {
+    height: 40px; /* Tamanho da logo */
+}

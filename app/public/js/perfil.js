@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
     logoutLink.addEventListener('click', (event) => {
         event.preventDefault();
         localStorage.removeItem('userProfile');
-        window.location.href = '/login';
+        window.location.href = '/sair';
     });
 
     // ----------------------------------------------------
