@@ -3,7 +3,7 @@
 body {
     background-color: #000;
     color: #fff;
-    font-family: 'Roboto', sans-serif; 
+    font-family: 'Roboto', sans-serif;
     /* Adiciona um background sutil de textura para seguir o protótipo */
     background-image: url('https://i.pinimg.com/1200x/de/d2/d7/ded2d7ac9173cb81662a4037e64df8e6.jpg'); 
     background-repeat: repeat;
@@ -169,4 +169,38 @@ body {
         bottom: auto;
         width: 100%;
     }
+}/* --- ESTILIZAÇÃO DA MENSAGEM DE ERRO (NOVO) --- */
+.error-message {
+    display: none; /* Mantido oculto por JS */
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #331f1f; /* Fundo escuro avermelhado */
+    color: #ff4d4d; /* Texto vermelho para erro */
+    border: 1px solid #ff4d4d; 
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 400;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(255, 77, 77, 0.3);
+}
+
+/* Classe aplicada via JS para destacar o erro */
+.error-border {
+    border-color: #ff4d4d;
+    box-shadow: 0 0 15px rgba(255, 77, 77, 0.7);
+}
+
+/* Estiliza as palavras-chave em negrito dentro da mensagem de erro */
+.error-message strong {
+    color: #fff; /* Destaca as palavras-chave em branco */
+    font-weight: 700;
+}
+/* --- Footer --- */
+.seguros-footer {
+    text-align: center;
+    padding: 2rem 1rem;
+    font-size: 0.8rem;
+    color: #888;
+    border-top: 1px solid #333;
+    line-height: 1.5;
 }

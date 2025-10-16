@@ -17,86 +17,40 @@
         <section class="login-card">
             <h1>Crie sua conta</h1>
             <form id="cadastro-form">
+                
                 <label for="username">Nome de Usuário</label>
                 <input type="text" id="username" name="username" placeholder="Nome de usuário" required>
-
-                <label for="email">Email</label>
+                <span id="username-error" class="error-message-validation"></span> <label for="email">Email</label>
                 <input type="email" id="email" name="email" placeholder="Seu email" required>
-
-                <label for="password">Senha</label>
+                <span id="email-error" class="error-message-validation"></span> <label for="password">Senha</label>
                 <input type="password" id="password" name="password" placeholder="Sua senha" required>
-
+                <span id="password-error" class="error-message-validation"></span> <p class="role-selection-title">Selecione seu tipo de conta:</p>
                 <section class="role-selection">
-                    <p>Qual é o seu tipo de conta?</p>
-                    <input type="radio" id="role-artist" name="role" value="Artista" required>
-                    <label for="role-artist" class="radio-label">Artista</label>
+                    <input type="radio" id="role-artista" name="role" value="Artista" required>
+                    <label for="role-artista">Artista</label>
                     
-                    <input type="radio" id="role-visitor" name="role" value="Visitante" required>
-                    <label for="role-visitor" class="radio-label">Visitante</label>
+                    <input type="radio" id="role-visitante" name="role" value="Visitante">
+                    <label for="role-visitante">Visitante</label>
                 </section>
 
-                <button type="button" id="cadastrar-btn" class="primary-button">Cadastrar</button>
+                <section id="artist-fields" class="hidden-fields">
+                    <label for="bandName">Nome da Banda/Projeto</label>
+                    <input type="text" id="bandName" name="bandName">
+                    <span id="bandName-error" class="error-message-validation"></span> <label for="musicalStyle">Estilo Musical</label>
+                    <input type="text" id="musicalStyle" name="musicalStyle" placeholder="Ex: Rock, Sertanejo, MPB">
+                    <span id="musicalStyle-error" class="error-message-validation"></span> <label for="instagram">Instagram (Opcional)</label>
+                    <input type="text" id="instagram" name="instagram" placeholder="@seu_perfil">
+                    <span id="instagram-error" class="error-message-validation"></span> </section>
+                <button type="submit" class="primary-button full-width-button">Cadastrar</button>
             </form>
             
-            <section class="social-login-section">
-                <section class="separator">OU</section> 
-                
-                <section id="g_id_onload"
-                    data-client_id="SEU_CLIENT_ID_DO_GOOGLE" 
-                    data-context="signup"
-                    data-ux_mode="popup"
-                    data-callback="handleGoogleSignup"
-                    data-auto_prompt="false">
-                </section>
-                
-
-                <p>Já tem uma conta? <a href="/login">Faça login</a></p>
-            </section>
+            <section class="separator">OU</section>
+            
+            <p class="login-link">Já tem uma conta? <a href="/login">Faça login</a></p>
         </section>
     </main>
 
-    <script>
-        // Esta parte do código está incompleta e não é usada
-        // O restante do código no bloco é a lógica de cadastro
-        /*
-        
-        // CÓDIGO INCOMPLETO REMOVIDO PARA EVITAR ERROS JAVASCRIPT
-        
-        // Salva o perfil no localStorage com o cargo selecionado
-        localStorage.setItem('userProfile', JSON.stringify({
-            username: username, 
-            email: email,
-            role: roleInput.value 
-            
-        }));
-        */
-        
-
-        // LÓGICA DE CADASTRO COM FORMULÁRIO (Corrigida para clareza)
-        document.getElementById('cadastrar-btn').addEventListener('click', function() {
-            const usernameInput = document.getElementById('username').value;
-            const emailInput = document.getElementById('email').value;
-            const passwordInput = document.getElementById('password').value;
-            const roleInput = document.querySelector('input[name="role"]:checked');
-            
-            if (usernameInput && emailInput && passwordInput && roleInput) {
-                // SALVA A SENHA NO LOCALSTORAGE, ESTE É UM RISCO DE SEGURANÇA NA VIDA REAL
-                // Mas é comum para simulação de front-end.
-                localStorage.setItem('userProfile', JSON.stringify({
-                    username: usernameInput,
-                    email: emailInput,
-                    password: passwordInput, 
-                    role: roleInput.value
-                }));
-
-                alert('Cadastro realizado com sucesso! Agora faça o login.');
-                // REDIRECIONAMENTO CORRETO: Aponta para a rota /login
-                window.location.href = '/login';
-            } else {
-                alert('Por favor, preencha todos os campos e selecione seu tipo de conta.');
-            }
-        });
-
-    </script>
+    <script src="js/cadastro.js"></script> 
+    
 </body>
 </html>

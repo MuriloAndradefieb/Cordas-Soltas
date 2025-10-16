@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+ <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -38,7 +38,7 @@
             </figure>
 
             <article class="luthbox-text-block">
-                <p>A **Luthbox** nasceu para oferecer suporte rápido e prático a músicos em situações de emergência. Problemas em instrumentos podem acontecer a qualquer momento, e nem sempre há uma equipe estruturada ou instrumentos reservas disponíveis. Por isso, disponibilizamos uma variedade de instrumentos para que o artista nunca precise cancelar ou comprometer sua apresentação.</p>
+                <p>A <b>Luthbox</b> nasceu para oferecer suporte rápido e prático a músicos em situações de emergência. Problemas em instrumentos podem acontecer a qualquer momento, e nem sempre há uma equipe estruturada ou instrumentos reservas disponíveis. Por isso, disponibilizamos uma variedade de instrumentos para que o artista nunca precise cancelar ou comprometer sua apresentação.</p>
             </article>
 
             <figure class="luthbox-kit-image">
@@ -46,15 +46,17 @@
             </figure>
 
             <section class="luthbox-buy-section">
-    <h2>Garanta seu seguro no show :</h2>
-    <p>Com apenas um valor adicional, você garante a tranquilidade do seu show: se o seu instrumento acontecer, terá um instrumento à sua disposição.</p>
-    <a href="/luthbox-seguros" id="buy-luthbox-btn" class="button-comprar">Comprar Seguro</a>
-</section>
+                <h2>Garanta seu seguro no show :</h2>
+                <p>Com apenas um valor adicional, você garante a tranquilidade do seu show: se o seu instrumento acontecer, terá um instrumento à sua disposição.</p>
+                <a href="#" id="buy-luthbox-btn" class="button-comprar">Comprar Seguro</a>
+                
+                <section id="error-message" class="error-message"></section>
+            </section>
 
         </section>
     </main>
 
-     <footer class="luthbox-footer">
+   <footer class="luthbox-footer">
         <p>Barueri, Jandira - SÃO PAULO - SP - brasil</p>
         <p>cordassoltascontatos@gmail.com | +55 (11) 1234-5678</p>
         <p>Todos os direitos reservados 2025.</p>
@@ -73,76 +75,7 @@
     </aside>
 
     <script src="js/script.js"></script>
-    <script>
-        // Script de verificação de login para o ícone de perfil
-        document.addEventListener('DOMContentLoaded', () => {
-            const accountLink = document.getElementById('account-link');
-            const userProfile = localStorage.getItem('userProfile');
-            if (userProfile) {
-                accountLink.href = '/perfil';
-            } else {
-                accountLink.href = '/login';
-            }
-        });
-    </script>
-       <script>
-        document.addEventListener('DOMContentLoaded'), () => {
-            // --- 1. Lógica do ícone de perfil (MANTIDO) ---
-            const accountLink = document.getElementById('account-link');
-            const userProfileString = localStorage.getItem('userProfile');
-            let user = null;
-            
-            if (userProfileString) {
-                user = JSON.parse(userProfileString);
-                accountLink.href = '/perfil';
-            } else {
-                accountLink.href = '/login';
-            }
-    }
-            // --- 2. Lógica do botão "Comprar Seguro" (NOVA) ---
-
-    document.addEventListener('DOMContentLoaded', () => {
-        // --- 1. Lógica do ícone de perfil (SEM ALTERAÇÃO) ---
-        const accountLink = document.getElementById('account-link');
-        const userProfileString = localStorage.getItem('userProfile');
-        let user = null;
-        
-        if (userProfileString) {
-            try {
-                user = JSON.parse(userProfileString);
-            } catch (e) {
-                // Caso haja erro, 'user' permanece null e o fluxo continua
-            }
-            accountLink.href = '/perfil';
-        } else {
-            accountLink.href = '/login';
-        }
-
-        // --- 2. Lógica do botão "Comprar Seguro" (CORREÇÃO DA ROLE) ---
-        const buyButton = document.getElementById('buy-luthbox-btn');
-
-        if (buyButton) {
-            buyButton.addEventListener('click', (event) => {
-                // Previne a navegação imediata
-                event.preventDefault(); 
-                
-                // Pega a role em minúsculo, se o usuário existir. Isso corrige o erro do Artista.
-                const userRole = user && user.role ? user.role.toLowerCase() : null;
-
-                if (userRole === 'Artista') {
-                    // Artista: Acesso Liberado!
-                    window.location.href = '/pagamento';
-                } else if (userRole === 'Visitante') {
-                    // Visitante (logado): Exibe alerta
-                    alert('A Luthbox é um seguro exclusivo para Artistas e Bandas. Por favor, cadastre-se com o perfil de Artista para prosseguir.');
-                } else {
-                    // Não Logado: Exibe alerta
-                    alert('Você precisa estar logado como Artista ou Banda para prosseguir com a compra do seguro Luthbox.');
-                }
-            });
-        }
-    });
-</script>
-</script>
+    <script src="js/luthbox.js"></script> 
+    <script src="js/global.js"></script>
 </body>
 </html>

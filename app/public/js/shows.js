@@ -92,4 +92,15 @@ const shows = [
         priceHalf: 37.5,
         priceBlocks: 150,
     },
+
+{
+       id: 'samba-music',
+        title: 'SAMBA TODO DIA',
+        date: '08/11',
+        location: 'Largo da Batata, SP',
+        image: 'https://i.imgur.com/XF9r0vY.jpeg',
+        priceFull: 75,
+        priceHalf: 37.5,
+        priceBlocks: 150,
+        }
 ];
