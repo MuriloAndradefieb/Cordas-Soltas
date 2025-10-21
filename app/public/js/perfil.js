@@ -5,11 +5,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const editarPerfilFormSection = document.getElementById('editar-perfil-form');
     const actionsSection = document.getElementById('actions');
 
-    // Botões de Cancelar
-    const cancelProfileBtn = document.getElementById('cancel-profile-btn'); // NOVO
-    const cancelPasswordBtn = document.getElementById('cancel-password-btn'); // NOVO
+    const cancelProfileBtn = document.getElementById('cancel-profile-btn'); 
+    const cancelPasswordBtn = document.getElementById('cancel-password-btn'); 
 
-    // Elementos de Exibição
     const displayUsernameHeaderEl = document.getElementById('display-username-header');
     const displayUsernameEl = document.getElementById('display-username');
     const displayEmailEl = document.getElementById('display-email');
@@ -18,28 +16,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const profileImageEl = document.getElementById('profile-image');
     const displayPhoneEl = document.getElementById('display-phone'); 
 
-    // Elementos do Formulário de Edição
     const editUsernameInput = document.getElementById('edit-username');
     const editEmailInput = document.getElementById('edit-email');
     const editPhoneInput = document.getElementById('edit-phone'); 
 
-    // Botões de Salvar
     const savePasswordBtn = document.getElementById('save-password-btn');
     const saveProfileBtn = document.getElementById('save-profile-btn');
-    
-    // Elementos da Foto
+
     const photoUploadInput = document.getElementById('photo-upload');
     const editPhotoBtn = document.getElementById('edit-photo-btn');
 
 
     let user = JSON.parse(localStorage.getItem('userProfile'));
-    
-    // Se o usuário não existir, cria um objeto base para evitar erros
+
     if (!user) {
         user = { username: 'Convidado', email: '', password: '', role: 'Membro', phone: '' };
     }
-
-    // === UTILITÁRIO DE MÁSCARA ===
     
     function maskPhone(value) {
         value = value.replace(/\D/g, ''); 
@@ -48,10 +40,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return value.substring(0, 15); 
     }
 
-    // === FUNÇÕES DE VISUALIZAÇÃO ===
     
     function showActionsSection() {
-        // Redefine os campos de senha quando cancela
         document.getElementById('new-password').value = '';
         document.getElementById('confirm-password').value = '';
 
@@ -71,13 +61,10 @@ document.addEventListener('DOMContentLoaded', () => {
         alterarSenhaFormSection.classList.add('hidden');
         editarPerfilFormSection.classList.remove('hidden');
         
-        // Preenche os campos do formulário com os dados atuais
         editUsernameInput.value = user.username || '';
         editEmailInput.value = user.email || '';
         editPhoneInput.value = user.phone ? maskPhone(user.phone) : '';
     }
-    
-    // Função para carregar os dados do usuário
     function loadUserProfile() {
         if (user) {
             displayUsernameHeaderEl.textContent = user.username || 'Usuário Padrão';
@@ -87,7 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
             displayPhoneEl.textContent = user.phone ? maskPhone(user.phone) : 'N/A';
             displayPasswordEl.textContent = user.password ? '•'.repeat(user.password.length) : '••••••••';
             
-            // Carrega a imagem do perfil
             if (user.profilePicture) {
                 profileImageEl.src = user.profilePicture;
             } else {
@@ -97,7 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    // === FUNÇÃO DE UPLOAD DE FOTO ===
     if (editPhotoBtn) {
         editPhotoBtn.addEventListener('click', () => {
             photoUploadInput.click();
@@ -125,7 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    // === FUNÇÕES DE SALVAMENTO E CANCELAMENTO ===
 
     if (saveProfileBtn) {
         saveProfileBtn.addEventListener('click', () => {
@@ -149,7 +133,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // NOVO: Adiciona a função de Cancelar
     if (cancelProfileBtn) {
         cancelProfileBtn.addEventListener('click', showActionsSection);
     }
@@ -173,21 +156,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // NOVO: Adiciona a função de Cancelar
     if (cancelPasswordBtn) {
         cancelPasswordBtn.addEventListener('click', showActionsSection);
     }
 
 
-    // === EVENT LISTENER PARA MÁSCARA DO TELEFONE ===
     if (editPhoneInput) {
         editPhoneInput.addEventListener('input', (e) => {
             e.target.value = maskPhone(e.target.value);
         });
     }
 
-
-    // === INICIALIZAÇÃO ===
     loadUserProfile(); 
     
     if (editProfileBtn) {

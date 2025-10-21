@@ -60,18 +60,13 @@
             const params = new URLSearchParams(window.location.search);
             const showId = params.get('id');
 
-            // Procura o show no array 'shows' (que veio do shows.js)
             const foundShow = shows.find(show => show.id === showId);
 
             if (foundShow) {
-                // SALVA O SHOW ENCONTRADO NO LOCALSTORAGE
-                // Assim, o seu script 'detalhes.js' original vai funcionar sem alterações!
                 localStorage.setItem('selectedShow', JSON.stringify(foundShow));
 
-                // Formata os preços para exibição
                 const formatCurrency = (value) => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-                // Monta o HTML dinâmico do show
                 container.innerHTML = `
                     <section class="show-image-wrapper">
                         <img src="${foundShow.image}" alt="${foundShow.title}" class="show-image">
@@ -117,7 +112,6 @@
                     </section>
                 `;
 
-                // NOVO CÓDIGO PARA GERENCIAR A CONTAGEM E MOSTRAR/OCULTAR NO NOME DO INGRESSO
                 const updateTicketCountDisplay = (type, qty) => {
                     const countSpan = document.querySelector(`.ticket-count[data-ticket-type="${type}"]`);
                     const nameH3 = countSpan.previousElementSibling;
@@ -132,21 +126,17 @@
                     }
                 };
 
-                // Adiciona listeners para atualizar a contagem no display do nome do ingresso
                 document.querySelectorAll('.quantity-btn').forEach(button => {
                     button.addEventListener('click', (event) => {
                         const type = event.target.dataset.type;
                         const input = document.getElementById(`qty-${type}`);
                         
-                        // O script `detalhes.js` (que carregaremos abaixo) cuidará da atualização do valor do input,
-                        // então aqui apenas esperamos um pequeno delay para ler o novo valor.
                         setTimeout(() => {
                             const newQty = parseInt(input.value);
                             updateTicketCountDisplay(type, newQty);
-                        }, 50); // Pequeno atraso para garantir que 'detalhes.js' já atualizou o valor
+                        }, 50);
                     });
                 });
-                // FIM DO NOVO CÓDIGO
                 
             } else {
                 container.innerHTML = '<h2>Show não encontrado</h2><p>O evento que você está procurando não foi localizado. Por favor, volte para a página inicial.</p>';
@@ -162,11 +152,9 @@
             const params = new URLSearchParams(window.location.search);
             const showId = params.get('id');
 
-            // Procura o show no array 'shows' (que AGORA ESTÁ CARREGADO)
             const foundShow = shows.find(show => show.id === showId);
 
             if (foundShow) {
-                // ... (RESTANTE DO SEU CÓDIGO INLINE ESTÁ CORRETO) ...
             } else {
                 container.innerHTML = '<h2>Show não encontrado</h2><p>O evento que você está procurando não foi localizado. Por favor, volte para a página inicial.</p>';
             }
@@ -175,9 +163,5 @@
     
     <script src="js/detalhes.js"></script> 
     
-    <script>
-        // ... (seu código do menu hambúrguer e checagem de login aqui) ...
-    </script>
-
 </body>
 </html>

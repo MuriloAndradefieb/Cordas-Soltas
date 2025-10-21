@@ -49,28 +49,28 @@ body {
 }
 
 .actions {
-    /* CORREÇÃO: Alinhamento Horizontal (lado a lado) e espaçamento uniforme */
+
     display: flex;
-    flex-direction: row; /* Alinha os itens horizontalmente */
+    flex-direction: row; 
     gap: 1.5rem;
     justify-content: center;
 }
 
-/* Garante que os botões ocupem o espaço de forma igual dentro do contêiner .actions */
+
 .actions .primary-button, 
 .actions .secondary-button {
-    width: 50%; /* Cada botão ocupa metade do espaço disponível */
-    max-width: 200px; /* Limita o crescimento em telas muito grandes */
+    width: 50%; 
+    max-width: 200px; 
 }
 
-/* MEDIA QUERY: Garante que em telas pequenas (celulares), os botões voltem a ficar empilhados */
+
 @media (max-width: 450px) {
     .actions {
         flex-direction: column;
     }
     .actions .primary-button, 
     .actions .secondary-button {
-        width: 100%; /* Ocupa a largura total novamente */
+        width: 100%; 
         max-width: none;
     }
 }

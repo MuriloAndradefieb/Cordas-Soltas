@@ -1,12 +1,3 @@
-/*
- * Arquivo: css/pagamento.css
- * Estilos para a página de Pagamento (Checkout)
- */
-
-/* ======================================= */
-/* ESTRUTURA E LAYOUT GERAL (SEMÂNTICA) */
-/* ======================================= */
-
 .main-content {
     background-color: #0d0d0d;
     min-height: 100vh;
@@ -48,10 +39,6 @@
     color: #e0b300;
 }
 
-
-/* ======================================= */
-/* STEPPER (PASSO A PASSO) */
-/* ======================================= */
 
 .steps {
     display: flex;
@@ -96,7 +83,7 @@
     color: #ffcc00;
 }
 
-/* Linha de progresso entre os círculos (apenas para desktop) */
+
 .step-item:not(:last-child)::after {
     content: '';
     position: absolute;
@@ -113,17 +100,13 @@
 }
 
 
-/* ======================================= */
-/* FORMULÁRIOS E CAMPOS */
-/* ======================================= */
-
 #info-form, #payment-form {
     display: grid;
     grid-template-columns: 1fr;
     gap: 20px;
 }
 
-/* Usando <fieldset> para agrupar rótulo e input */
+
 .form-group {
     display: flex;
     flex-direction: column;
@@ -132,7 +115,6 @@
     margin: 0;
 }
 
-/* <fieldset> para Endereço */
 .form-address {
     border: 1px solid #333;
     padding: 20px;
@@ -171,7 +153,7 @@
     box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.3);
 }
 
-/* Campo de erro e input */
+
 .input-error-border {
     border-color: #f00 !important;
 }
@@ -188,19 +170,14 @@
 }
 
 .half-width {
-    /* Em layouts de grid, isso deve ocupar uma coluna, mas ajuda no mobile */
     min-width: 45%; 
 }
 
-/* Linha de Cartão (Validade e CVV) */
 .card-row {
     display: flex;
     gap: 20px;
 }
 
-/* ======================================= */
-/* BOTÕES E RESUMO */
-/* ======================================= */
 
 .buy-button {
     background-color: #ffcc00;
@@ -223,23 +200,23 @@
     cursor: not-allowed;
 }
 
-/* Botões no Passo 2 (Voltar e Finalizar) */
+
 #payment-form button {
     margin-top: 10px;
 }
 #back-to-info {
     background-color: #333;
     color: #f7f7f7;
-    grid-column: 1 / 2; /* Ocupa a primeira coluna */
+    grid-column: 1 / 2; 
 }
 #back-to-info:hover:not(:disabled) {
     background-color: #5a5a5a;
 }
 #submit-payment {
-    grid-column: 2 / 3; /* Ocupa a segunda coluna (em desktop) */
+    grid-column: 2 / 3; 
 }
 #payment-form {
-    grid-template-columns: 1fr 1fr; /* Duas colunas em desktop */
+    grid-template-columns: 1fr 1fr; 
 }
 
 .summary-box {
@@ -271,7 +248,7 @@
     margin-top: 10px;
 }
 
-/* Estilo PIX/Confirmação */
+
 .pix-box img {
     max-width: 250px !important;
     height: auto;
@@ -280,14 +257,10 @@
 }
 
 
-/* ======================================= */
-/* RESPONSIVIDADE */
-/* ======================================= */
-
 @media (max-width: 600px) {
     .main-content {
         padding: 20px 10px;
-        align-items: flex-start; /* Alinha ao topo em mobile */
+        align-items: flex-start; 
     }
 
     .checkout-container {
@@ -295,31 +268,27 @@
     }
 
     .form-address {
-        /* Garante que o grid de endereço seja uma coluna única em telas pequenas */
         grid-template-columns: 1fr;
     }
     
     .card-row {
-        /* Força a quebra de linha para Validade e CVV em mobile */
         flex-direction: column;
         gap: 15px;
     }
 
     .form-group.half-width {
-        /* No mobile, campos que eram "half" voltam a ocupar a largura total */
         min-width: 100%;
     }
     
-    /* Faz os botões ficarem em coluna no mobile */
     #payment-form {
         grid-template-columns: 1fr;
     }
     
     #back-to-info, #submit-payment {
-        grid-column: 1 / -1; /* Ocupa a largura total */
+        grid-column: 1 / -1; 
     }
 }
-/* Header (Cabeçalho) */
+
 .header {
     background-color: #000000;
     padding: 1rem 5%;
@@ -334,5 +303,5 @@
 }
 
 .logo {
-    height: 40px; /* Tamanho da logo */
+    height: 40px; 
 }

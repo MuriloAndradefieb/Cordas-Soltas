@@ -1,4 +1,3 @@
-// Arquivo: shows.js
 
 const shows = [
     {
@@ -13,7 +12,7 @@ const shows = [
     },
     {
         id: 'rock-collection',
-        title: 'ROCK COLLECTION',
+        title: 'Rock São Paulo',
         date: '11/09',
         location: 'Praça das Artes - SP',
         image: '/img/codigo-qr-grande-isolado-no-fundo-branco-vetor-gratis_522680-388.jpg',
@@ -41,7 +40,7 @@ const shows = [
         priceHalf: 22.5,
         priceBlocks: 90,
     },
-    // Adicione os outros shows aqui
+
     {
         id: 'samba-raiz',
         title: 'SAMBA RAIZ',

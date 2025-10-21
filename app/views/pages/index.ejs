@@ -148,7 +148,6 @@
             const userProfile = localStorage.getItem('userProfile');
 
             if (userProfile) {
-                // Usuário logado: redireciona para o perfil
                 if (accountLink) {
                     accountLink.href = '/perfil';
                 }
@@ -157,7 +156,6 @@
                     sidebarAccountLink.textContent = 'Meu Perfil'; 
                 }
             } else {
-                // Usuário deslogado: redireciona para o login
                 if (accountLink) {
                     accountLink.href = '/login';
                 }

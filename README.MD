@@ -15,5 +15,3 @@ npm install express-validator --save
 npm install dotenv --save
 
 npm install nodemailer
-
-murilo boy

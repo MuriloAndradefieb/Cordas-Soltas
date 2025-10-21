@@ -1,23 +1,16 @@
-// Arquivo: cadastro.js (Lógica de Validação e Salvamento)
+
 
 document.addEventListener('DOMContentLoaded', () => {
     const cadastroForm = document.getElementById('cadastro-form');
     const roleArtista = document.getElementById('role-artista');
     const roleVisitante = document.getElementById('role-visitante');
     const artistFieldsDiv = document.getElementById('artist-fields');
-
-    // Elementos de Input
     const usernameInput = document.getElementById('username');
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
-    // Campos Artista
     const bandNameInput = document.getElementById('bandName');
     const musicalStyleInput = document.getElementById('musicalStyle');
     const instagramInput = document.getElementById('instagram');
-
-    // ===============================================
-    // 1. UTILITÁRIOS DE VALIDAÇÃO E MARCAÇÃO
-    // ===============================================
 
     function isValidEmail(email) {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; 
@@ -30,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
         input.classList.add('input-error');
         if (errorElement) {
             errorElement.textContent = message;
-            errorElement.style.display = 'block'; // Mostra o span
+            errorElement.style.display = 'block'; 
         }
     }
 
@@ -39,13 +32,10 @@ document.addEventListener('DOMContentLoaded', () => {
         
         input.classList.remove('input-error');
         if (errorElement) {
-            errorElement.style.display = 'none'; // Esconde o span
+            errorElement.style.display = 'none';
         }
     }
 
-    // ===============================================
-    // 2. LÓGICA DE EXIBIÇÃO CONDICIONAL DOS CAMPOS
-    // ===============================================
     function toggleArtistFields() {
         if (roleArtista.checked) {
             artistFieldsDiv.classList.remove('hidden-fields');
@@ -55,7 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
             artistFieldsDiv.classList.add('hidden-fields');
             bandNameInput.removeAttribute('required');
             musicalStyleInput.removeAttribute('required');
-            // Limpa erros visuais ao esconder
             unmarkAsError(bandNameInput);
             unmarkAsError(musicalStyleInput);
         }
@@ -65,9 +54,6 @@ document.addEventListener('DOMContentLoaded', () => {
     roleVisitante.addEventListener('change', toggleArtistFields);
     toggleArtistFields(); 
 
-    // ===============================================
-    // 3. VALIDAÇÃO DO FORMULÁRIO (SUBMIT)
-    // ===============================================
     if (cadastroForm) {
         cadastroForm.addEventListener('submit', (event) => {
             event.preventDefault();
@@ -75,10 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
             let isValid = true;
             const roleInput = document.querySelector('input[name="role"]:checked');
             
-            // Limpa todos os erros
             [usernameInput, emailInput, passwordInput, bandNameInput, musicalStyleInput, instagramInput].forEach(unmarkAsError);
 
-            // VALIDAÇÕES BÁSICAS
             if (usernameInput.value.trim() === '') {
                 markAsError(usernameInput, 'O nome de usuário é obrigatório.');
                 isValid = false;
@@ -98,12 +82,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (!roleInput) {
-                // NOTA: Para a seleção de Role, como não há um único input, mantemos um alerta ou um aviso na interface. 
-                // Se isValid for false, o submit será impedido.
-                // Vou remover o alert daqui para que apenas os avisos visuais apareçam.
             }
 
-            // VALIDAÇÕES ESPECÍFICAS PARA ARTISTA
+
             if (roleInput && roleInput.value.toLowerCase() === 'artista') {
                 if (bandNameInput.value.trim() === '') {
                     markAsError(bandNameInput, 'O nome da banda/projeto é obrigatório.');
@@ -115,14 +96,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
             
-            // Caso o Role não esteja selecionado, impede o envio e exibe um alerta, pois não há onde colocar a borda vermelha.
-             if (!roleInput && isValid) { // Se a validação dos campos passou, mas o role não foi checado
+             if (!roleInput && isValid) { 
                  alert('Por favor, selecione seu tipo de conta (Artista ou Visitante) para prosseguir.');
                  isValid = false;
              }
 
 
-            // SE FOR VÁLIDO: SALVA E REDIRECIONA
             if (isValid) {
                 
                 let userProfileData = {
@@ -132,7 +111,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     role: roleInput.value.toLowerCase() 
                 };
 
-                // Adiciona campos extras se for Artista
                 if (userProfileData.role === 'artista') {
                     userProfileData.bandName = bandNameInput.value;
                     userProfileData.musicalStyle = musicalStyleInput.value;

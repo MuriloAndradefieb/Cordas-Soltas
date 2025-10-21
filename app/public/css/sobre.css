@@ -1,23 +1,18 @@
-/* Estilos para a página sobre.html */
-
-/* O body e o header já usam estilos de style.css */
 
 .sobre-main-content {
     background-color: #121212;
     padding: 1rem;
-    /* Imagem de fundo sutil para simular a textura do protótipo */
     background-image: url('/img/background-black.jpg'); 
     background-repeat: repeat;
     background-size: 50%;
 }
 
 .sobre-container {
-    max-width: 600px; /* Mantendo a largura do protótipo */
+    max-width: 600px; 
     margin: 0 auto;
     text-align: center;
 }
 
-/* --- Título Principal --- */
 .sobre-header {
     margin: 3rem 0 1.5rem 0;
 }
@@ -32,58 +27,53 @@
 
 .sobre-header h1 {
     font-size: 3rem;
-    color: #FFD700; /* Dourado */
+    color: #FFD700;
     font-weight: 700;
     margin: 0;
     text-transform: uppercase;
     line-height: 1;
-    /* Efeito de luz (Neon/Brilho) - Copiado do seletivas.css para harmonia */
     text-shadow: 0 0 8px rgba(255, 215, 0, 0.7), 
                  0 0 15px rgba(255, 215, 0, 0.5); 
 }
 
-/* --- Imagens --- */
+
 .sobre-image-wrapper {
-    margin: 2.5rem 0 1.5rem 0; /* Espaçamento entre blocos */
-    /* Garante que o wrapper não introduza margem lateral */
+    margin: 2.5rem 0 1.5rem 0;
     max-width: 100%;
 }
 
 .sobre-image-wrapper img {
     max-width: 100%;
     height: auto;
-    border-radius: 0; /* Mais fiel ao protótipo */
+    border-radius: 0;
     display: block;
     margin: 0 auto;
-    /* Sombra sutil para destacar a imagem */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); 
 }
 
-/* --- Bloco de Texto --- */
+
 .sobre-text-block {
     font-size: 0.95rem;
-    line-height: 1.8; /* Aumentado o line-height para maior legibilidade */
+    line-height: 1.8; 
     color: #e0e0e0;
     padding: 0 1rem;
-    text-align: left; /* O texto é justificado/alinhado à esquerda no protótipo */
+    text-align: left;
     margin-bottom: 3rem; 
 }
 
-/* NOVO: Estilo para os subtítulos H2 */
 .sobre-text-block h2 {
-    color: #FFD700; /* Dourado */
+    color: #FFD700; 
     font-size: 1.5rem;
     margin-bottom: 1rem;
     text-transform: uppercase;
-    border-bottom: 2px solid #333; /* Linha sutil para separar */
+    border-bottom: 2px solid #333; 
     padding-bottom: 0.5rem;
-    text-align: center; /* Centraliza o H2 para destaque */
+    text-align: center;
     letter-spacing: 1px;
 }
 
 .sobre-text-block p {
-    margin-bottom: 1.5rem; /* Espaçamento entre parágrafos */
-}
+    margin-bottom: 1.5rem; 
 
 .sobre-text-block strong {
     color: #FFD700;
@@ -95,25 +85,25 @@
     font-style: italic;
 }
 
-/* NOVO: Estilo para lista (UL) */
+
 .sobre-text-block ul {
-    list-style: none; /* Remove bolinhas padrão */
+    list-style: none; 
     padding: 0;
     margin: 1.5rem 0;
 }
 
 .sobre-text-block ul li {
-    background-color: #1e1e1e; /* Fundo levemente mais claro para destaque */
+    background-color: #1e1e1e; 
     margin-bottom: 0.5rem;
     padding: 0.8rem 1rem;
-    border-left: 3px solid #FFD700; /* Destaque lateral dourado */
+    border-left: 3px solid #FFD700;
     font-size: 1rem;
     color: #f0f0f0;
     text-align: left;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-/* --- Footer da Sobre Nós --- */
+
 .sobre-footer {
     text-align: center;
     padding: 2rem 1rem 1rem 1rem;
@@ -121,7 +111,7 @@
     color: #888;
     border-top: 1px solid #333;
     line-height: 1.5;
-    background-color: #000; /* Fundo escuro para o footer */
+    background-color: #000;
     position: relative; 
 }
 
@@ -130,7 +120,7 @@
 }
 
 .social-icons {
-    /* Posição no canto inferior direito do protótipo */
+
     position: absolute;
     bottom: 20px; 
     right: 20px;
@@ -140,7 +130,7 @@
 }
 
 .social-icons img {
-    width: 25px; /* Tamanho ajustado */
+    width: 25px;
     height: 25px;
     opacity: 0.8;
     transition: opacity 0.3s ease, transform 0.3s ease;
@@ -151,7 +141,7 @@
     transform: scale(1.1);
 }
 
-/* Media Query para telas menores */
+
 @media (max-width: 768px) {
     .sobre-header h1 {
         font-size: 2.5rem;
@@ -160,7 +150,7 @@
         font-size: 1.3rem;
     }
     .sobre-text-block {
-        text-align: left; /* Mantém alinhamento em telas menores */
+        text-align: left;
     }
     .social-icons {
         position: relative;
@@ -170,4 +160,5 @@
         bottom: auto;
         width: 100%;
     }
+}
 }

@@ -1,29 +1,23 @@
-// Arquivo: script.js (Semântico e Corrigido)
 
 document.addEventListener('DOMContentLoaded', () => {
-    /* ======================================= */
-    /* LÓGICA DO MENU DE HAMBÚRGUER (CORRIGIDA) */
-    /* ======================================= */
     
-    // Selecionadores para o menu (usam tags semânticas: button, aside e section)
-    const hamburgerButton = document.querySelector('.hamburger-button'); // Botão de abrir
-    const sidebar = document.getElementById('sidebar-menu');           // O menu lateral (tag <aside>)
-    const overlay = document.getElementById('menu-overlay');             // A camada escura (tag <section>)
-    const closeMenuBtn = document.getElementById('close-menu-btn');    // Botão de fechar
+
+    const hamburgerButton = document.querySelector('.hamburger-button');
+    const sidebar = document.getElementById('sidebar-menu');           
+    const overlay = document.getElementById('menu-overlay');             
+    const closeMenuBtn = document.getElementById('close-menu-btn');    
 
     function toggleMenu() {
         if (sidebar && overlay) {
             const isMenuOpen = sidebar.classList.toggle('open');
             
-            // Usa a classe 'open' em ambos
             overlay.classList.toggle('open'); 
 
-            // Bloqueia ou libera o scroll do corpo da página
             document.body.style.overflow = isMenuOpen ? 'hidden' : ''; 
         }
     }
 
-    // Adiciona os event listeners
+
     if (hamburgerButton) {
         hamburgerButton.addEventListener('click', toggleMenu);
     }
@@ -36,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
         overlay.addEventListener('click', toggleMenu);
     }
 
-    // Fechar menu ao clicar em um link
+
     const sidebarLinks = document.querySelectorAll('.sidebar-links a');
     sidebarLinks.forEach(link => {
         link.addEventListener('click', () => {
@@ -46,17 +40,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // === Lógica de Login para o Ícone de Perfil ===
     const accountLink = document.getElementById('account-link');
     const userProfile = localStorage.getItem('userProfile');
     if (accountLink) {
         accountLink.href = userProfile ? '/perfil' : '/login';
     }
-
-
-    /* ======================================= */
-    /* LÓGICA DOS CARROSSEIS DE SCROLL (MANTIDA) */
-    /* ======================================= */
 
     function initializeCarousel(carouselId) {
         const carousel = document.getElementById(carouselId);
@@ -87,41 +75,30 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeCarousel('popular-carousel');
     initializeCarousel('recent-carousel');
 
-    
-    /* ============================================== */
-    /* LÓGICA DO CARROSSEL DE BANNER AUTOMÁTICO (FADE) */
-    /* ============================================== */
 
     const bannerCarousel = document.getElementById('auto-banner-carousel');
     if (bannerCarousel) {
-        // Seleciona todos os elementos <a> com a classe .banner-slide
         const slides = bannerCarousel.querySelectorAll('.banner-slide');
         
-        // Verifica se existem slides para evitar erros
         if (slides.length > 1) {
             let currentSlide = 0;
-            const slideInterval = 5000; // Troca a cada 5 segundos (5000ms)
+            const slideInterval = 5000;
 
             function nextSlide() {
-                // 1. Desativa o slide atual
+
                 slides[currentSlide].classList.remove('active');
                 
-                // 2. Calcula o índice do próximo slide (usa o módulo para voltar ao 0)
+
                 currentSlide = (currentSlide + 1) % slides.length;
 
-                // 3. Ativa o novo slide
+
                 slides[currentSlide].classList.add('active');
             }
 
-            // Inicia o carrossel automático
+
             setInterval(nextSlide, slideInterval);
         }
     }
-    
-    
-    /* ======================================= */
-    /* LÓGICA DE RENDERIZAÇÃO DE SHOWS (MANTIDA) */
-    /* ======================================= */
     
     const formatCurrency = (value) => {
         return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -156,13 +133,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-        // Supondo que a variável `shows` está definida no escopo global ou em outro arquivo
         renderShows('rock-carousel', show => show.title.toLowerCase().includes('rock'));
         renderShows('samba-carousel', show => show.title.toLowerCase().includes('samba') || show.title.toLowerCase().includes('pagode'));
-        renderShows('popular-carousel', () => true); // Todos os shows (para Popular)
-        renderShows('recent-carousel', () => true);  // Todos os shows (para Recentes)
+        renderShows('popular-carousel', () => true); 
+        renderShows('recent-carousel', () => true);  
     } catch (e) {
-        // Ignora se 'shows' não estiver definido
         console.warn("Aviso: Variável 'shows' não encontrada. A renderização de cards não será executada.", e);
     }
     

@@ -5,5 +5,14 @@
     "express": "^5.1.0",
     "express-validator": "^7.2.1",
     "nodemailer": "^7.0.9"
-  }
+  },
+  "name": "cordas-soltas",
+  "description": "Para instalar as dependencias use:",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
 }

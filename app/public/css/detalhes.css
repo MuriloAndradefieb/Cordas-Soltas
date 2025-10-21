@@ -13,7 +13,6 @@ body {
     background-repeat: repeat;
 }
 
-/* Header */
 .header {
     display: flex;
     justify-content: space-between;
@@ -34,7 +33,6 @@ body {
     gap: 1rem;
 }
 
-/* Estilo do Ícone de Conta */
 .account-icon {
     font-size: 1.5rem;
     color: black;
@@ -47,7 +45,7 @@ body {
     justify-content: center;
     align-items: center;
     text-decoration: none;
-    flex-shrink: 0; /* Impede que diminua em telas pequenas */
+    flex-shrink: 0; 
 }
 
 .menu-toggle, .cart-icon {
@@ -61,21 +59,21 @@ body {
 
 .cart-icon {
     text-decoration: none;
-    line-height: 1; /* Alinha o emoji */
+    line-height: 1;
 }
 
-/* CORREÇÃO DO LAYOUT: Define o alinhamento do conteúdo principal para o topo */
+
 .main-content {
     background-color: #121212;
     padding: 2rem 1rem;
     min-height: calc(100vh - 70px);
     display: flex;
     justify-content: center; 
-    align-items: flex-start; /* Alinha o conteúdo ao topo */
+    align-items: flex-start; 
     gap: 2rem;
 }
 
-/* Contêiner que segura o conteúdo principal e o botão de voltar */
+
 .details-and-back-container {
     display: flex;
     flex-direction: column;
@@ -84,12 +82,12 @@ body {
     width: 100%;
 }
 
-/* Banners Laterais */
+
 .banner-side {
     background-color: rgba(40, 40, 40, 0.5);
     width: 150px;
     height: 600px;
-    display: none; /* Inicia oculto em mobile */
+    display: none; 
     justify-content: center;
     align-items: center;
     border-radius: 8px;
@@ -104,8 +102,6 @@ body {
     border-radius: 8px;
 }
 
-
-/* Botão "Voltar" (link) */
 .back-link {
     color: #fff;
     text-decoration: none;
@@ -120,7 +116,7 @@ body {
     color: #ffd700;
 }
 
-/* Contêiner do Show */
+
 .show-details-container {
     background-color: #1a1a1a; 
     padding: 1.5rem;
@@ -171,11 +167,11 @@ body {
     margin-bottom: 0.5rem;
 }
 
-/* Seção de Compra */
+
 .purchase-section {
     margin-top: 2rem;
     width: 100%;
-    max-width: 400px; /* Limita a largura em mobile para melhor leitura */
+    max-width: 400px;
     text-align: center;
 }
 
@@ -199,24 +195,24 @@ body {
     font-size: 1rem;
     text-transform: uppercase;
     margin-bottom: 3px;
-    line-height: 1; /* Garante que o texto não tenha espaçamento extra */
+    line-height: 1; 
 }
 
-/* ESTILO DA CONTAGEM (1x meia-entrada) */
+
 .ticket-count {
     font-size: 0.85rem;
     color: #FFD700;
     font-weight: 700;
-    height: 0; /* Oculta a altura quando invisível */
-    overflow: hidden; /* Oculta o conteúdo quando invisível */
+    height: 0; 
+    overflow: hidden;
     transition: all 0.2s ease-in-out;
 }
 
 .ticket-count.visible {
-    height: auto; /* Mostra a altura */
-    margin-bottom: 4px; /* Adiciona um pequeno espaço */
+    height: auto;
+    margin-bottom: 4px;
 }
-/* FIM DO ESTILO DA CONTAGEM */
+
 
 .ticket-price {
     font-size: 1.25rem;
@@ -225,7 +221,7 @@ body {
     margin-right: 1rem;
 }
 
-/* Controles de Quantidade */
+
 .quantity-control {
     display: flex;
     align-items: center;
@@ -237,7 +233,7 @@ body {
     border: 1px solid #FFD700;
     color: #FFD700;
     font-size: 1.2rem; 
-    width: 30px; /* Aumentei um pouco para melhor toque em mobile */
+    width: 30px;
     height: 30px; 
     line-height: 1;
     display: flex;
@@ -260,7 +256,6 @@ body {
     color: #fff;
     font-size: 1.1rem;
     font-weight: 700;
-    /* Remover setas de incremento/decremento (apenas visual, input é readonly) */
 }
 .quantity-control input[type="number"]::-webkit-outer-spin-button,
 .quantity-control input[type="number"]::-webkit-inner-spin-button {
@@ -302,11 +297,6 @@ body {
 .buy-button:hover {
     opacity: 0.9;
 }
-
-
-/* ======================================= */
-/* ESTILOS DO MENU DE HAMBÚRGUER (SIDEBAR) */
-/* ======================================= */
 
 .sidebar {
     position: fixed; 
@@ -359,10 +349,10 @@ body {
 }
 
 .menu-toggle {
-    display: block; /* Garante que o toggle esteja visível em mobile */
+    display: block; 
 }
 
-/* Overlay de fundo */
+
 .menu-overlay {
     position: fixed;
     top: 0;
@@ -379,14 +369,9 @@ body {
     display: block;
 }
 
-
-/* ======================================= */
-/* MEDIA QUERIES (Desktop)                   */
-/* ======================================= */
-
 @media (min-width: 1200px) {
     .banner-side {
-        display: flex; /* Mostra os banners laterais em telas largas */
+        display: flex;
     }
 }
 
@@ -399,14 +384,11 @@ body {
         height: 60px;
     }
 
-    /* O menu-toggle permanece visível, pois a sidebar é o menu de navegação. */
-    /* .menu-toggle { display: block; } */ 
-
     .details-and-back-container {
         padding: 0; 
     }
 
-    /* Layout Lado a Lado (Desktop) */
+
     .show-details-container {
         flex-direction: row;
         justify-content: center;
@@ -436,7 +418,7 @@ body {
     }
 
     .purchase-section {
-        max-width: 450px; /* Aumenta a largura máxima para desktop */
+        max-width: 450px;
         margin-left: 0;
         margin-right: 0;
         text-align: left; 
@@ -448,7 +430,7 @@ body {
     }
 
     .ticket-name {
-        flex-direction: row; /* Volta para a linha para melhor visualização em desktop */
+        flex-direction: row; 
         align-items: center;
         gap: 10px;
     }
@@ -460,14 +442,11 @@ body {
     .ticket-count.visible {
         height: auto;
         margin-bottom: 0;
-        margin-right: 15px; /* Espaçamento entre a contagem e o preço */
+        margin-right: 15px;
     }
 
 }
 
-/* ======================================= */
-/* ESTILOS DO MODAL DE AVISO PERSONALIZADO */
-/* ======================================= */
 
 .custom-alert-modal {
     position: fixed;
@@ -475,24 +454,24 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.8); /* Fundo escuro transparente */
+    background-color: rgba(0, 0, 0, 0.8); 
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 10000; /* Acima de tudo */
-    opacity: 0; /* Começa invisível */
+    z-index: 10000; 
+    opacity: 0; 
     visibility: hidden;
     transition: opacity 0.3s, visibility 0.3s;
 }
 
 .custom-alert-modal.visible {
-    opacity: 1; /* Torna visível */
+    opacity: 1; 
     visibility: visible;
 }
 
 .modal-content {
-    background-color: #330000; /* Fundo vermelho escuro */
-    border: 1px solid #FFD700; /* Borda dourada/amarela */
+    background-color: #330000; 
+    border: 1px solid #FFD700; 
     padding: 30px 40px;
     border-radius: 8px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
@@ -508,7 +487,7 @@ body {
     margin-bottom: 25px;
 }
 
-/* Botão de Fechar (X) */
+
 .close-btn {
     position: absolute;
     top: 10px;
@@ -526,11 +505,11 @@ body {
     opacity: 1;
 }
 
-/* Botão OK no Modal */
+
 .modal-ok-btn {
-    background-color: #e50000; /* Vermelho vibrante */
+    background-color: #e50000; 
     color: #fff;
-    border: 2px solid #fff; /* Borda branca para destacar */
+    border: 2px solid #fff; 
     font-size: 1.1rem;
     font-weight: 700;
     padding: 10px 25px;
@@ -545,35 +524,30 @@ body {
     border-color: #FFD700;
 }
 
-
-/* =============================== */
-/* NOVOS ESTILOS PARA ERRO NO BOTÃO */
-/* =============================== */
-
 .error-message {
-    color: #ff4d4d; /* Um vermelho mais suave para a mensagem */
-    background-color: #2a0000; /* Fundo discreto para a mensagem */
-    border: 1px solid #e50000; /* Borda da mensagem */
+    color: #ff4d4d; 
+    background-color: #2a0000; 
+    border: 1px solid #e50000; 
     padding: 10px 15px;
     border-radius: 4px;
     margin-top: 15px;
     font-size: 0.95rem;
     text-align: center;
-    opacity: 0; /* Começa invisível */
+    opacity: 0; 
     visibility: hidden;
-    transform: translateY(-10px); /* Começa um pouco acima */
+    transform: translateY(-10px); 
     transition: opacity 0.4s ease-out, visibility 0.4s ease-out, transform 0.4s ease-out;
 }
 
 .error-message.visible {
-    opacity: 1; /* Torna visível */
+    opacity: 1; 
     visibility: visible;
-    transform: translateY(0); /* Desliza para a posição normal */
+    transform: translateY(0); 
 }
 
-/* Estilo para a borda vermelha do botão de compra */
+
 .buy-button.error-border {
-    border: 3px solid #e50000; /* Borda vermelha vibrante */
-    box-shadow: 0 0 15px rgba(229, 0, 0, 0.6); /* Sombra vermelha */
+    border: 3px solid #e50000; 
+    box-shadow: 0 0 15px rgba(229, 0, 0, 0.6);
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }

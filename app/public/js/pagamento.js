@@ -1,8 +1,5 @@
-// Arquivo: pagamento.js (VERSÃO FINAL E CORRIGIDA: Resolve o bug do valor zerado)
-
 document.addEventListener('DOMContentLoaded', () => {
     
-    // === 1. UTILITÁRIOS E VALIDAÇÕES RÍGIDAS ===
     
     const formatCurrency = (value) => {
         return parseFloat(value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -56,7 +53,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return len === 3 || len === 4;
     }
 
-    // === 2. UTILITÁRIOS DE ESTILO E MÁSCARA ===
 
     const markAsError = (el) => el.classList.add('input-error-border');
     const unmarkAsError = (el) => el.classList.remove('input-error-border');
@@ -91,10 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         input.value = maskedValue;
     }
-
-    // === 3. VARIÁVEIS DE ESTADO E INICIALIZAÇÃO ===
-    
-    // Tenta carregar a ordem, se falhar, currentOrder é null.
     const currentOrder = JSON.parse(localStorage.getItem('currentOrder'));
     
     if (!currentOrder || !currentOrder.total) { 
@@ -107,21 +99,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const paymentForm = document.getElementById('payment-form');
     const paymentMethodSelect = document.getElementById('payment-method');
 
-    // Elementos de Confirmação (IDs no HTML)
     const productTitleConfirmEl = document.getElementById('product-title-confirm');
     const totalConfirmEl = document.getElementById('total-confirm');
     const productTitlePixEl = document.getElementById('product-title-pix');
     const totalPixEl = document.getElementById('total-pix');
 
-    // Elementos de Input
     const cpfInput = document.getElementById('cpf');
     const emailInput = document.getElementById('email');
     const cardNumberInput = document.getElementById('card-number'); 
     const validadeInput = document.getElementById('validade'); 
     const cvvInput = document.getElementById('cvv'); 
     const cardHolderNameInput = document.getElementById('card-holder-name');
-    
-    // === 4. FUNÇÕES DE VALIDAÇÃO COM ESPECIFICAÇÃO DE ERRO ===
     
     function validateStep1() {
         hideCheckoutError(1);
@@ -164,12 +152,10 @@ document.addEventListener('DOMContentLoaded', () => {
             return false;
         }
 
-        // Salva os dados do cliente
         const formData = { 
             nome: document.getElementById('nome').value,
             email: emailInput.value,
             cpf: cpfInput.value,
-            // ... (restante dos dados do endereço)
         };
         localStorage.setItem('checkoutInfo', JSON.stringify(formData));
         return true;
@@ -192,7 +178,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (paymentMethodSelect.value === 'cartao') {
             
-            // Checagem de Nome
             if (cardHolderNameInput && cardHolderNameInput.value.trim() === "") {
                 markAsError(cardHolderNameInput);
                 isValid = false;
@@ -200,7 +185,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!firstErrorElement) firstErrorElement = cardHolderNameInput;
             }
 
-            // Checagem de Número
             if (cardNumberInput && !isValidCardNumber(cardNumberInput.value)) {
                 markAsError(cardNumberInput);
                 isValid = false;
@@ -208,7 +192,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!firstErrorElement) firstErrorElement = cardNumberInput;
             }
             
-            // Checagem de Validade
             if (validadeInput && !isValidExpiry(validadeInput.value)) {
                 markAsError(validadeInput);
                 isValid = false;
@@ -216,7 +199,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!firstErrorElement) firstErrorElement = validadeInput;
             }
             
-            // Checagem de CVV
             if (cvvInput && !isValidCVV(cvvInput.value)) {
                 markAsError(cvvInput);
                 isValid = false;
@@ -237,8 +219,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    // === 5. CONTROLE DE FLUXO E EVENTOS (BLOCO CORRIGIDO) ===
-
     document.getElementById('next-to-payment').addEventListener('click', (e) => {
         e.preventDefault(); 
         if (validateStep1()) {
@@ -256,9 +236,6 @@ document.addEventListener('DOMContentLoaded', () => {
             
             document.getElementById('submit-payment').textContent = 'Processando...';
             document.getElementById('submit-payment').disabled = true;
-            
-            // 🚨 CORREÇÃO CRÍTICA: Salva os dados necessários para a confirmação 
-            // ANTES de limpar o localStorage.
             const finalOrderDetails = {
                 title: currentOrder.title,
                 total: currentOrder.total,
@@ -274,12 +251,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 }); 
                 
                 localStorage.setItem('userOrders', JSON.stringify(userOrders));
-                
-                // Limpa dados temporários
                 localStorage.removeItem('currentOrder');
                 localStorage.removeItem('checkoutInfo');
-                
-                // 🚨 CORREÇÃO: Passa os detalhes da ordem (finalOrderDetails) para o renderStep(3)
                 renderStep(3, finalOrderDetails); 
                 document.getElementById('submit-payment').textContent = 'Finalizar Pedido';
                 document.getElementById('submit-payment').disabled = false;
@@ -287,11 +260,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // Configuração de máscaras e remoção de erro ao digitar
     function setupMasks() {
         document.querySelectorAll('.step-section input').forEach(element => {
             element.addEventListener('input', () => {
-                unmarkAsError(element); // Remove a borda de erro ao digitar
+                unmarkAsError(element);
                 
                 if (element.id === 'cpf') { applyMask(element, '999.999.999-99'); }
                 if (element.id === 'cep') { applyMask(element, '99999-999'); }
@@ -302,7 +274,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Configuração da visibilidade dos campos de pagamento
     document.getElementById('payment-method').addEventListener('change', (e) => {
         const selectedMethod = e.target.value;
         const paymentDetails = document.getElementById('payment-details');
@@ -311,7 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
             detail.style.display = 'none';
         });
         
-        // Remove 'required' e erros de todos os inputs de cartão
+
         paymentDetails.querySelectorAll('input').forEach(input => {
              input.removeAttribute('required');
              unmarkAsError(input);
@@ -323,7 +294,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 detailSection.style.display = 'block';
                 
                 if (selectedMethod === 'cartao') {
-                    // Torna campos de cartão obrigatórios
                     detailSection.querySelectorAll('input').forEach(input => {
                         input.setAttribute('required', 'required');
                     });
@@ -333,13 +303,8 @@ document.addEventListener('DOMContentLoaded', () => {
         hideCheckoutError(2);
     });
 
-    // === 6. RENDERIZAÇÃO DE PASSOS (FUNÇÃO CORRIGIDA) ===
-    
-    // 🚨 CORREÇÃO: Adiciona o parâmetro opcional orderData
     function renderStep(step, orderData = null) {
         const steps = document.querySelectorAll('.step-item');
-        
-        // Lógica de navegação visual
         document.querySelectorAll('.step-section').forEach(section => { section.style.display = 'none'; });
         document.getElementById(`step-${step}`).style.display = 'block';
         steps.forEach(s => { s.classList.remove('active'); });
@@ -349,7 +314,6 @@ document.addEventListener('DOMContentLoaded', () => {
         hideCheckoutError(2);
         
         if (step === 2) {
-            // Resumo do pedido (Instrumento) - USA currentOrder, que está OK nesta etapa
             const orderSummaryEl = document.getElementById('order-summary');
             const productTitle = currentOrder.title || 'Instrumento Selecionado';
             const totalFormatted = formatCurrency(currentOrder.total);
@@ -362,10 +326,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         if (step === 3) {
-            // 🚨 CORREÇÃO: Tenta usar o dado passado (orderData) ou, como fallback, o currentOrder (que agora estará vazio)
             const dataToUse = orderData || currentOrder; 
 
-            // Checagem de segurança
             if (!dataToUse || !dataToUse.total) {
                 console.error("Dados da ordem ausentes na confirmação.");
                 return; 
@@ -388,7 +350,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // === INICIALIZAÇÃO ===
     setupMasks();
     renderStep(1); 
 });

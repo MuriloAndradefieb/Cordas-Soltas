@@ -1,8 +1,3 @@
-/*
-Este é o CSS base, adaptado para usar seletores semânticos e 'flexbox'.
-*/
-
-/* Reset Básico */
 * {
     margin: 0;
     padding: 0;
@@ -18,7 +13,7 @@ body {
     flex-direction: column;
 }
 
-/* Header (Cabeçalho) */
+
 .header {
     background-color: #000000;
     padding: 1rem 5%;
@@ -33,10 +28,9 @@ body {
 }
 
 .logo {
-    height: 40px; /* Tamanho da logo */
+    height: 40px; 
 }
 
-/* Nav Icons (Ícones de Navegação) */
 .nav-icons {
     display: flex;
     align-items: center;
@@ -49,7 +43,6 @@ body {
     color: #f7f7f7;
 }
 
-/* Hamburger Button (Menu Mobile) */
 .hamburger-button {
     background: none;
     border: none;
@@ -67,16 +60,16 @@ body {
     transition: 0.4s;
 }
 
-/* Main Content (Conteúdo Principal) */
+
 .seguros-main-content {
-    flex-grow: 1; /* Permite que o conteúdo principal ocupe o espaço restante */
+    flex-grow: 1;
     padding: 2rem 5%;
     display: flex;
     justify-content: center;
-    /* Removemos a centralização vertical para permitir rolagem se o conteúdo for longo */
+
 }
 
-/* Footer (Rodapé) */
+
 .seguros-footer {
     background-color: #000000;
     text-align: center;
@@ -90,7 +83,7 @@ body {
     margin: 0.3rem 0;
 }
 
-/* Sidebar Menu (Menu Lateral) */
+
 .menu-overlay {
     position: fixed;
     top: 0;
@@ -112,7 +105,7 @@ body {
 .sidebar {
     position: fixed;
     top: 0;
-    right: -280px; /* Escondido por padrão */
+    right: -280px;
     width: 280px;
     height: 100%;
     background-color: #1a1a1a;
@@ -123,7 +116,7 @@ body {
 }
 
 .sidebar.open {
-    right: 0; /* Exibir */
+    right: 0;
 }
 
 .close-menu-btn {
@@ -157,10 +150,10 @@ body {
     color: #ffcc00;
 }
 
-/* Media Query para Menu em telas menores */
+
 @media (max-width: 768px) {
     .sidebar {
-        width: 70%; /* Maior em telas menores */
+        width: 70%;
         right: -70%;
     }
 }

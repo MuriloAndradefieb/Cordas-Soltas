@@ -15,8 +15,6 @@ app.use("/", rotas);
  
  
 app.listen(process.env.APP_PORT, () => {
-  console.log(`Servidor ouvindo na porta ${process.env.APP_PORT}
-    \nhttp://localhost:${process.env.APP_PORT
-     
-    }`);
-});
+    console.log(`Servidor ouvindo na porta ${process.env.APP_PORT}
+        \nhttp://localhost:${process.env.APP_PORT}`);
+})

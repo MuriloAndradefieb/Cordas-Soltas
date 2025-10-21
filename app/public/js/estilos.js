@@ -1,6 +1,3 @@
-// Arquivo: js/estilos.js (CORRIGIDO: Agora salva a ordem de compra)
-
-// Objeto de dados para cada estilo musical (Mantido)
 const estilosData = {
     'rock': {
         title: 'Rock - Equipamentos',
@@ -17,7 +14,7 @@ const estilosData = {
             '5. Microfones (Vocais e Bateria)',
             '6. Cabos e Pedais de Efeito (Distortion/Overdrive)'
         ],
-        price: '500.00' // Preço único para todos os kits
+        price: '500.00'
     },
     'samba': {
         title: 'Samba - Equipamentos',
@@ -91,21 +88,17 @@ const estilosData = {
 
 const mainContent = document.getElementById('main-content');
 
-// === NOVA FUNÇÃO: CONFIGURA O LISTENER DO BOTÃO DE COMPRA ===
+
 function setupBuyButtonListener() {
-    // O seletor '.botao-prosseguir' deve ser usado
     const buyButton = document.querySelector('.botao-prosseguir');
 
     if (buyButton) {
         buyButton.addEventListener('click', (e) => {
-            // Previne o redirecionamento padrão do <a> para que possamos salvar a ordem antes
             e.preventDefault(); 
             
-            // CRÍTICO: Pega os dados que foram injetados no link pelo renderizarEstilo
             const productTitle = buyButton.getAttribute('data-title');
             const productPrice = buyButton.getAttribute('data-price');
             
-            // Salva no localStorage com a chave 'currentOrder'
             const orderData = {
                 title: productTitle || 'Kit de Instrumentos',
                 total: parseFloat(productPrice) || 500.00,
@@ -113,21 +106,17 @@ function setupBuyButtonListener() {
             };
             localStorage.setItem('currentOrder', JSON.stringify(orderData));
 
-            // Agora, redireciona para o pagamento
             window.location.href = '/pagamento'; 
         });
     }
 }
 
-// Função principal que gera e insere o HTML (MODIFICADA)
 function renderizarEstilo(estiloKey) {
     const data = estilosData[estiloKey];
     if (!data) return;
 
-    // Constrói a lista <ul> de itens
+
     const itemsHtml = data.items.map(item => `<li>${item}</li>`).join('');
-    
-    // Constrói o HTML semântico completo
     const html = `
         <article class="equipamento-section">
             <header>
@@ -159,18 +148,12 @@ function renderizarEstilo(estiloKey) {
         </article>
     `;
 
-    // Injeta o HTML no <main>
     mainContent.innerHTML = html;
-    
-    // Altera o título da página
     document.title = `Luthbox - ${data.title.split(' ')[0]}`;
-    
-    // CHAMA A NOVA FUNÇÃO APÓS INSERIR O BOTÃO NO DOM
     setupBuyButtonListener();
 }
 
 
-// Função para determinar qual estilo carregar na inicialização (Mantida)
 function carregarEstiloInicial() {
     const params = new URLSearchParams(window.location.search);
     const estiloParam = params.get('estilo');
