@@ -31,34 +31,12 @@
     </main>
 
     <script>
-        function handleGoogleLogin(response) {
-            try {
-                const base64Url = response.credential.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const userPayload = JSON.parse(atob(base64));
-
-                const username = userPayload.name || userPayload.email.split('@')[0];
-                const email = userPayload.email;
-                
-                localStorage.setItem('userProfile', JSON.stringify({
-                    username: username, 
-                    email: email,
-                    role: 'Visitante'
-                }));
-
-                alert(`Login com ${email} bem-sucedido via Google! Redirecionando para o perfil.`);
-                window.location.href = '/perfil';
-                
-            } catch (error) {
-                console.error("Erro ao decodificar o token do Google:", error);
-                alert("Ocorreu um erro ao processar seu login do Google.");
-            }
-        }
-
+        // LÓGICA DE LOGIN COM FORMULÁRIO 
         document.getElementById('entrar-btn').addEventListener('click', function() {
             const emailInput = document.getElementById('email').value;
             const passwordInput = document.getElementById('password').value;
             
+            // 1. Tenta carregar o perfil salvo
             const savedProfileString = localStorage.getItem('userProfile');
             
             if (!savedProfileString) {
@@ -67,6 +45,8 @@
             }
 
             const savedProfile = JSON.parse(savedProfileString);
+
+            // 2. Compara o email e a senha digitados com os salvos
             if (savedProfile.email === emailInput && savedProfile.password === passwordInput) {
                 alert('Login com formulário bem-sucedido! Redirecionando para o perfil.');
                 window.location.href = '/perfil';

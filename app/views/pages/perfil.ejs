@@ -8,6 +8,7 @@
 
     <script>
         if (!localStorage.getItem('userProfile')) {
+            // Se não houver perfil salvo, redireciona para a página de login
             window.location.href = '/login';
         }
     </script>
@@ -43,8 +44,13 @@
             <section id="actions" class="actions-section">
                 <button id="edit-profile-btn" class="secondary-button">Editar Perfil</button>
                 <button id="change-password-btn" class="secondary-button">Alterar Senha</button>
+                <button id="downgrade-to-member-btn" class="secondary-button hidden">Tornar-se Visitante</button>
             </section>
 
+            <section id="artist-upgrade-section" class="actions-section">
+                <button id="upgrade-to-artist-btn" class="primary-button">Deseja se tornar conta Artista?</button>
+            </section>
+            
             <article id="alterar-senha-form" class="form-section hidden">
                 <h2>Alterar Senha</h2>
                 <form>
