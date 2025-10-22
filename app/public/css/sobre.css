@@ -106,13 +106,11 @@
 
 .sobre-footer {
     text-align: center;
-    padding: 2rem 1rem 1rem 1rem;
+    padding: 2rem 1rem;
     font-size: 0.8rem;
     color: #888;
     border-top: 1px solid #333;
     line-height: 1.5;
-    background-color: #000;
-    position: relative; 
 }
 
 .sobre-footer p {
