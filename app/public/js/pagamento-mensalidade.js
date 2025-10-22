@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     const PRODUCT_TITLE = "Mensalidade";
-    const PRODUCT_PRICE = 320.00;
+    const PRODUCT_PRICE = 210.99;
     const formatCurrency = (value) => {
         return parseFloat(value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     };

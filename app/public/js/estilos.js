@@ -14,7 +14,7 @@ const estilosData = {
             '5. Microfones (Vocais e Bateria)',
             '6. Cabos e Pedais de Efeito (Distortion/Overdrive)'
         ],
-        price: '500.00'
+        price: '150.00'
     },
     'samba': {
         title: 'Samba - Equipamentos',
@@ -31,7 +31,7 @@ const estilosData = {
             '5. Violão (Base harmônica)',
             '6. Reco-reco e Agogô (Cores e texturas rítmicas)'
         ],
-        price: '500.00' 
+        price: '150.00' 
     },
     'pagode': {
         title: 'Pagode - Equipamentos',
@@ -48,7 +48,7 @@ const estilosData = {
             '5. Pandeiro e Tamborim (Ritmo e contratempo)',
             '6. Banjo (Comum em subgêneros)'
         ],
-        price: '500.00'
+        price: '150.00'
     },
     'eletronica': {
         title: 'Eletrônica - Equipamentos',
@@ -65,7 +65,7 @@ const estilosData = {
             '5. Monitores de Estúdio (Para mixagem e masterização)',
             '6. Controladores MIDI Adicionais (Pads, knobs, etc.)'
         ],
-        price: '500.00'
+        price: '150.00'
     },
     'jazz': {
         title: 'Jazz - Equipamentos',
@@ -82,7 +82,7 @@ const estilosData = {
             '5. Bateria (Minimalista, focada no ride/chimbal)',
             '6. Guitarra (Semi-acústica, para acordes e solos limpos)'
         ],
-        price: '500.00'
+        price: '150.00'
     }
 };
 
@@ -101,7 +101,7 @@ function setupBuyButtonListener() {
             
             const orderData = {
                 title: productTitle || 'Kit de Instrumentos',
-                total: parseFloat(productPrice) || 500.00,
+                total: parseFloat(productPrice) || 150.00,
                 quantity: 1 
             };
             localStorage.setItem('currentOrder', JSON.stringify(orderData));

@@ -60,12 +60,11 @@
             const params = new URLSearchParams(window.location.search);
             const showId = params.get('id');
 
-            // Procura o show no array 'shows' (que veio do shows.js)
+            // Procura o show no array 'shows'
             const foundShow = shows.find(show => show.id === showId);
 
             if (foundShow) {
                 // SALVA O SHOW ENCONTRADO NO LOCALSTORAGE
-                // Assim, o seu script 'detalhes.js' original vai funcionar sem alterações!
                 localStorage.setItem('selectedShow', JSON.stringify(foundShow));
 
                 // Formata os preços para exibição
@@ -117,7 +116,7 @@
                     </section>
                 `;
 
-                // NOVO CÓDIGO PARA GERENCIAR A CONTAGEM E MOSTRAR/OCULTAR NO NOME DO INGRESSO
+                //CÓDIGO PARA GERENCIAR A CONTAGEM E MOSTRAR/OCULTAR NO NOME DO INGRESSO
                 const updateTicketCountDisplay = (type, qty) => {
                     const countSpan = document.querySelector(`.ticket-count[data-ticket-type="${type}"]`);
                     const nameH3 = countSpan.previousElementSibling;
@@ -138,15 +137,13 @@
                         const type = event.target.dataset.type;
                         const input = document.getElementById(`qty-${type}`);
                         
-                        // O script `detalhes.js` (que carregaremos abaixo) cuidará da atualização do valor do input,
-                        // então aqui apenas esperamos um pequeno delay para ler o novo valor.
+                        // O script `detalhes.js` cuidará da atualização do valor do input,
                         setTimeout(() => {
                             const newQty = parseInt(input.value);
                             updateTicketCountDisplay(type, newQty);
                         }, 50); // Pequeno atraso para garantir que 'detalhes.js' já atualizou o valor
                     });
                 });
-                // FIM DO NOVO CÓDIGO
                 
             } else {
                 container.innerHTML = '<h2>Show não encontrado</h2><p>O evento que você está procurando não foi localizado. Por favor, volte para a página inicial.</p>';
@@ -162,11 +159,11 @@
             const params = new URLSearchParams(window.location.search);
             const showId = params.get('id');
 
-            // Procura o show no array 'shows' (que AGORA ESTÁ CARREGADO)
+            // Procura o show no array 'shows' 
             const foundShow = shows.find(show => show.id === showId);
 
             if (foundShow) {
-                // ... (RESTANTE DO SEU CÓDIGO INLINE ESTÁ CORRETO) ...
+        
             } else {
                 container.innerHTML = '<h2>Show não encontrado</h2><p>O evento que você está procurando não foi localizado. Por favor, volte para a página inicial.</p>';
             }
@@ -176,7 +173,30 @@
     <script src="js/detalhes.js"></script> 
     
     <script>
-        // ... (seu código do menu hambúrguer e checagem de login aqui) ...
+          document.addEventListener('DOMContentLoaded', () => {
+            const accountLink = document.getElementById('account-link');
+            const sidebarAccountLink = document.getElementById('sidebar-account-link');
+            
+            const userProfile = localStorage.getItem('userProfile');
+
+            if (userProfile) {
+                if (accountLink) {
+                    accountLink.href = '/perfil';
+                }
+                if (sidebarAccountLink) {
+                    sidebarAccountLink.href = '/perfil';
+                    sidebarAccountLink.textContent = 'Meu Perfil'; 
+                }
+            } else {
+                if (accountLink) {
+                    accountLink.href = '/login';
+                }
+                if (sidebarAccountLink) {
+                    sidebarAccountLink.href = '/login';
+                    sidebarAccountLink.textContent = 'Conta (Login)';
+                }
+            }
+        });
     </script>
 
 </body>
