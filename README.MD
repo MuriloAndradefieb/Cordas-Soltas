@@ -2,7 +2,7 @@ Para instalar as dependencias use:
 
 npm i --save
 
-pm config set strict-ssl false
+npm config set strict-ssl false
 
 npm init
 

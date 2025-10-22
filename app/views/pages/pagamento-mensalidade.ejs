@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento - Cordas Soltas</title>
+    
+    <link rel="stylesheet" href="css/style.css"> 
+    <link rel="stylesheet" href="css/pagamento.css"> 
+    
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <main class="main-content">
+        <article class="checkout-container">
+            <a href="/detalhes" class=back-link style="align-self: flex-start;">&larr; Voltar para o Evento</a>
+            <h1>Finalizar Compra</h1>
+
+            <nav class="steps" aria-label="Progresso do Pagamento">
+                <section class="step-item active" data-step="1">
+                    <span class="step-circle">1</span>
+                    <p>Informações</p>
+                </section>
+                <section class="step-item" data-step="2">
+                    <span class="step-circle">2</span>
+                    <p>Pagamento</p>
+                </section>
+                <section class="step-item" data-step="3">
+                    <span class="step-circle">3</span>
+                    <p>Confirmação</p>
+                </section>
+            </nav>
+
+            <section class="step-content">
+                <section class="step-section" id="step-1">
+                    <p class="error-message-checkout" id="error-message-step1" style="display: none;"></p>
+
+                    <form id="info-form">
+                        <fieldset class="form-group">
+                            <label for="nome">Nome Completo</label>
+                            <input type="text" id="nome" required>
+                        </fieldset>
+                        <fieldset class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" required>
+                        </fieldset>
+                        <fieldset class="form-group">
+                            <label for="cpf">CPF</label>
+                            <input type="text" id="cpf" placeholder="000.000.000-00" required>
+                        </fieldset>
+
+                        <fieldset class="form-address">
+                            <legend>Endereço de Cobrança</legend>
+                            <fieldset class="form-group">
+                                <label for="cep">CEP</label>
+                                <input type="text" id="cep" placeholder="00000-000" required>
+                            </fieldset>
+                            <fieldset class="form-group">
+                                <label for="rua">Rua</label>
+                                <input type="text" id="rua" required>
+                            </fieldset>
+                            <fieldset class="form-group half-width">
+                                <label for="numero">Número</label>
+                                <input type="text" id="numero" required>
+                            </fieldset>
+                            <fieldset class="form-group half-width">
+                                <label for="complemento">Complemento (Opcional)</label>
+                                <input type="text" id="complemento">
+                            </fieldset>
+                            <fieldset class="form-group">
+                                <label for="bairro">Bairro</label>
+                                <input type="text" id="bairro" required>
+                            </fieldset>
+                            <fieldset class="form-group">
+                                <label for="cidade">Cidade</label>
+                                <input type="text" id="cidade" required>
+                            </fieldset>
+                        </fieldset>
+
+                        <button type="button" class="buy-button" id="next-to-payment">Ir para Pagamento</button>
+                    </form>
+                </section>
+
+                <section class="step-section" id="step-2" style="display: none;">
+                    <p class="error-message-checkout" id="error-message-step2" style="display: none;"></p>
+
+                    <aside class="summary-box" id="order-summary">
+                        </aside>
+
+                    <form id="payment-form">
+                        <fieldset class="form-group">
+                            <label for="payment-method">Método de Pagamento</label>
+                            <select id="payment-method" required>
+                                <option value="">Selecione...</option>
+                                <option value="cartao">Cartão de Crédito</option>
+                                <option value="pix">PIX</option>
+                                <option value="boleto">Boleto Bancário</option>
+                            </select>
+                        </fieldset>
+
+                        <section id="payment-details">
+                            <fieldset class="payment-method-details" data-method="cartao" style="display: none;">
+                                <fieldset class="form-group">
+                                    <label for="card-holder-name">Nome Impresso no Cartão</label>
+                                    <input type="text" id="card-holder-name" required>
+                                </fieldset>
+                                <fieldset class="form-group">
+                                    <label for="card-number">Número do Cartão</label>
+                                    <input type="text" id="card-number" placeholder="0000 0000 0000 0000" maxlength="19" required>
+                                </fieldset>
+                                <section class="card-row">
+                                    <fieldset class="form-group half-width">
+                                        <label for="validade">Validade</label>
+                                        <input type="text" id="validade" placeholder="MM/AA" required>
+                                    </fieldset>
+                                    <fieldset class="form-group half-width">
+                                        <label for="cvv">CVV</label>
+                                        <input type="text" id="cvv" placeholder="123" maxlength="4" required>
+                                    </fieldset>
+                                </section>
+                            </fieldset>
+                            
+                            <p class="payment-method-details" data-method="pix" style="display: none; padding: 10px; background: #222; border-radius: 4px;">Você será redirecionado para a tela de confirmação com o QR Code PIX.</p>
+                            
+                            <p class="payment-method-details" data-method="boleto" style="display: none; padding: 10px; background: #222; border-radius: 4px;">O boleto será gerado na tela de confirmação e enviado para o seu e-mail.</p>
+                        </section>
+                        
+                        <button type="button" class="buy-button" id="back-to-info">Voltar</button>
+                        <button type="submit" class="buy-button" id="submit-payment">Finalizar Pedido</button>
+                    </form>
+                </section>
+                
+                <section class="step-section" id="step-3" style="display: none;">
+                    <h2>🎉 Compra Finalizada!</h2>
+                    
+                    <aside class="summary-box" id="confirmation-details" style="display: none;">
+                        <h3>Obrigado pela sua compra!</h3>
+                        <p>Seu ingresso para <span id="show-title-confirm"></span> foi enviado para o seu email.</p>
+                        <p class="summary-total">Total Pago: <span id="total-confirm">R$ 0,00</span></p>
+                    </aside>
+
+                    <aside class="summary-box pix-box" id="pix-payment-details" style="display: none;">
+                        <h3>✅ Quase lá! Finalize o pagamento via PIX</h3>
+                        <p>Para concluir a compra de <span id="show-title-pix"></span>, escaneie o QR Code ou use o código Copia e Cola abaixo.</p>
+                        
+                        <section class="qr-code-section" style="text-align: center; margin: 20px 0;">
+                            <img src="img/qr-code.jpg" alt="QR Code PIX" style="max-width: 100%; height: auto;">
+                        </section>
+                        
+                        <p class="pix-total" style="font-size: 1.2rem; font-weight: bold; margin-bottom: 15px;">Total a Pagar: <span id="total-pix">R$ 0,00</span></p>
+
+                        <section class="pix-copy-section" style="display: flex; flex-direction: column; gap: 10px;">
+                            <input type="text" id="pix-code" value="1234567890123456789012345678901234567890" readonly style="padding: 10px; background: #222; border: 1px solid #FFD700; color: #fff; border-radius: 4px;">
+                            <button type="button" class="buy-button copy-button" onclick="copyPixCode()" style="background-color: #FFD700; color: #1a1a1a;">Copiar Código</button>
+                            <p class="pix-status" style="text-align: center; color: #ccc;">(Pagamento deve ser realizado em até 30 minutos)</p>
+                        </section>
+                    </aside>
+                    
+                    <a href="/" class="buy-button" style="text-decoration: none; display: block; text-align: center; margin-top: 20px;">Voltar para Início</a>
+                    
+                    <script>
+                        function copyPixCode() {
+                            const pixInput = document.getElementById('pix-code');
+                            pixInput.select();
+                            pixInput.setSelectionRange(0, 99999);
+                            document.execCommand("copy");
+                            alert("Código PIX copiado!");
+                        }
+                    </script>
+                </section>
+            </section>
+        </article>
+    </main>
+
+    <script src="js/pagamento.js"></script>
+</body>
+</html>
