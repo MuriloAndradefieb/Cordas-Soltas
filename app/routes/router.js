@@ -42,10 +42,6 @@ router.get("/cadastro", function (req, res) {
     res.render("pages/cadastro", {titulo:"Cadastro para login"})
 });
 
-router.get("/pagamento-mensalidade", function (req, res) {
-    res.render("pages/pagamento-mensalidade", {titulo:"Pagamento Mensalidade"})
-});
-
 router.get("/regulamento", function (req, res) {
     res.render("pages/regulamento", {titulo:"Regulamento"})
 });
