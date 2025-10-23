@@ -26,6 +26,10 @@ router.get("/luthbox", function (req, res) {
     res.render("pages/luthbox", {titulo:"Luthbox"})
 });
 
+router.get("/pagamento-luth", function (req, res) {
+    res.render("pages/pagamento-luth", {titulo:"Pagamento da Luthbox"})
+});
+
 router.get("/seletivas", function (req, res) {
     res.render("pages/seletivas", {titulo:"Seletivas"})
 });

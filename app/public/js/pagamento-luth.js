@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Verifica se há um pedido ativo antes de prosseguir
     if (!currentOrder || !currentOrder.total) { 
-        alert("Nenhum ingresso selecionado. Retornando à seleção.");
+        alert("Nenhum instrumento selecionado. Retornando à seleção.");
         window.location.href = '/estilos';
         return;
     }
@@ -206,12 +206,12 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Renderização do Resumo (Passo 2)
         if (step === 2) {
-            const productTitle = orderData.title || 'Ingresso Selecionado';
+            const productTitle = orderData.title || 'Instrumento Selecionado';
             const totalFormatted = Utils.formatCurrency(orderData.total);
 
             $('order-summary').innerHTML = `
                 <p class="summary-title">Resumo do Pedido</p>
-                <p>Ingresso: <strong>${productTitle}</strong></p>
+                <p>Instrumento: <strong>${productTitle}</strong></p>
                 <p class="summary-total">Total a Pagar: ${totalFormatted}</p>
             `;
         }
@@ -235,7 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 ? [Elements.productTitlePixEl, Elements.totalPixEl] 
                 : [Elements.productTitleConfirmEl, Elements.totalConfirmEl];
 
-            titleEl.textContent = title || 'Ingresso';
+            titleEl.textContent = title || 'Instrumento';
             totalEl.textContent = Utils.formatCurrency(total);
         }
     };

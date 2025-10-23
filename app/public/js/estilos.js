@@ -106,7 +106,7 @@ function setupBuyButtonListener() {
             };
             localStorage.setItem('currentOrder', JSON.stringify(orderData));
 
-            window.location.href = '/pagamento'; 
+            window.location.href = '/pagamento-luth'; 
         });
     }
 }
@@ -138,7 +138,7 @@ function renderizarEstilo(estiloKey) {
                 
                 <p class="preco">A partir de: R$${data.price.replace('.', ',')}</p>
                 
-                <a href="pagamento.html" 
+                <a href="pagamento.ejs" 
                    class="botao-prosseguir" 
                    data-title="${data.cardTitle}" 
                    data-price="${data.price}">
