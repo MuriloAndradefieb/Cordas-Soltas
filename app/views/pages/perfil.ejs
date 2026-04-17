@@ -3,103 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perfil do Usuário</title>
+    <title>Perfil do Usuário - Cordas Soltas</title>
     <link rel="stylesheet" href="css/perfil.css">
-
-    <script>
-        if (!localStorage.getItem('userProfile')) {
-            // Se não houver perfil salvo, redireciona para a página de login
-            window.location.href = '/login';
+    <style>
+        /* ── Avisos de erro / sucesso do servidor ─────────────────────────── */
+        .aviso-servidor {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin: 12px 0 20px 0;
+            animation: slideDown 0.3s ease;
         }
-    </script>
-    
-    <script src="js/perfil.js" defer></script>
+        .aviso-servidor.erro {
+            background-color: #2a0000;
+            border: 1px solid #c0392b;
+            color: #ff6b6b;
+        }
+        .aviso-servidor.sucesso {
+            background-color: #002a0d;
+            border: 1px solid #27ae60;
+            color: #6bffaa;
+        }
+        .aviso-servidor .aviso-icon { font-size: 1rem; flex-shrink: 0; }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── Dados do usuário ─────────────────────────────────────────────── */
+        .user-details { text-align: left; margin: 1rem 0 1.5rem 0; }
+        .user-details p {
+            padding: 8px 0;
+            border-bottom: 1px dashed #333;
+            font-size: 0.95rem;
+        }
+        .user-details strong { color: var(--accent-gold); margin-right: 8px; }
+        .user-role { font-size: 0.9rem; color: #aaa; margin-top: 4px; }
+    </style>
 </head>
 <body>
-   <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
-     <div vw class="enabled">
-    <div vw-access-button class="active"></div>
-    <div vw-plugin-wrapper>
-      <div class="vw-plugin-top-wrapper"></div>
+    <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
+    <div vw class="enabled">
+        <div vw-access-button class="active"></div>
+        <div vw-plugin-wrapper>
+            <div class="vw-plugin-top-wrapper"></div>
+        </div>
     </div>
-  </div>
-  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
-  <script>
-    new window.VLibras.Widget('https://vlibras.gov.br/app');
-  </script>
-<!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
-
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script>new window.VLibras.Widget('https://vlibras.gov.br/app');</script>
+    <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
 
     <main>
         <section class="profile-card">
             <a href="/" class="primary-button back-button-position" aria-label="Voltar para a página inicial">&#8592; Voltar</a>
 
+            <!-- Mensagens do servidor (sem pop-up) -->
+            <% if (typeof erro !== 'undefined' && erro) { %>
+                <div class="aviso-servidor erro" style="margin-top: 55px;">
+                    <span class="aviso-icon">⚠️</span>
+                    <span><%= erro %></span>
+                </div>
+            <% } %>
+            <% if (typeof sucesso !== 'undefined' && sucesso) { %>
+                <div class="aviso-servidor sucesso" style="margin-top: 55px;">
+                    <span class="aviso-icon">✅</span>
+                    <span><%= sucesso %></span>
+                </div>
+            <% } %>
+
+            <!-- Cabeçalho do perfil -->
             <header>
                 <figure class="profile-picture">
-                    <img id="profile-image" src="https://via.placeholder.com/150/000000/FFFFFF/?text=P" alt="Foto de perfil">
-                    
+                    <img id="profile-image"
+                         src="<%= usuario.fotoPerfil || 'https://via.placeholder.com/150/000000/FFFFFF/?text=P' %>"
+                         alt="Foto de perfil">
+
                     <input type="file" id="photo-upload" accept="image/*" style="display: none;">
-                    
+
                     <button id="edit-photo-btn" class="edit-photo-button" aria-label="Alterar foto de perfil">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M149.1 64.8L138.7 96H64C28.7 96 0 124.7 0 160V416C0 451.3 28.7 480 64 480H448C483.3 480 512 451.3 512 416V160C512 124.7 483.3 96 448 96H373.3L362.9 64.8C356.1 45.2 338.4 32 318.3 32H193.7C173.6 32 155.9 45.2 149.1 64.8zM256 320C202.9 320 160 277.1 160 224C160 170.9 202.9 128 256 128C309.1 128 352 170.9 352 224C352 277.1 309.1 320 256 320z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                            <path fill="currentColor" d="M149.1 64.8L138.7 96H64C28.7 96 0 124.7 0 160V416C0 451.3 28.7 480 64 480H448C483.3 480 512 451.3 512 416V160C512 124.7 483.3 96 448 96H373.3L362.9 64.8C356.1 45.2 338.4 32 318.3 32H193.7C173.6 32 155.9 45.2 149.1 64.8zM256 320C202.9 320 160 277.1 160 224C160 170.9 202.9 128 256 128C309.1 128 352 170.9 352 224C352 277.1 309.1 320 256 320z"/>
+                        </svg>
                     </button>
                 </figure>
-                <h1 id="display-username-header">Usuário Padrão</h1>
-                <p class="user-role" id="display-role">Membro</p>
+
+                <h1 id="display-username-header"><%= usuario.username %></h1>
+                <p class="user-role" id="display-role"><%= usuario.role %></p>
             </header>
 
+            <!-- Dados do usuário (vindos da sessão, não do localStorage) -->
             <article class="user-details">
-                <p><strong>Nome de Usuário:</strong> <span id="display-username">Usuário Padrão</span></p>
-                <p><strong>Email:</strong> <span id="display-email">email@exemplo.com</span></p>
-                <p><strong>Telefone:</strong> <span id="display-phone">N/A</span></p>
-                <p><strong>Senha:</strong> <span id="display-password">••••••••</span></p>
+                <p><strong>Nome de Usuário:</strong> <span id="display-username"><%= usuario.username %></span></p>
+                <p><strong>Email:</strong> <span id="display-email"><%= usuario.email %></span></p>
+                <p><strong>Telefone:</strong> <span id="display-phone"><%= usuario.telefone || 'Não informado' %></span></p>
+                <p><strong>Tipo de conta:</strong> <span><%= usuario.role %></span></p>
+                <% if (usuario.role === 'artista' && usuario.nomeBanda) { %>
+                    <p><strong>Banda/Projeto:</strong> <%= usuario.nomeBanda %></p>
+                <% } %>
+                <% if (usuario.role === 'artista' && usuario.estiloMusical) { %>
+                    <p><strong>Estilo:</strong> <%= usuario.estiloMusical %></p>
+                <% } %>
             </article>
-            
+
+            <!-- Botões de ação -->
             <section id="actions" class="actions-section">
-                <button id="edit-profile-btn" class="secondary-button">Editar Perfil</button>
-                <button id="change-password-btn" class="secondary-button">Alterar Senha</button>
-                <button id="downgrade-to-member-btn" class="secondary-button hidden">Tornar-se Visitante</button>
+                <button id="edit-profile-btn" class="secondary-button" onclick="mostrarForm('form-editar')">Editar Perfil</button>
+                <button id="change-password-btn" class="secondary-button" onclick="mostrarForm('form-senha')">Alterar Senha</button>
+
+                <!-- Botão de Role: muda conforme o tipo de conta -->
+                <% if (usuario.role === 'artista') { %>
+                    <form method="POST" action="/perfil/role" style="display:inline; width:100%;">
+                        <input type="hidden" name="role" value="visitante">
+                        <button type="submit" class="secondary-button"
+                                onclick="return confirm('Deseja reverter para Visitante? Você perderá acesso às ferramentas de Artista.')">
+                            Tornar-se Visitante
+                        </button>
+                    </form>
+                <% } else { %>
+                    <form method="POST" action="/perfil/role" style="display:inline; width:100%;">
+                        <input type="hidden" name="role" value="artista">
+                        <button type="submit" class="primary-button"
+                                onclick="return confirm('Deseja se tornar conta Artista?')">
+                            Deseja se tornar conta Artista?
+                        </button>
+                    </form>
+                <% } %>
             </section>
 
-            <section id="artist-upgrade-section" class="actions-section">
-                <button id="upgrade-to-artist-btn" class="primary-button">Deseja se tornar conta Artista?</button>
-            </section>
-            
-            <article id="alterar-senha-form" class="form-section hidden">
-                <h2>Alterar Senha</h2>
-                <form>
+            <!-- Formulário: Editar Perfil -->
+            <article id="form-editar" class="form-section hidden">
+                <h2>Editar Perfil</h2>
+                <form method="POST" action="/perfil/editar">
                     <fieldset>
-                        <legend class="sr-only">Formulário para Alterar Senha</legend>
-                        <label for="new-password">Nova senha</label>
-                        <input type="password" id="new-password" placeholder="Nova senha" required>
-                        
-                        <label for="confirm-password">Confirmar senha</label>
-                        <input type="password" id="confirm-password" placeholder="Confirmar Senha">
+                        <legend class="sr-only">Formulário para Editar Perfil</legend>
+                        <label for="edit-username">Nome de Usuário</label>
+                        <input type="text" id="edit-username" name="username"
+                               value="<%= usuario.username %>" required>
+
+                        <label for="edit-email">Alterar o email</label>
+                        <input type="email" id="edit-email" name="email"
+                               value="<%= usuario.email %>" required>
+
+                        <label for="edit-phone">Telefone</label>
+                        <input type="tel" id="edit-phone" name="telefone"
+                               value="<%= usuario.telefone || '' %>" placeholder="(99) 99999-9999">
                     </fieldset>
                     <section class="form-actions-buttons">
-                        <button type="button" id="cancel-password-btn" class="secondary-button cancel-button">Cancelar</button>
-                        <button type="button" id="save-password-btn" class="primary-button">Concluído</button>
+                        <button type="button" id="cancel-profile-btn" class="secondary-button cancel-button"
+                                onclick="ocultarForms()">Cancelar</button>
+                        <button type="submit" id="save-profile-btn" class="primary-button">Salvar alterações</button>
                     </section>
                 </form>
             </article>
 
-            <article id="editar-perfil-form" class="form-section hidden">
-                <h2>Editar Perfil</h2>
-                <form>
+            <!-- Formulário: Alterar Senha -->
+            <article id="form-senha" class="form-section hidden">
+                <h2>Alterar Senha</h2>
+                <form method="POST" action="/perfil/senha">
                     <fieldset>
-                        <legend class="sr-only">Formulário para Editar Perfil</legend>
-                        <label for="edit-username">Nome de Usuário</label>
-                        <input type="text" id="edit-username" placeholder="Nome de usuário">
+                        <legend class="sr-only">Formulário para Alterar Senha</legend>
+                        <label for="new-password">Nova senha</label>
+                        <input type="password" id="new-password" name="novaSenha"
+                               placeholder="Mínimo 6 caracteres" required>
 
-                        <label for="edit-email">Alterar o email</label>
-                        <input type="email" id="edit-email" placeholder="Alterar o email">
-                        
-                        <label for="edit-phone">Telefone</label>
-                        <input type="tel" id="edit-phone" placeholder="(99) 99999-9999">
+                        <label for="confirm-password">Confirmar senha</label>
+                        <input type="password" id="confirm-password" name="confirmarSenha"
+                               placeholder="Repita a nova senha">
                     </fieldset>
                     <section class="form-actions-buttons">
-                        <button type="button" id="cancel-profile-btn" class="secondary-button cancel-button">Cancelar</button>
-                        <button type="button" id="save-profile-btn" class="primary-button">Salvar alterações</button>
+                        <button type="button" id="cancel-password-btn" class="secondary-button cancel-button"
+                                onclick="ocultarForms()">Cancelar</button>
+                        <button type="submit" id="save-password-btn" class="primary-button">Concluído</button>
                     </section>
                 </form>
             </article>
@@ -107,5 +185,55 @@
             <a href="/sair" class="logout-link" aria-label="Sair da conta">Sair</a>
         </section>
     </main>
+
+    <script>
+    // ── Mostrar / ocultar formulários ──────────────────────────────────────────
+    function mostrarForm(id) {
+        document.querySelectorAll('.form-section').forEach(el => el.classList.add('hidden'));
+        document.getElementById('actions').classList.add('hidden');
+        document.getElementById(id).classList.remove('hidden');
+    }
+    function ocultarForms() {
+        document.querySelectorAll('.form-section').forEach(el => el.classList.add('hidden'));
+        document.getElementById('actions').classList.remove('hidden');
+    }
+
+    // ── Foto de perfil via base64 + fetch (POST /perfil/foto) ─────────────────
+    document.getElementById('edit-photo-btn').addEventListener('click', () => {
+        document.getElementById('photo-upload').click();
+    });
+
+    document.getElementById('photo-upload').addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = async (ev) => {
+            const base64 = ev.target.result;
+            try {
+                const resp = await fetch('/perfil/foto', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fotoBase64: base64 })
+                });
+                const data = await resp.json();
+                if (data.ok) {
+                    document.getElementById('profile-image').src = base64;
+                }
+            } catch (err) {
+                console.error('Erro ao salvar foto:', err);
+            }
+        };
+        reader.readAsDataURL(file);
+    });
+
+    // ── Máscara de telefone ────────────────────────────────────────────────────
+    document.getElementById('edit-phone')?.addEventListener('input', (e) => {
+        let v = e.target.value.replace(/\D/g, '');
+        v = v.replace(/^(\d{2})(\d)/g, '($1) $2');
+        v = v.replace(/(\d)(\d{4})$/, '$1-$2');
+        e.target.value = v.substring(0, 15);
+    });
+    </script>
 </body>
 </html>

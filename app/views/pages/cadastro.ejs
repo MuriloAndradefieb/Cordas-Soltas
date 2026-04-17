@@ -3,45 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro</title>
+    <title>Cadastro - Cordas Soltas</title>
     <link rel="stylesheet" href="css/perfil.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        /* ── Avisos de erro / sucesso do servidor ─────────────────────────── */
+        .aviso-servidor {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 18px;
+            animation: slideDown 0.3s ease;
+        }
+        .aviso-servidor.erro {
+            background-color: #2a0000;
+            border: 1px solid #c0392b;
+            color: #ff6b6b;
+        }
+        .aviso-servidor.sucesso {
+            background-color: #002a0d;
+            border: 1px solid #27ae60;
+            color: #6bffaa;
+        }
+        .aviso-servidor .aviso-icon {
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+        .aviso-servidor a {
+            color: #FFD700;
+            font-weight: 700;
+            text-decoration: underline;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 <body>
-       <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
-     <div vw class="enabled">
-    <div vw-access-button class="active"></div>
-    <div vw-plugin-wrapper>
-      <div class="vw-plugin-top-wrapper"></div>
+    <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
+    <div vw class="enabled">
+        <div vw-access-button class="active"></div>
+        <div vw-plugin-wrapper>
+            <div class="vw-plugin-top-wrapper"></div>
+        </div>
     </div>
-  </div>
-  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
-  <script>
-    new window.VLibras.Widget('https://vlibras.gov.br/app');
-  </script>
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script>new window.VLibras.Widget('https://vlibras.gov.br/app');</script>
+    <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
 
-<!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
     <main class="login-container">
         <a href="/" class="primary-button back-button-position" aria-label="Voltar para a página inicial">&#8592; Voltar</a>
 
         <section class="login-card">
             <h1>Crie sua conta</h1>
-            <form id="cadastro-form">
-                
+
+            <!-- Mensagem de erro vinda do servidor (sem pop-up) -->
+            <% if (typeof erro !== 'undefined' && erro) { %>
+                <div class="aviso-servidor erro">
+                    <span class="aviso-icon">⚠️</span>
+                    <span><%= erro %></span>
+                </div>
+            <% } %>
+
+            <!-- Mensagem de sucesso vinda do servidor (sem pop-up) -->
+            <% if (typeof sucesso !== 'undefined' && sucesso) { %>
+                <div class="aviso-servidor sucesso">
+                    <span class="aviso-icon">✅</span>
+                    <span><%= sucesso %> <a href="/login">Clique aqui para entrar</a></span>
+                </div>
+            <% } %>
+
+            <!-- Formulário envia para o servidor via POST -->
+            <form id="cadastro-form" method="POST" action="/cadastro" novalidate>
+
                 <label for="username">Nome de Usuário</label>
                 <input type="text" id="username" name="username" placeholder="Nome de usuário" required>
-                <span id="username-error" class="error-message-validation"></span> <label for="email">Email</label>
+                <span id="username-error" class="error-message-validation"></span>
+
+                <label for="email">Email</label>
                 <input type="email" id="email" name="email" placeholder="Seu email" required>
-                <span id="email-error" class="error-message-validation"></span> <label for="password">Senha</label>
+                <span id="email-error" class="error-message-validation"></span>
+
+                <label for="password">Senha</label>
                 <input type="password" id="password" name="password" placeholder="Sua senha" required>
-                <span id="password-error" class="error-message-validation"></span> <p class="role-selection-title">Selecione seu tipo de conta:</p>
+                <span id="password-error" class="error-message-validation"></span>
+
+                <p class="role-selection-title">Selecione seu tipo de conta:</p>
                 <section class="role-selection">
                     <input type="radio" id="role-artista" name="role" value="Artista" required>
                     <label for="role-artista">Artista</label>
-                    
+
                     <input type="radio" id="role-visitante" name="role" value="Visitante">
                     <label for="role-visitante">Visitante</label>
                 </section>
@@ -49,20 +106,112 @@
                 <section id="artist-fields" class="hidden-fields">
                     <label for="bandName">Nome da Banda/Projeto</label>
                     <input type="text" id="bandName" name="bandName">
-                    <span id="bandName-error" class="error-message-validation"></span> <label for="musicalStyle">Estilo Musical</label>
+                    <span id="bandName-error" class="error-message-validation"></span>
+
+                    <label for="musicalStyle">Estilo Musical</label>
                     <input type="text" id="musicalStyle" name="musicalStyle" placeholder="Ex: Rock, Sertanejo, MPB">
-                    <span id="musicalStyle-error" class="error-message-validation"></span> <label for="instagram">Instagram (Opcional)</label>
+                    <span id="musicalStyle-error" class="error-message-validation"></span>
+
+                    <label for="instagram">Instagram (Opcional)</label>
                     <input type="text" id="instagram" name="instagram" placeholder="@seu_perfil">
-                    <span id="instagram-error" class="error-message-validation"></span> </section>
+                    <span id="instagram-error" class="error-message-validation"></span>
+                </section>
+
                 <button type="submit" class="primary-button full-width-button">Cadastrar</button>
             </form>
-        
-            
+
             <p class="login-link">Já tem uma conta? <a href="/login">Faça login</a></p>
         </section>
     </main>
 
-    <script src="js/cadastro.js"></script> 
-    
+    <!--
+        O JS abaixo faz apenas feedback VISUAL (marca campos em vermelho antes de enviar).
+        A validação real acontece no servidor (authController.js).
+        NÃO usa localStorage. NÃO faz event.preventDefault() no envio final.
+    -->
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const $ = id => document.getElementById(id);
+
+        const roleArtista   = $('role-artista');
+        const roleVisitante = $('role-visitante');
+        const artistFields  = $('artist-fields');
+        const form          = $('cadastro-form');
+
+        // ── Exibe / oculta campos de artista ────────────────────────────────
+        const toggleArtistFields = () => {
+            if (roleArtista && roleArtista.checked) {
+                artistFields.classList.remove('hidden-fields');
+            } else {
+                artistFields.classList.add('hidden-fields');
+            }
+        };
+
+        if (roleArtista)   roleArtista.addEventListener('change', toggleArtistFields);
+        if (roleVisitante) roleVisitante.addEventListener('change', toggleArtistFields);
+        toggleArtistFields(); // estado inicial
+
+        // ── Funções de marcação de erro ─────────────────────────────────────
+        const markError = (inputId, errSpanId, msg) => {
+            const inp  = $(inputId);
+            const span = $(errSpanId);
+            if (inp)  inp.classList.add('input-error');
+            if (span) { span.textContent = msg; span.style.display = 'block'; }
+        };
+        const clearError = (inputId, errSpanId) => {
+            const inp  = $(inputId);
+            const span = $(errSpanId);
+            if (inp)  inp.classList.remove('input-error');
+            if (span) { span.textContent = ''; span.style.display = 'none'; }
+        };
+
+        // ── Validação client-side (só evita envio óbvio) ────────────────────
+        form.addEventListener('submit', (e) => {
+            let ok = true;
+
+            clearError('username',    'username-error');
+            clearError('email',       'email-error');
+            clearError('password',    'password-error');
+            clearError('bandName',    'bandName-error');
+            clearError('musicalStyle','musicalStyle-error');
+
+            const username = $('username').value.trim();
+            const email    = $('email').value.trim();
+            const password = $('password').value;
+            const role     = document.querySelector('input[name="role"]:checked');
+
+            if (!username) {
+                markError('username', 'username-error', 'O nome de usuário é obrigatório.');
+                ok = false;
+            }
+
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                markError('email', 'email-error', 'Formato de e-mail inválido.');
+                ok = false;
+            }
+
+            if (password.length < 6) {
+                markError('password', 'password-error', 'A senha deve ter pelo menos 6 caracteres.');
+                ok = false;
+            }
+
+            if (!role) {
+                // Não tem span próprio – apenas bloqueia sem pop-up
+                ok = false;
+            }
+
+            if (roleArtista && roleArtista.checked) {
+                const banda  = $('bandName').value.trim();
+                const estilo = $('musicalStyle').value.trim();
+                if (!banda)  { markError('bandName',     'bandName-error',     'Nome da banda obrigatório.'); ok = false; }
+                if (!estilo) { markError('musicalStyle', 'musicalStyle-error', 'Estilo musical obrigatório.'); ok = false; }
+            }
+
+            // Se inválido, bloqueia o POST
+            if (!ok) e.preventDefault();
+            // Se válido, o formulário segue normalmente para o servidor
+        });
+    });
+    </script>
 </body>
 </html>

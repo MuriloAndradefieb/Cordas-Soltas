@@ -3,41 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sair da Conta</title>
+    <title>Sair da Conta - Cordas Soltas</title>
     <link rel="stylesheet" href="css/sair.css">
 </head>
 <body>
-   <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
-     <div vw class="enabled">
-    <div vw-access-button class="active"></div>
-    <div vw-plugin-wrapper>
-      <div class="vw-plugin-top-wrapper"></div>
+    <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
+    <div vw class="enabled">
+        <div vw-access-button class="active"></div>
+        <div vw-plugin-wrapper>
+            <div class="vw-plugin-top-wrapper"></div>
+        </div>
     </div>
-  </div>
-  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
-  <script>
-    new window.VLibras.Widget('https://vlibras.gov.br/app');
-  </script>
-<!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
-
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script>new window.VLibras.Widget('https://vlibras.gov.br/app');</script>
+    <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
 
     <main class="logout-container">
-        <section class="logout-card"> 
+        <section class="logout-card">
             <h1>Tem certeza de que deseja sair?</h1>
             <p>Você será desconectado da sua conta.</p>
             <article class="actions">
                 <a href="/perfil" class="secondary-button" aria-label="Cancelar e voltar ao perfil">Cancelar</a>
-                <button class="primary-button" onclick="logout()" aria-label="Confirmar e sair da conta">Sair</button>
+
+                <!-- POST para /logout — destrói a sessão no servidor -->
+                <form method="POST" action="/logout" style="display:inline; width:50%; max-width:200px;">
+                    <button type="submit" class="primary-button" style="width:100%;"
+                            aria-label="Confirmar e sair da conta">Sair</button>
+                </form>
             </article>
         </section>
     </main>
-    <script>
-        function logout() {
-            localStorage.removeItem('userProfile'); 
-            
-            alert('Você foi desconectado da sua conta. Redirecionando para a página inicial...');
-            window.location.href = '/'; 
-        }
-    </script>
 </body>
 </html>

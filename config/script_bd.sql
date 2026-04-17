@@ -55,3 +55,17 @@ Equipamentos varchar(20),
 idUsuario int not null,
 constraint fkUsuario4 foreign key(idUsuario) references Usuario(idUsuario)
 )
+
+CREATE TABLE IF NOT EXISTS usuarios (
+    id             INT AUTO_INCREMENT PRIMARY KEY,
+    username       VARCHAR(100) NOT NULL,
+    email          VARCHAR(150) NOT NULL UNIQUE,
+    senha          VARCHAR(255) NOT NULL,              -- bcrypt hash
+    role           ENUM('artista','visitante') DEFAULT 'visitante',
+    nome_banda     VARCHAR(150),
+    estilo_musical VARCHAR(100),
+    instagram      VARCHAR(100),
+    telefone       VARCHAR(20),
+    foto_perfil    MEDIUMTEXT,                         -- base64 da foto
+    criado_em      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

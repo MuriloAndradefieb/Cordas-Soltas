@@ -13,7 +13,7 @@ const PerfilController = {
                 return res.redirect('/perfil?erro=Preencha+nome+e+email');
             }
 
-            await UsuarioModel.atualizar(id, { username, email, telefone });
+            await UsuariosModel.atualizar(id, { username, email, telefone });
 
             // Atualiza a sessão
             req.session.usuario.username = username;
@@ -43,7 +43,7 @@ const PerfilController = {
             }
 
             const hash = await bcrypt.hash(novaSenha, 10);
-            await UsuarioModel.atualizarSenha(id, hash);
+            await UsuariosModel.atualizarSenha(id, hash);
 
             return res.redirect('/perfil?sucesso=Senha+alterada+com+sucesso');
 
@@ -63,7 +63,7 @@ const PerfilController = {
                 return res.redirect('/perfil?erro=Role+invalido');
             }
 
-            await UsuarioModel.atualizarRole(id, role);
+            await UsuariosModel.atualizarRole(id, role);
             req.session.usuario.role = role;
 
             return res.redirect('/perfil?sucesso=Perfil+atualizado');
@@ -84,7 +84,7 @@ const PerfilController = {
                 return res.json({ ok: false, mensagem: 'Nenhuma imagem enviada.' });
             }
 
-            await UsuarioModel.atualizarFoto(id, fotoBase64);
+            await UsuariosModel.atualizarFoto(id, fotoBase64);
             req.session.usuario.fotoPerfil = fotoBase64;
 
             return res.json({ ok: true });
