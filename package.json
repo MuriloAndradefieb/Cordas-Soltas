@@ -1,9 +1,12 @@
 {
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "dotenv": "^17.2.3",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
+    "express-session": "^1.19.0",
     "express-validator": "^7.2.1",
+    "mysql2": "^3.22.0",
     "nodemailer": "^7.0.9"
   },
   "name": "cordas-soltas",
