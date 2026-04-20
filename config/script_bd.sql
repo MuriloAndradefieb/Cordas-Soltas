@@ -1,3 +1,4 @@
+-- Active: 1776457691409@@127.0.0.1@3306@mysql
 create database cordassoltas;
 use cordassoltas;
  

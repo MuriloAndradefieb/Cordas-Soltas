@@ -2,7 +2,7 @@ const mysql = require('mysql2');
 require('dotenv').config();
 
 const pool = mysql.createPool({
-    host:            process.env.DB_HOST     || '127.0.0.1',
+    host:            process.env.DB_HOST     || 'mysql-cordasoltas-estudante-5267.d.aivencloud.com',
     port:            process.env.DB_PORT     || 3306,
     user:            process.env.DB_USER     || 'root',
     password:        process.env.DB_PASSWORD || '',
