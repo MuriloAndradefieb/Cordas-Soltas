@@ -2,12 +2,11 @@ const mysql = require('mysql2');
 require('dotenv').config();
 
 const pool = mysql.createPool({
-    host:            process.env.DB_HOST     || 'mysql-cordasoltas-estudante-5267.d.aivencloud.com',
-    port:            process.env.DB_PORT     || 3306,
-    user:            process.env.DB_USER     || 'root',
-    password:        process.env.DB_PASSWORD || '',
-    database:        process.env.DB_NAME     || 'cordassoltas',
-    waitForConnections: true,
+    host:     process.env.DB_HOST,
+    port:     process.env.DB_PORT || 19831, // Portas geralmente não são segredos, pode manter
+    user:     process.env.DB_USER,
+    password: process.env.DB_PASSWORD, // REMOVIDO: A senha real não deve ficar aqui
+    database: process.env.DB_NAME,
     connectionLimit: 10,
     queueLimit:      0
 });
