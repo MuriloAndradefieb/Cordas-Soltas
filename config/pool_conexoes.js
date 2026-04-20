@@ -3,13 +3,16 @@ require('dotenv').config();
 
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
+    port: process.env.DB_PORT || 19831,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    port: process.env.DB_PORT,
+    // ADICIONE O BLOCO ABAIXO:
     ssl: {
-        rejectUnauthorized: false // Isso resolve o erro de conexão no Render
-    }
+        rejectUnauthorized: false
+    },
+    connectionLimit: 10,
+    queueLimit: 0
 });
 
 // Testa a conexão ao iniciar
