@@ -1,5 +1,5 @@
 <!DOCTYPE html>
- <html lang="pt-br">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,24 +10,21 @@
 </head>
 <body>
     <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
-     <div vw class="enabled">
-    <div vw-access-button class="active"></div>
-    <div vw-plugin-wrapper>
-      <div class="vw-plugin-top-wrapper"></div>
+    <div vw class="enabled">
+        <div vw-access-button class="active"></div>
+        <div vw-plugin-wrapper>
+            <div class="vw-plugin-top-wrapper"></div>
+        </div>
     </div>
-  </div>
-  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
-  <script>
-    new window.VLibras.Widget('https://vlibras.gov.br/app');
-  </script>
-<!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
- 
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script>new window.VLibras.Widget('https://vlibras.gov.br/app');</script>
+    <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
 
-      <%- include("../partials/header"); %>
+    <%- include("../partials/header"); %>
 
     <main class="luthbox-main-content">
         <section class="luthbox-container">
-            
+
             <header class="luthbox-header">
                 <p class="luthbox-tagline">tenha seguro no seu show</p>
                 <h1>Luthbox</h1>
@@ -46,26 +43,30 @@
             </figure>
 
             <section class="luthbox-buy-section">
-                <h2>Garanta seu seguro no show :</h2>
-                <p>Com apenas um valor adicional, você garante a tranquilidade do seu show: se o seu instrumento acontecer, terá um instrumento à sua disposição.</p>
+                <h2>Garanta seu seguro no show:</h2>
+                <p>Com apenas um valor adicional, você garante a tranquilidade do seu show: se algo acontecer com seu instrumento, terá um substituto à sua disposição.</p>
                 <a href="#" id="buy-luthbox-btn" class="button-comprar">Comprar Seguro</a>
-                
                 <section id="error-message" class="error-message"></section>
             </section>
 
         </section>
     </main>
 
-   <footer class="luthbox-footer">
+    <footer class="luthbox-footer">
         <p>Barueri, Jandira - SÃO PAULO - SP - brasil</p>
         <p>cordassoltascontatos@gmail.com | +55 (11) 1234-5678</p>
         <p>Todos os direitos reservados 2025.</p>
     </footer>
 
-      <%- include("../partials/menu"); %>
+    <%- include("../partials/menu"); %>
+
+    <!-- Dados da sessão injetados para o JS do cliente -->
+    <script>
+        const usuarioLogado = <%- usuario ? 'true' : 'false' %>;
+        const usuarioRole   = '<%- usuario ? usuario.role : "" %>';
+    </script>
 
     <script src="js/script.js"></script>
-    <script src="js/luthbox.js"></script> 
-    <script src="js/global.js"></script>
+    <script src="js/luthbox.js"></script>
 </body>
 </html>

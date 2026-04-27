@@ -10,24 +10,21 @@
 </head>
 <body>
     <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
-     <div vw class="enabled">
-    <div vw-access-button class="active"></div>
-    <div vw-plugin-wrapper>
-      <div class="vw-plugin-top-wrapper"></div>
+    <div vw class="enabled">
+        <div vw-access-button class="active"></div>
+        <div vw-plugin-wrapper>
+            <div class="vw-plugin-top-wrapper"></div>
+        </div>
     </div>
-  </div>
-  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
-  <script>
-    new window.VLibras.Widget('https://vlibras.gov.br/app');
-  </script>
-<!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
- 
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script>new window.VLibras.Widget('https://vlibras.gov.br/app');</script>
+    <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
 
-      <%- include("../partials/header"); %>
+    <%- include("../partials/header"); %>
 
     <main class="sobre-main-content">
         <section class="sobre-container">
-            
+
             <header class="sobre-header">
                 <p>tudo sobre</p>
                 <h1>cordas soltas</h1>
@@ -39,7 +36,7 @@
 
             <article class="sobre-text-block">
                 <h2>O Elo Entre a Música e Você</h2>
-                <p>A <b>Cordas Soltas</b> é uma empresa dedicada à sectionulgação e valorização de eventos musicais de sectionersos estilos, atuando como um elo fundamental entre artistas, produtores e o público.</p>
+                <p>A <b>Cordas Soltas</b> é uma empresa dedicada à divulgação e valorização de eventos musicais de diversos estilos, atuando como um elo fundamental entre artistas, produtores e o público.</p>
                 <p>Nosso trabalho vai muito além da simples promoção: acreditamos que a música é uma das formas mais ricas de expressão cultural, capaz de aproximar pessoas, despertar emoções e criar memórias inesquecíveis.</p>
             </article>
 
@@ -49,8 +46,8 @@
 
             <article class="sobre-text-block">
                 <h2>Propósito: Fortalecer a Cena Musical</h2>
-                <p>Nosso propósito é fortalecer a cena musical, ampliando o acesso do público a experiências culturais únicas e incentivando a circulação da arte em todas as suas formas. Acreditamos no poder da música de unir pessoas, transformar realidades e criar memórias.</p>
-                <p>Por isso, investimos em estratégias criativas de comunicação e visibilidade, garantindo que cada show e artista alcancem o público certo no momento certo. Nosso diferencial está no apoio a bandas e artistas independentes. Valorizamos o talento, a autenticidade e a força da música autoral, oferecendo a esses profissionais um espaço digno e profissional para iniciar suas carreiras.</p>
+                <p>Nosso propósito é fortalecer a cena musical, ampliando o acesso do público a experiências culturais únicas e incentivando a circulação da arte em todas as suas formas.</p>
+                <p>Por isso, investimos em estratégias criativas de comunicação e visibilidade, garantindo que cada show e artista alcancem o público certo no momento certo. Nosso diferencial está no apoio a bandas e artistas independentes.</p>
             </article>
 
             <figure class="sobre-image-wrapper">
@@ -59,13 +56,13 @@
 
             <article class="sobre-text-block">
                 <h2>Crescimento em Rede</h2>
-                <p>A Cordas Soltas também busca criar pontes entre produtores culturais, espaços de eventos, patrocinadores e a comunidade. Acreditamos que a música cresce em rede, onde todos se beneficiam:</p>
+                <p>A Cordas Soltas também busca criar pontes entre produtores culturais, espaços de eventos, patrocinadores e a comunidade. Acreditamos que a música cresce em rede:</p>
                 <ul>
                     <li>O artista, que tem sua arte reconhecida;</li>
                     <li>O público, que vivencia espetáculos de qualidade;</li>
                     <li>E os parceiros, que fortalecem sua imagem ao se associar à cultura.</li>
                 </ul>
-                <p>Mais do que sectionulgar shows, <b>queremos fazer parte de histórias.</b></p>
+                <p>Mais do que divulgar shows, <b>queremos fazer parte de histórias.</b></p>
             </article>
 
         </section>
@@ -77,21 +74,8 @@
         <p>Todos os direitos reservados 2025.</p>
     </footer>
 
-      <%- include("../partials/menu"); %>
+    <%- include("../partials/menu"); %>
 
     <script src="js/script.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const accountLink = document.getElementById('account-link');
-            const userProfile = localStorage.getItem('userProfile');
-            if (userProfile) {
-                accountLink.href = '/perfil';
-            } else {
-                accountLink.href = '/login';
-            }
-        });
-        
-        document.querySelector('.sidebar-links a[href="/sobre"]').classList.add('active');
-    </script>
 </body>
-<html>
+</html>

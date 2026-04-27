@@ -4,31 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalhes do Show</title>
-    <link rel="stylesheet" href="css/detalhes.css"> 
+    <link rel="stylesheet" href="css/detalhes.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-   <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
-     <div vw class="enabled">
-    <div vw-access-button class="active"></div>
-    <div vw-plugin-wrapper>
-      <div class="vw-plugin-top-wrapper"></div>
+    <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
+    <div vw class="enabled">
+        <div vw-access-button class="active"></div>
+        <div vw-plugin-wrapper>
+            <div class="vw-plugin-top-wrapper"></div>
+        </div>
     </div>
-  </div>
-  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
-  <script>
-    new window.VLibras.Widget('https://vlibras.gov.br/app');
-  </script>
-<!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
-
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script>new window.VLibras.Widget('https://vlibras.gov.br/app');</script>
+    <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
 
     <header class="header">
         <a href="/" class="logo-link">
             <img src="img/LOGO CORDAS SOLTAS SITE.png" alt="Logo Cordas Soltas" class="logo">
         </a>
         <nav class="nav-icons">
-            <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu">&#9776;</button>
-            <a href="/perfil" id="account-link" class="account-icon" aria-label="Conta">&#128100;</a>
+            <button class="hamburger-button" aria-label="Abrir menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+            <a href="<%- usuario ? '/perfil' : '/login' %>" class="account-icon" aria-label="Conta">&#128100;</a>
             <a href="#" class="cart-icon" aria-label="Carrinho">&#128722;</a>
         </nav>
     </header>
@@ -40,11 +41,9 @@
 
         <section class="details-and-back-container">
             <a href="/" class="back-link">&larr; Voltar para Eventos</a>
-            
             <section id="show-details-container" class="show-details-container">
                 <p>Carregando detalhes do show...</p>
             </section>
-
         </section>
 
         <aside class="banner-side right">
@@ -52,165 +51,192 @@
         </aside>
     </main>
 
-    <section id="menu-overlay" class="menu-overlay"></section>
-     <aside id="sidebar-menu" class="sidebar">
-        <button id="close-menu-btn" class="close-menu-btn" aria-label="Fechar menu">&times;</button>
-        <ul class="sidebar-links">
-            <li><a href="/">Início</a></li>
-            <li><a href="/sobre">Sobre</a></li>
-            <li><a href="/seletivas">Concurso</a></li>
-            <li><a href="/luthbox">Luthbox</a></li>
-            <li><a href="/mensalidade">Mensalidade</a></li>
-        </ul>
-    </aside>
-    <section id="menu-overlay" class="menu-overlay"></section>
+    <%- include("../partials/menu"); %>
 
-    <script src="/shows"></script> 
+    <!-- Dado de sessão injetado pelo servidor -->
+    <script>
+        const usuarioLogado = JSON.parse('<%- JSON.stringify(usuario ? true : false) %>');
+    </script>
+
+    <!-- Array de shows -->
+    <script src="js/shows.js"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const container = document.getElementById('show-details-container');
-            const params = new URLSearchParams(window.location.search);
-            const showId = params.get('id');
+    document.addEventListener('DOMContentLoaded', () => {
 
-            // Procura o show no array 'shows'
-            const foundShow = shows.find(show => show.id === showId);
+        // ── Menu lateral ──────────────────────────────────────────────────────
+        const hamburger   = document.querySelector('.hamburger-button');
+        const sidebar     = document.getElementById('sidebar-menu');
+        const overlay     = document.getElementById('menu-overlay');
+        const closeBtn    = document.getElementById('close-menu-btn');
 
-            if (foundShow) {
-                // SALVA O SHOW ENCONTRADO NO LOCALSTORAGE
-                localStorage.setItem('selectedShow', JSON.stringify(foundShow));
+        function toggleMenu() {
+            if (!sidebar || !overlay) return;
+            const open = sidebar.classList.toggle('open');
+            overlay.classList.toggle('open');
+            document.body.style.overflow = open ? 'hidden' : '';
+        }
 
-                // Formata os preços para exibição
-                const formatCurrency = (value) => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        if (hamburger) hamburger.addEventListener('click', toggleMenu);
+        if (closeBtn)  closeBtn.addEventListener('click', toggleMenu);
+        if (overlay)   overlay.addEventListener('click', toggleMenu);
+        document.querySelectorAll('.sidebar-links a').forEach(a =>
+            a.addEventListener('click', () => sidebar?.classList.contains('open') && toggleMenu())
+        );
 
-                // Monta o HTML dinâmico do show
-                container.innerHTML = `
-                    <section class="show-image-wrapper">
-                        <img src="${foundShow.image}" alt="${foundShow.title}" class="show-image">
-                    </section>
-                    <section class="show-info-wrapper">
-                        <section class="show-info">
-                            <h1>${foundShow.title}</h1>
-                            <p>📅 ${foundShow.date}</p>
-                            <p>📍 ${foundShow.location}</p>
+        // ── Busca o show pelo id da URL ───────────────────────────────────────
+        const params    = new URLSearchParams(window.location.search);
+        const showId    = params.get('id');
+        const container = document.getElementById('show-details-container');
+        const show      = shows.find(s => s.id === showId);
+
+        if (!show) {
+            container.innerHTML = '<h2>Show não encontrado</h2><p>Volte para a página inicial.</p>';
+            return;
+        }
+
+        // ── Formata moeda ─────────────────────────────────────────────────────
+        const fmt = v => parseFloat(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+        // ── Renderiza HTML do show ────────────────────────────────────────────
+        container.innerHTML = `
+            <section class="show-image-wrapper">
+                <img src="${show.image}" alt="${show.title}" class="show-image">
+            </section>
+            <section class="show-info-wrapper">
+                <section class="show-info">
+                    <h1>${show.title}</h1>
+                    <p>📅 ${show.date}</p>
+                    <p>📍 ${show.location}</p>
+                </section>
+
+                <section class="purchase-section">
+
+                    <section class="ticket-option">
+                        <section class="ticket-name">
+                            <h3>Inteira</h3>
+                            <span class="ticket-count" id="count-full"></span>
+                            <span class="ticket-price">${fmt(show.priceFull)}</span>
                         </section>
-                        <section class="purchase-section">
-                            <section class="ticket-option">
-                                <section class="ticket-name">
-                                    <h3>Inteira</h3>
-                                    <span class="ticket-count" data-ticket-type="full"></span>
-                                    <span class="ticket-price">${formatCurrency(foundShow.priceFull)}</span>
-                                </section>
-                                <section class="quantity-control">
-                                    <button class="quantity-btn minus" data-type="full">-</button>
-                                    <input type="number" id="qty-full" value="0" min="0" max="10" readonly>
-                                    <button class="quantity-btn plus" data-type="full">+</button>
-                                </section>
-                            </section>
-                            <section class="ticket-option">
-                                <section class="ticket-name">
-                                    <h3>Meia-Entrada</h3>
-                                    <span class="ticket-count" data-ticket-type="half"></span>
-                                    <span class="ticket-price">${formatCurrency(foundShow.priceHalf)}</span>
-                                </section>
-                                <section class="quantity-control">
-                                    <button class="quantity-btn minus" data-type="half">-</button>
-                                    <input type="number" id="qty-half" value="0" min="0" max="10" readonly>
-                                    <button class="quantity-btn plus" data-type="half">+</button>
-                                </section>
-                            </section>
-                            <section class="total-summary">
-                                <h3>Total:</h3>
-                                <span id="total-value" class="total-price">R$ 0,00</span>
-                            </section>
-                            <button id="buy-button" class="buy-button">
-                                Comprar Ingressos</button>
-                            <section id="error-message" class="error-message"></section> </section>
+                        <section class="quantity-control">
+                            <button class="quantity-btn minus" data-type="full">-</button>
+                            <input type="number" id="qty-full" value="0" min="0" max="10" readonly>
+                            <button class="quantity-btn plus"  data-type="full">+</button>
+                        </section>
                     </section>
-                `;
 
-                //CÓDIGO PARA GERENCIAR A CONTAGEM E MOSTRAR/OCULTAR NO NOME DO INGRESSO
-                const updateTicketCountDisplay = (type, qty) => {
-                    const countSpan = document.querySelector(`.ticket-count[data-ticket-type="${type}"]`);
-                    const nameH3 = countSpan.previousElementSibling;
-                    
-                    if (qty > 0) {
-                        const ticketLabel = nameH3.textContent.trim().toLowerCase();
-                        countSpan.textContent = `${qty}x ${ticketLabel}`;
-                        countSpan.classList.add('visible');
-                    } else {
-                        countSpan.textContent = '';
-                        countSpan.classList.remove('visible');
-                    }
-                };
+                    <section class="ticket-option">
+                        <section class="ticket-name">
+                            <h3>Meia-Entrada</h3>
+                            <span class="ticket-count" id="count-half"></span>
+                            <span class="ticket-price">${fmt(show.priceHalf)}</span>
+                        </section>
+                        <section class="quantity-control">
+                            <button class="quantity-btn minus" data-type="half">-</button>
+                            <input type="number" id="qty-half" value="0" min="0" max="10" readonly>
+                            <button class="quantity-btn plus"  data-type="half">+</button>
+                        </section>
+                    </section>
 
-                // Adiciona listeners para atualizar a contagem no display do nome do ingresso
-                document.querySelectorAll('.quantity-btn').forEach(button => {
-                    button.addEventListener('click', (event) => {
-                        const type = event.target.dataset.type;
-                        const input = document.getElementById(`qty-${type}`);
-                        
-                        // O script `detalhes.js` cuidará da atualização do valor do input,
-                        setTimeout(() => {
-                            const newQty = parseInt(input.value);
-                            updateTicketCountDisplay(type, newQty);
-                        }, 50); // Pequeno atraso para garantir que 'detalhes.js' já atualizou o valor
-                    });
-                });
-                
-            } else {
-                container.innerHTML = '<h2>Show não encontrado</h2><p>O evento que você está procurando não foi localizado. Por favor, volte para a página inicial.</p>';
-            }
+                    <section class="total-summary">
+                        <h3>Total:</h3>
+                        <span id="total-value" class="total-price">R$ 0,00</span>
+                    </section>
+
+                    <button id="buy-button" class="buy-button">Comprar Ingressos</button>
+                    <section id="error-message" class="error-message"></section>
+
+                </section>
+            </section>
+        `;
+
+        // ── Estado dos ingressos ──────────────────────────────────────────────
+        const state = { full: 0, half: 0 };
+        let errorTimeout;
+
+        const totalEl    = document.getElementById('total-value');
+        const buyBtn     = document.getElementById('buy-button');
+        const errEl      = document.getElementById('error-message');
+        const countFull  = document.getElementById('count-full');
+        const countHalf  = document.getElementById('count-half');
+        const inputFull  = document.getElementById('qty-full');
+        const inputHalf  = document.getElementById('qty-half');
+
+        function calcTotal() {
+            return (state.full * show.priceFull) + (state.half * show.priceHalf);
+        }
+
+        function updateUI() {
+            const total = calcTotal();
+            totalEl.textContent = fmt(total);
+
+            // Contador visível no nome do ingresso
+            countFull.textContent = state.full > 0 ? `${state.full}x` : '';
+            countFull.classList.toggle('visible', state.full > 0);
+            countHalf.textContent = state.half > 0 ? `${state.half}x` : '';
+            countHalf.classList.toggle('visible', state.half > 0);
+
+            // Se o usuário selecionou algo, esconde o erro
+            if (total > 0) hideError();
+        }
+
+        function showError(msg) {
+            errEl.textContent = msg;
+            errEl.classList.add('visible');
+            buyBtn.classList.add('error-border');
+            clearTimeout(errorTimeout);
+            errorTimeout = setTimeout(hideError, 5000);
+        }
+
+        function hideError() {
+            errEl.classList.remove('visible');
+            buyBtn.classList.remove('error-border');
+        }
+
+        // ── Botões + / - ──────────────────────────────────────────────────────
+        document.querySelectorAll('.quantity-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const type  = btn.dataset.type;           // 'full' ou 'half'
+                const input = type === 'full' ? inputFull : inputHalf;
+                const max   = 10;
+                const delta = btn.classList.contains('plus') ? 1 : -1;
+
+                state[type] = Math.max(0, Math.min(max, state[type] + delta));
+                input.value = state[type];
+                updateUI();
+            });
         });
-    </script>
-    
-    <script src="js/shows.js"></script> 
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const container = document.getElementById('show-details-container');
-            const params = new URLSearchParams(window.location.search);
-            const showId = params.get('id');
-
-            // Procura o show no array 'shows' 
-            const foundShow = shows.find(show => show.id === showId);
-
-            if (foundShow) {
-        
-            } else {
-                container.innerHTML = '<h2>Show não encontrado</h2><p>O evento que você está procurando não foi localizado. Por favor, volte para a página inicial.</p>';
+        // ── Botão Comprar ─────────────────────────────────────────────────────
+        buyBtn.addEventListener('click', () => {
+            if (calcTotal() === 0) {
+                showError('Selecione pelo menos um ingresso para continuar.');
+                return;
             }
-        });
-    </script>
-    
-    <script src="js/detalhes.js"></script> 
-    
-    <script>
-          document.addEventListener('DOMContentLoaded', () => {
-            const accountLink = document.getElementById('account-link');
-            const sidebarAccountLink = document.getElementById('sidebar-account-link');
-            
-            const userProfile = localStorage.getItem('userProfile');
 
-            if (userProfile) {
-                if (accountLink) {
-                    accountLink.href = '/perfil';
-                }
-                if (sidebarAccountLink) {
-                    sidebarAccountLink.href = '/perfil';
-                    sidebarAccountLink.textContent = 'Meu Perfil'; 
-                }
-            } else {
-                if (accountLink) {
-                    accountLink.href = '/login';
-                }
-                if (sidebarAccountLink) {
-                    sidebarAccountLink.href = '/login';
-                    sidebarAccountLink.textContent = 'Conta (Login)';
-                }
+            // Verifica login via sessão do servidor (não localStorage)
+            if (!usuarioLogado) {
+                alert('Você precisa estar logado para comprar ingressos.');
+                window.location.href = '/login';
+                return;
             }
+
+            // Salva pedido no localStorage só para a página de pagamento ler
+            const order = {
+                showId:    show.id,
+                title:     show.title,
+                tickets:   { full: state.full, half: state.half },
+                total:     calcTotal(),
+                orderDate: new Date().toISOString()
+            };
+            localStorage.setItem('currentOrder', JSON.stringify(order));
+            window.location.href = '/pagamento';
         });
+
+        updateUI(); // estado inicial
+    });
     </script>
 
+    <script src="js/script.js"></script>
 </body>
 </html>

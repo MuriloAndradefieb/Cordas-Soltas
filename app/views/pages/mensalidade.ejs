@@ -5,35 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mensalidade - Cordas Soltas</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css"> <link rel="stylesheet" href="css/mensalidade.css">
-    </head>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/mensalidade.css">
+</head>
 <body>
-       <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
-     <div vw class="enabled">
-    <div vw-access-button class="active"></div>
-    <div vw-plugin-wrapper>
-      <div class="vw-plugin-top-wrapper"></div>
+    <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
+    <div vw class="enabled">
+        <div vw-access-button class="active"></div>
+        <div vw-plugin-wrapper>
+            <div class="vw-plugin-top-wrapper"></div>
+        </div>
     </div>
-  </div>
-  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
-  <script>
-    new window.VLibras.Widget('https://vlibras.gov.br/app');
-  </script>
-<!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script>new window.VLibras.Widget('https://vlibras.gov.br/app');</script>
+    <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
 
-
-      <%- include("../partials/header"); %>
+    <%- include("../partials/header"); %>
 
     <main class="mensalidade-main-content">
         <section class="mensalidade-container">
-            
+
             <header class="mensalidade-header">
                 <p class="subtitle">faça parte do nosso projeto assinando</p>
                 <h1 class="title">Mensalidade</h1>
             </header>
 
             <figure class="hero-image-container mensalidade-image-wrapper">
-                <img src="img/genehoglan.jpg" alt="Baterista no palco com luzes. Imagem representativa de música e performance." class="hero-image">
+                <img src="img/genehoglan.jpg" alt="Baterista no palco com luzes." class="hero-image">
             </figure>
 
             <article class="description-box mensalidade-text-block">
@@ -46,19 +44,18 @@
             <section class="pricing-card-section">
                 <section class="pricing-card">
                     <p class="price">R$ 210,99</p>
-
                     <ul class="features-list">
                         <li>Acesso aos Festivais</li>
                         <li>Contrato de um ano conosco</li>
                         <li>Divulgaremos Suas Músicas e Shows</li>
                         <li>Sem concurso!</li>
                     </ul>
-
                     <a href="/pagamento-mensalidade">
                         <button class="subscribe-button button-assinatura">Assinar</button>
                     </a>
                 </section>
             </section>
+
         </section>
     </main>
 
@@ -68,19 +65,8 @@
         <p>Todos os direitos reservados 2025.</p>
     </footer>
 
-      <%- include("../partials/menu"); %>
+    <%- include("../partials/menu"); %>
 
     <script src="js/script.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const accountLink = document.getElementById('account-link');
-            const userProfile = localStorage.getItem('userProfile');
-            if (userProfile) {
-                accountLink.href = '/perfil';
-            } else {
-                accountLink.href = '/login';
-            }
-        });
-    </script>
 </body>
 </html>

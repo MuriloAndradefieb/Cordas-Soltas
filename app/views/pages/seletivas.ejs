@@ -10,31 +10,28 @@
 </head>
 <body>
     <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
-     <div vw class="enabled">
-    <div vw-access-button class="active"></div>
-    <div vw-plugin-wrapper>
-      <div class="vw-plugin-top-wrapper"></div>
+    <div vw class="enabled">
+        <div vw-access-button class="active"></div>
+        <div vw-plugin-wrapper>
+            <div class="vw-plugin-top-wrapper"></div>
+        </div>
     </div>
-  </div>
-  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
-  <script>
-    new window.VLibras.Widget('https://vlibras.gov.br/app');
-  </script>
-<!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
- 
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script>new window.VLibras.Widget('https://vlibras.gov.br/app');</script>
+    <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
 
-      <%- include("../partials/header"); %>
+    <%- include("../partials/header"); %>
 
     <main class="seletivas-main-content">
         <section class="seletivas-container">
-            
+
             <header class="seletivas-header">
                 <p>tudo sobre nossos</p>
                 <h1>concursos</h1>
             </header>
 
             <figure class="seletivas-image-wrapper">
-                <img src="img/Death_mexico89.jpg" alt="Banda tocando no palco em um show" width="1050px" wi>
+                <img src="img/Death_mexico89.jpg" alt="Banda tocando no palco em um show">
             </figure>
 
             <article class="seletivas-text-block">
@@ -49,11 +46,11 @@
             <section class="seletivas-signup-section">
                 <h2>Inscreva-se</h2>
                 <h3>Atenção! Pela Primeira vez!</h3>
-                <p>As bandas que se inscreverem receberão as informações sobre as próximas etapas por e-mail. Fiquem atentos! Em breve, mais novidades.</p>
+                <p>As bandas que se inscreverem receberão as informações sobre as próximas etapas por e-mail. Fiquem atentos!</p>
                 <a href="https://docs.google.com/forms/d/e/1FAIpQLSfoBeMMyBPdcFzBmCaBOUrv9GFXvmeM1A7UIpomeUQ23wf-lQ/viewform?usp=dialog" target="_blank" rel="noopener noreferrer" class="form-link">
-                    <img src="img/formulario.png" alt="Imagem de um formulário de inscrição do Concurso Cordas Soltas" height="190px">
+                    <img src="img/formulario.png" alt="Formulário de inscrição do Concurso Cordas Soltas" height="190px">
                 </a>
-                <p class="rules-prompt">leia atenciosamente o regulamento abaixo antes de preencher o formulário, por gentileza.</p>
+                <p class="rules-prompt">Leia atenciosamente o regulamento abaixo antes de preencher o formulário.</p>
                 <a href="/regulamento" class="button-regulamento">LER REGULAMENTO</a>
             </section>
 
@@ -66,19 +63,8 @@
         <p>Todos os direitos reservados 2025.</p>
     </footer>
 
-      <%- include("../partials/menu"); %>
+    <%- include("../partials/menu"); %>
 
     <script src="js/script.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const accountLink = document.getElementById('account-link');
-            const userProfile = localStorage.getItem('userProfile');
-            if (userProfile) {
-                accountLink.href = '/perfil';
-            } else {
-                accountLink.href = '/login';
-            }
-        });
-    </script>
 </body>
 </html>
