@@ -6,6 +6,49 @@
     <title>Detalhes do Show</title>
     <link rel="stylesheet" href="css/detalhes.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* ── Avisos de validação ─────────────────────────────────────────── */
+        .aviso-validacao {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-top: 14px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-8px);
+            transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+        }
+        .aviso-validacao.visivel {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .aviso-validacao.erro {
+            background-color: #2a0000;
+            border: 1px solid #c0392b;
+            color: #ff6b6b;
+        }
+        .aviso-validacao.aviso {
+            background-color: #1a1500;
+            border: 1px solid #b8860b;
+            color: #ffd700;
+        }
+        .aviso-validacao .aviso-icon {
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+        .aviso-validacao a {
+            color: #FFD700;
+            font-weight: 700;
+            text-decoration: underline;
+        }
+        .aviso-validacao a:hover { color: #fff; }
+    </style>
 </head>
 <body>
     <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
@@ -53,22 +96,19 @@
 
     <%- include("../partials/menu"); %>
 
-    <!-- Dado de sessão injetado pelo servidor -->
-    <script>
-        const usuarioLogado = JSON.parse('<%- JSON.stringify(usuario ? true : false) %>');
-    </script>
+    <!-- Sessão injetada pelo servidor -->
+    <script>const usuarioLogado = <%- usuario ? 'true' : 'false' %>;</script>
 
-    <!-- Array de shows -->
     <script src="js/shows.js"></script>
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
 
         // ── Menu lateral ──────────────────────────────────────────────────────
-        const hamburger   = document.querySelector('.hamburger-button');
-        const sidebar     = document.getElementById('sidebar-menu');
-        const overlay     = document.getElementById('menu-overlay');
-        const closeBtn    = document.getElementById('close-menu-btn');
+        const hamburger = document.querySelector('.hamburger-button');
+        const sidebar   = document.getElementById('sidebar-menu');
+        const overlay   = document.getElementById('menu-overlay');
+        const closeBtn  = document.getElementById('close-menu-btn');
 
         function toggleMenu() {
             if (!sidebar || !overlay) return;
@@ -76,7 +116,6 @@
             overlay.classList.toggle('open');
             document.body.style.overflow = open ? 'hidden' : '';
         }
-
         if (hamburger) hamburger.addEventListener('click', toggleMenu);
         if (closeBtn)  closeBtn.addEventListener('click', toggleMenu);
         if (overlay)   overlay.addEventListener('click', toggleMenu);
@@ -84,7 +123,7 @@
             a.addEventListener('click', () => sidebar?.classList.contains('open') && toggleMenu())
         );
 
-        // ── Busca o show pelo id da URL ───────────────────────────────────────
+        // ── Busca show pelo id da URL ─────────────────────────────────────────
         const params    = new URLSearchParams(window.location.search);
         const showId    = params.get('id');
         const container = document.getElementById('show-details-container');
@@ -98,11 +137,12 @@
         // ── Formata moeda ─────────────────────────────────────────────────────
         const fmt = v => parseFloat(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-        // ── Renderiza HTML do show ────────────────────────────────────────────
+        // ── Renderiza HTML do show + área de avisos CSS ───────────────────────
         container.innerHTML = `
             <section class="show-image-wrapper">
                 <img src="${show.image}" alt="${show.title}" class="show-image">
             </section>
+
             <section class="show-info-wrapper">
                 <section class="show-info">
                     <h1>${show.title}</h1>
@@ -144,64 +184,71 @@
                     </section>
 
                     <button id="buy-button" class="buy-button">Comprar Ingressos</button>
-                    <section id="error-message" class="error-message"></section>
+
+                    <!-- Aviso: nenhum ingresso selecionado -->
+                    <div id="aviso-quantidade" class="aviso-validacao erro" role="alert">
+                        <span class="aviso-icon">⚠️</span>
+                        <span>Selecione pelo menos um ingresso para continuar.</span>
+                    </div>
+
+                    <!-- Aviso: usuário não está logado -->
+                    <div id="aviso-login" class="aviso-validacao aviso" role="alert">
+                        <span class="aviso-icon">🔒</span>
+                        <span>Você precisa estar <strong>logado</strong> para comprar ingressos.
+                            <a href="/login">Fazer login</a> ou <a href="/cadastro">criar conta</a>.
+                        </span>
+                    </div>
 
                 </section>
             </section>
         `;
 
-        // ── Estado dos ingressos ──────────────────────────────────────────────
-        const state = { full: 0, half: 0 };
-        let errorTimeout;
-
+        // ── Referências aos elementos criados ─────────────────────────────────
+        const state      = { full: 0, half: 0 };
         const totalEl    = document.getElementById('total-value');
         const buyBtn     = document.getElementById('buy-button');
-        const errEl      = document.getElementById('error-message');
-        const countFull  = document.getElementById('count-full');
-        const countHalf  = document.getElementById('count-half');
         const inputFull  = document.getElementById('qty-full');
         const inputHalf  = document.getElementById('qty-half');
+        const countFull  = document.getElementById('count-full');
+        const countHalf  = document.getElementById('count-half');
+        const avisoQtd   = document.getElementById('aviso-quantidade');
+        const avisoLogin = document.getElementById('aviso-login');
 
-        function calcTotal() {
-            return (state.full * show.priceFull) + (state.half * show.priceHalf);
+        let avisoTimeout;
+
+        // ── Funções de aviso CSS ──────────────────────────────────────────────
+        function mostrarAviso(el) {
+            ocultarTodosAvisos();
+            el.classList.add('visivel');
+            clearTimeout(avisoTimeout);
+            avisoTimeout = setTimeout(() => el.classList.remove('visivel'), 6000);
         }
 
+        function ocultarTodosAvisos() {
+            [avisoQtd, avisoLogin].forEach(el => el.classList.remove('visivel'));
+        }
+
+        // ── Atualiza UI após mudar quantidade ────────────────────────────────
         function updateUI() {
-            const total = calcTotal();
+            const total = (state.full * show.priceFull) + (state.half * show.priceHalf);
             totalEl.textContent = fmt(total);
 
-            // Contador visível no nome do ingresso
             countFull.textContent = state.full > 0 ? `${state.full}x` : '';
             countFull.classList.toggle('visible', state.full > 0);
             countHalf.textContent = state.half > 0 ? `${state.half}x` : '';
             countHalf.classList.toggle('visible', state.half > 0);
 
-            // Se o usuário selecionou algo, esconde o erro
-            if (total > 0) hideError();
-        }
-
-        function showError(msg) {
-            errEl.textContent = msg;
-            errEl.classList.add('visible');
-            buyBtn.classList.add('error-border');
-            clearTimeout(errorTimeout);
-            errorTimeout = setTimeout(hideError, 5000);
-        }
-
-        function hideError() {
-            errEl.classList.remove('visible');
-            buyBtn.classList.remove('error-border');
+            if (total > 0) ocultarTodosAvisos();
         }
 
         // ── Botões + / - ──────────────────────────────────────────────────────
         document.querySelectorAll('.quantity-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                const type  = btn.dataset.type;           // 'full' ou 'half'
-                const input = type === 'full' ? inputFull : inputHalf;
-                const max   = 10;
+                const type  = btn.dataset.type;
                 const delta = btn.classList.contains('plus') ? 1 : -1;
+                const input = type === 'full' ? inputFull : inputHalf;
 
-                state[type] = Math.max(0, Math.min(max, state[type] + delta));
+                state[type] = Math.max(0, Math.min(10, state[type] + delta));
                 input.value = state[type];
                 updateUI();
             });
@@ -209,31 +256,32 @@
 
         // ── Botão Comprar ─────────────────────────────────────────────────────
         buyBtn.addEventListener('click', () => {
-            if (calcTotal() === 0) {
-                showError('Selecione pelo menos um ingresso para continuar.');
+            const total = (state.full * show.priceFull) + (state.half * show.priceHalf);
+
+            // Validação 1: nenhum ingresso selecionado
+            if (total === 0) {
+                mostrarAviso(avisoQtd);
                 return;
             }
 
-            // Verifica login via sessão do servidor (não localStorage)
+            // Validação 2: não está logado
             if (!usuarioLogado) {
-                alert('Você precisa estar logado para comprar ingressos.');
-                window.location.href = '/login';
+                mostrarAviso(avisoLogin);
                 return;
             }
 
-            // Salva pedido no localStorage só para a página de pagamento ler
-            const order = {
+            // Tudo ok → salva pedido e vai para pagamento
+            localStorage.setItem('currentOrder', JSON.stringify({
                 showId:    show.id,
                 title:     show.title,
                 tickets:   { full: state.full, half: state.half },
-                total:     calcTotal(),
+                total,
                 orderDate: new Date().toISOString()
-            };
-            localStorage.setItem('currentOrder', JSON.stringify(order));
+            }));
             window.location.href = '/pagamento';
         });
 
-        updateUI(); // estado inicial
+        updateUI();
     });
     </script>
 
