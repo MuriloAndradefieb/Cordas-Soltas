@@ -1,0 +1,141 @@
+/* ================================================================
+   header-nav.css  –  Header com navegação desktop (sem hamburguer)
+   Baseado no protótipo: fundo escuro, borda dourada topo/base,
+   links brancos em maiúsculo, indicador amarelo no link ativo.
+   ================================================================ */
+
+/* ── Reset de conflitos com style.css ─────────────────────────── */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2.5rem;
+    height: 80px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    background-color: #1e1e1e;
+
+    /* Barra dourada no topo e na base, igual ao protótipo */
+    border-top: 3px solid #F5A623;
+   
+}
+
+/* ── Logo ─────────────────────────────────────────────────────── */
+.logo-link {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.logo {
+    height: 52px;
+    width: auto;
+}
+
+/* ── Navegação central ────────────────────────────────────────── */
+.header-nav {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+}
+
+.nav-link {
+    position: relative;
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #e8e8e8;
+    text-decoration: none;
+    padding-bottom: 4px;
+    transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+    color: #F5A623;
+}
+
+/* Indicador amarelo abaixo do link ativo — igual ao protótipo */
+.nav-link.active {
+    color: #F5A623;
+}
+
+.nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #F5A623;
+    border-radius: 2px;
+}
+
+/* ── Ícones da direita ────────────────────────────────────────── */
+.nav-icons {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-shrink: 0;
+}
+
+.account-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 36px;
+    height: 36px;
+    background-color: #fff;
+    color: #1e1e1e;
+    border-radius: 50%;
+    font-size: 1.1rem;
+    text-decoration: none;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.account-icon:hover {
+    background-color: #F5A623;
+    transform: scale(1.08);
+}
+
+.cart-icon {
+    font-size: 1.5rem;
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.2s ease, transform 0.2s ease;
+    line-height: 1;
+}
+
+.cart-icon:hover {
+    color: #F5A623;
+    transform: scale(1.08);
+}
+
+/* ── Oculta o hamburguer (não é mais necessário) ──────────────── */
+.hamburger-button,
+.menu-toggle {
+    display: none !important;
+}
+
+/* ── Responsivo: volta ao hamburguer em mobile ────────────────── */
+@media (max-width: 768px) {
+    .header {
+        padding: 0 1.25rem;
+        height: 64px;
+    }
+
+    .header-nav {
+        display: none; /* Sidebar continua disponível via JS se necessário */
+    }
+
+    .hamburger-button {
+        display: flex !important;
+    }
+
+    .logo {
+        height: 40px;
+    }
+}

@@ -1,15 +1,49 @@
     <header class="header">
+        <link rel="stylesheet" href="css/header-nav.css">
         <a href="/" class="logo-link">
             <img src="img/LOGO CORDAS SOLTAS SITE.png" alt="Logo Cordas Soltas" class="logo">
         </a>
-        <nav class="nav-icons">
+
+        <!-- Nav desktop: links direto no header -->
+        <nav class="nav-desktop" aria-label="Navegação principal">
+            <a href="/"           class="nav-link" data-page="inicio">INGRESSOS</a>
+            <a href="/seletivas"  class="nav-link" data-page="seletivas">CONCURSO</a>
+            <a href="/luthbox"    class="nav-link" data-page="luthbox">LUTHBOX</a>
+            <a href="/sobre"      class="nav-link" data-page="sobre">SOBRE</a>
+        </nav>
+
+        <nav class="nav-icons" aria-label="Ações do usuário">
+            <a href="<%= usuario ? '/perfil' : '/login' %>" id="account-link" class="account-icon" aria-label="Conta">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="20" height="20" fill="currentColor">
+                    <path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512l388.6 0c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304l-91.4 0z"/>
+                </svg>
+            </a>
+            <a href="#" class="cart-icon" aria-label="Carrinho">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" width="22" height="22" fill="currentColor">
+                    <path d="M0 24C0 10.7 10.7 0 24 0L69.5 0c22 0 41.5 12.8 50.6 32l411 0c26.3 0 45.5 25 38.6 50.4l-41 152.3c-8.5 31.4-37 53.3-69.5 53.3l-288.5 0 5.4 28.5c2.2 11.3 12.1 19.5 23.6 19.5L488 336c13.3 0 24 10.7 24 24s-10.7 24-24 24l-288.3 0c-34.6 0-64.3-24.6-70.7-58.5L77.4 54.5c-.7-3.8-4-6.5-7.9-6.5L24 48C10.7 48 0 37.3 0 24zM128 464a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm336-48a48 48 0 1 1 0 96 48 48 0 1 1 0-96z"/>
+                </svg>
+            </a>
+            <!-- Hamburger só aparece em mobile -->
             <button class="hamburger-button" aria-label="Abrir menu">
                 <span class="bar"></span>
                 <span class="bar"></span>
                 <span class="bar"></span>
             </button>
-            <button class="menu-toggle" aria-label="Abrir menu">&#9776;</button>
-            <a href="<%= usuario ? '/perfil' : '/login' %>" id="account-link" class="account-icon" aria-label="Conta">&#128100;</a>
-            <a href="#" class="cart-icon" aria-label="Carrinho">&#128722;</a>
         </nav>
     </header>
+
+    <script>
+    // Marca o link ativo com base na URL atual
+    (function() {
+        var path = window.location.pathname;
+        var links = document.querySelectorAll('.nav-desktop .nav-link');
+        links.forEach(function(link) {
+            var href = link.getAttribute('href');
+            if (href === '/' && (path === '/' || path.startsWith('/detalhes'))) {
+                link.classList.add('active');
+            } else if (href !== '/' && path.startsWith(href)) {
+                link.classList.add('active');
+            }
+        });
+    })();
+    </script>
