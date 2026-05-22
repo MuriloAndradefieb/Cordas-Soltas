@@ -1,0 +1,200 @@
+/* public/css/admin-dashboard.css */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #1a1a1a;
+    color: #ffffff;
+    height: 100vh;
+    display: block;
+}
+
+/* Linha dourada superior */
+.top-line {
+    height: 4px;
+    background-color: #ffb800;
+    width: 100%;
+}
+
+/* Cabeçalho */
+.main-header {
+    background-color: #262626;
+    padding: 15px 30px;
+    border-bottom: 2px solid #121212;
+}
+
+.logo-container img {
+    height: 45px;
+}
+
+/* Layout Principal */
+.app-container {
+    display: table;
+    width: 100%;
+    height: calc(100vh - 79px);
+}
+
+/* Barra Lateral (Sidebar) */
+.sidebar {
+    display: table-cell;
+    width: 240px;
+    background-color: #262626;
+    vertical-align: top;
+    border-right: 2px solid #121212;
+    padding-top: 10px;
+}
+
+.sidebar ul {
+    list-style: none;
+}
+
+.sidebar li {
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.sidebar li:hover {
+    background-color: #333333;
+}
+
+/* Item ativo (Administradores) */
+.sidebar li.active {
+    background-color: #1e1e1e;
+    border-left: 4px solid #ffb800;
+    color: #ffffff;
+}
+
+.sidebar li img {
+    width: 18px;
+    height: 18px;
+}
+
+/* Conteúdo da Direita */
+.content-area {
+    display: table-cell;
+    vertical-align: top;
+    padding: 25px;
+    background-color: #1e1e1e;
+}
+
+/* Sub-header interno */
+.sub-header {
+    background-color: #2d2d2d;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 4px 4px 0 0;
+    margin-bottom: 20px;
+}
+
+.sub-header .title {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: #ffffff;
+}
+
+.btn-add {
+    background-color: #404040;
+    color: #ffffff;
+    border: 1px solid #555555;
+    padding: 6px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-add span {
+    color: #ffb800;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.btn-add:hover {
+    background-color: #4a4a4a;
+}
+
+/* Seção de busca */
+.search-container {
+    margin-bottom: 25px;
+}
+
+.btn-search {
+    background-color: #333333;
+    border: 1px solid #444444;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* Tabela de Administradores */
+.table-container {
+    background-color: #2b2b2b;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.adm-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.adm-table th {
+    background-color: #212121;
+    color: #ffb800;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 14px 20px;
+    letter-spacing: 0.5px;
+}
+
+.adm-table td {
+    padding: 14px 20px;
+    border-bottom: 1px solid #383838;
+    color: #e0e0e0;
+    font-size: 14px;
+}
+
+/* Linhas vazias simulando a imagem */
+.adm-table tr.empty-row td {
+    height: 48px;
+}
+
+.email-link {
+    color: #ffffff;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/* Botão de Ação (Engrenagem) */
+.btn-action {
+    background-color: #1a1a1a;
+    border: 1px solid #ffb800;
+    color: #ffb800;
+    padding: 5px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.btn-action:hover {
+    background-color: #ffb800;
+    color: #1a1a1a;
+}

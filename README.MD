@@ -17,3 +17,6 @@ npm install dotenv --save
 npm install nodemailer
 
 npm install bcryptjs
+
+npm install bcrypt
+

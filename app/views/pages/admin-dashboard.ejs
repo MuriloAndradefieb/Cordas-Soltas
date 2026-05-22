@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrador - Cordas Soltas</title>
+    <link rel="stylesheet" href="/css/admin-dashboard.css">
+</head>
+<body>
+
+    <div class="top-line"></div>
+
+    <header class="main-header">
+        <div class="logo-container">
+            <h2 style="color: white; font-style: italic; letter-spacing: 1px;">CORDAS SOLTAS</h2>
+        </div>
+    </header>
+
+    <div class="app-container">
+        
+        <aside class="sidebar">
+            <ul>
+                <li class="active">⚙️ Administradores</li>
+                <li>👤 Cadastro</li>
+                <li>🎫 Ingressos</li>
+                <li>🧰 Luthbox</li>
+            </ul>
+        </aside>
+
+        <main class="content-area">
+            
+            <div class="sub-header">
+                <div class="title">ADMINISTRADORES</div>
+                <button class="btn-add"><span>+</span> Adicionar</button>
+            </div>
+
+            <div class="search-container">
+                <button class="btn-search">🔍</button>
+            </div>
+
+            <div class="table-container">
+                <table class="adm-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 45%;">E-MAIL</th>
+                            <th style="width: 35%;">USUÁRIOS</th>
+                            <th style="width: 20%;">AÇÕES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (administradores && administradores.length > 0) { %>
+                            <% administradores.forEach(function(adm) { %>
+                                <tr>
+                                    <td><span class="email-link"><%= adm.email %></span></td>
+                                    <td><%= adm.usuario %></td>
+                                    <td>
+                                        <button class="btn-action">⚙️</button>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="3" style="text-align: center; color: #999;">Nenhum administrador encontrado.</td>
+                            </tr>
+                        <% } %>
+
+                        <tr class="empty-row"><td></td><td></td><td></td></tr>
+                        <tr class="empty-row"><td></td><td></td><td></td></tr>
+                        <tr class="empty-row"><td></td><td></td><td></td></tr>
+                        <tr class="empty-row"><td></td><td></td><td></td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="/js/admin-dashboard.js"></script>
+</body>
+</html>
