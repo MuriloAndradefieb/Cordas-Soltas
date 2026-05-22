@@ -49,7 +49,6 @@
             </section>
         <% } %>
 
-        <!-- Formulário — POST ao servidor, salva no banco de dados -->
         <form id="formulario-inscricao" method="POST" action="/formulario-seletivas"
               enctype="multipart/form-data" novalidate>
 
@@ -167,23 +166,29 @@
                            placeholder="link do perfil da banda">
                 </fieldset>
 
+                <!-- ── Upload: Clipe/Vídeo ──────────────────────────────── -->
                 <fieldset class="f-grupo">
                     <label class="f-label">Clipe ou Lyric video da banda</label>
                     <div class="f-upload-area" id="upload-clipe-area">
                         <input type="file" name="clipe_video"
                                accept="video/*,.mp4,.mov,.avi"
-                               id="upload-clipe"
-                               onchange="marcarUpload('upload-clipe-area', 'upload-clipe-txt', this)">
-                        <div class="f-upload-icone">&#8681;</div>
-                        <span class="f-upload-txt" id="upload-clipe-txt">Adicionar arquivo</span>
+                               id="upload-clipe">
+                        <div class="f-upload-placeholder">
+                            <div class="f-upload-icone">&#8681;</div>
+                            <span class="f-upload-txt">Adicionar arquivo de vídeo</span>
+                        </div>
                     </div>
+                    <!-- input hidden para re-seleção após preview -->
+                    <input type="file" name="clipe_video" accept="video/*,.mp4,.mov,.avi"
+                           id="upload-clipe-hidden" class="f-upload-hidden">
                 </fieldset>
 
+                <!-- ── Upload: Fotos da banda ───────────────────────────── -->
                 <fieldset class="f-grupo">
                     <label class="f-label">
                         Envie até 5 fotos da banda
                         <span class="f-label-obs">
-                            Use alta qualidade para as arquivos em alta resolução.
+                            Use alta qualidade para os arquivos em alta resolução.
                             Recomendamos fotos do show ou ensaio, que serão utilizadas na divulgação caso
                             a banda seja selecionada.
                         </span>
@@ -192,14 +197,18 @@
                         <input type="file" name="fotos_banda"
                                accept="image/*"
                                multiple
-                               id="upload-fotos"
-                               onchange="marcarUpload('upload-fotos-area', 'upload-fotos-txt', this)">
-                        <div class="f-upload-icone">&#8681;</div>
-                        <span class="f-upload-txt" id="upload-fotos-txt">Adicionar arquivo</span>
+                               id="upload-fotos">
+                        <div class="f-upload-placeholder">
+                            <div class="f-upload-icone">&#8681;</div>
+                            <span class="f-upload-txt">Adicionar fotos (até 5)</span>
+                        </div>
                     </div>
+                    <!-- input hidden para re-seleção -->
+                    <input type="file" name="fotos_banda" accept="image/*" multiple
+                           id="upload-fotos-hidden" class="f-upload-hidden">
                 </fieldset>
 
-            </section><!-- fim seção 2 -->
+            </section>
 
             <!-- ── Botão Enviar ──────────────────────────────────── -->
             <footer>
@@ -209,36 +218,217 @@
             </footer>
 
         </form>
-    </main><!-- fim wrapper -->
+    </main>
 
     <script>
-    // ── Feedback de upload ──────────────────────────────────────────────────
-    function marcarUpload(areaId, txtId, input) {
-        const area = document.getElementById(areaId);
-        const txt  = document.getElementById(txtId);
-        if (!input.files || input.files.length === 0) return;
+    // ══════════════════════════════════════════════════════════════════
+    //  UPLOAD COM PREVIEW
+    // ══════════════════════════════════════════════════════════════════
 
-        area.classList.add('tem-arquivo');
+    const fmt = bytes => {
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + ' KB';
+        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    };
 
-        if (input.files.length === 1) {
-            txt.textContent = input.files[0].name;
-        } else {
-            txt.textContent = input.files.length + ' arquivos selecionados';
+    // ── VÍDEO ─────────────────────────────────────────────────────────
+    (function initVideoUpload() {
+        const area        = document.getElementById('upload-clipe-area');
+        const inputMain   = document.getElementById('upload-clipe');
+        const inputHidden = document.getElementById('upload-clipe-hidden');
+
+        function renderVideoPreview(file) {
+            area.classList.add('tem-arquivo');
+            // Remove input principal da área (desativa clique na área)
+            inputMain.style.pointerEvents = 'none';
+            inputMain.style.width = '0';
+            inputMain.style.height = '0';
+
+            // Cria URL de objeto para preview
+            const url = URL.createObjectURL(file);
+
+            area.innerHTML = `
+                <div class="f-video-preview-wrap">
+                    <video src="${url}" controls preload="metadata"></video>
+                    <div class="f-video-meta">
+                        <span class="f-video-meta-icone">🎬</span>
+                        <div class="f-video-meta-info">
+                            <div class="f-video-meta-nome">${file.name}</div>
+                            <div class="f-video-meta-tamanho">${fmt(file.size)}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="f-upload-acoes">
+                    <button type="button" class="f-upload-btn-acao" id="btn-trocar-video">
+                        ↺ Trocar vídeo
+                    </button>
+                    <button type="button" class="f-upload-btn-acao remover" id="btn-remover-video">
+                        ✕ Remover
+                    </button>
+                </div>
+            `;
+
+            document.getElementById('btn-trocar-video').addEventListener('click', () => {
+                inputHidden.click();
+            });
+            document.getElementById('btn-remover-video').addEventListener('click', () => {
+                URL.revokeObjectURL(url);
+                resetVideoArea();
+            });
         }
-    }
 
-    // ── Máscaras ────────────────────────────────────────────────────────────
+        function resetVideoArea() {
+            area.classList.remove('tem-arquivo');
+            area.innerHTML = `
+                <input type="file" name="clipe_video" accept="video/*,.mp4,.mov,.avi" id="upload-clipe">
+                <div class="f-upload-placeholder">
+                    <div class="f-upload-icone">&#8681;</div>
+                    <span class="f-upload-txt">Adicionar arquivo de vídeo</span>
+                </div>
+            `;
+            // Re-vincula evento ao novo input
+            document.getElementById('upload-clipe').addEventListener('change', onVideoChange);
+        }
+
+        function onVideoChange(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            renderVideoPreview(file);
+        }
+
+        inputMain.addEventListener('change', onVideoChange);
+
+        // Input hidden (troca)
+        inputHidden.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            renderVideoPreview(file);
+        });
+    })();
+
+
+    // ── FOTOS ─────────────────────────────────────────────────────────
+    (function initFotosUpload() {
+        const area        = document.getElementById('upload-fotos-area');
+        const inputMain   = document.getElementById('upload-fotos');
+        const inputHidden = document.getElementById('upload-fotos-hidden');
+        const MAX_FOTOS   = 5;
+        let fotosAtivas   = []; // Array de { file, url }
+
+        function renderFotos() {
+            if (fotosAtivas.length === 0) {
+                resetFotosArea();
+                return;
+            }
+
+            area.classList.add('tem-arquivo');
+            inputMain.style.pointerEvents = 'none';
+            inputMain.style.width = '0';
+            inputMain.style.height = '0';
+
+            const limitado = fotosAtivas.slice(0, MAX_FOTOS);
+            const excedeu  = fotosAtivas.length > MAX_FOTOS;
+
+            let gridHtml = limitado.map((item, idx) => `
+                <div class="f-preview-item" data-idx="${idx}">
+                    <img class="f-preview-img" src="${item.url}" alt="${item.file.name}">
+                    <div class="f-preview-overlay">
+                        <div class="f-preview-nome">${item.file.name}</div>
+                        <div class="f-preview-tamanho">${fmt(item.file.size)}</div>
+                    </div>
+                    <button type="button" class="f-preview-remover" data-idx="${idx}" title="Remover">✕</button>
+                </div>
+            `).join('');
+
+            if (excedeu) {
+                gridHtml += `<div class="f-upload-aviso-max">⚠ Máximo de ${MAX_FOTOS} fotos. As primeiras ${MAX_FOTOS} serão usadas.</div>`;
+            }
+
+            area.innerHTML = `
+                <div class="f-upload-previews">${gridHtml}</div>
+                <div class="f-upload-acoes">
+                    ${fotosAtivas.length < MAX_FOTOS
+                        ? `<button type="button" class="f-upload-btn-acao" id="btn-add-fotos">+ Adicionar mais</button>`
+                        : ''}
+                    <button type="button" class="f-upload-btn-acao remover" id="btn-limpar-fotos">✕ Remover todas</button>
+                </div>
+            `;
+
+            // Botão remover individual
+            area.querySelectorAll('.f-preview-remover').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const idx = parseInt(this.dataset.idx);
+                    URL.revokeObjectURL(fotosAtivas[idx].url);
+                    fotosAtivas.splice(idx, 1);
+                    renderFotos();
+                });
+            });
+
+            // Adicionar mais
+            const btnAdd = document.getElementById('btn-add-fotos');
+            if (btnAdd) {
+                btnAdd.addEventListener('click', () => inputHidden.click());
+            }
+
+            // Remover todas
+            document.getElementById('btn-limpar-fotos').addEventListener('click', () => {
+                fotosAtivas.forEach(f => URL.revokeObjectURL(f.url));
+                fotosAtivas = [];
+                resetFotosArea();
+            });
+        }
+
+        function resetFotosArea() {
+            area.classList.remove('tem-arquivo');
+            area.innerHTML = `
+                <input type="file" name="fotos_banda" accept="image/*" multiple id="upload-fotos">
+                <div class="f-upload-placeholder">
+                    <div class="f-upload-icone">&#8681;</div>
+                    <span class="f-upload-txt">Adicionar fotos (até ${MAX_FOTOS})</span>
+                </div>
+            `;
+            document.getElementById('upload-fotos').addEventListener('change', onFotosChange);
+        }
+
+        function onFotosChange(e) {
+            const novos = Array.from(e.target.files);
+            if (!novos.length) return;
+            novos.forEach(file => {
+                if (fotosAtivas.length < MAX_FOTOS * 2) { // permite acumular mas avisa
+                    fotosAtivas.push({ file, url: URL.createObjectURL(file) });
+                }
+            });
+            renderFotos();
+        }
+
+        inputMain.addEventListener('change', onFotosChange);
+
+        // Input hidden (adicionar mais)
+        inputHidden.addEventListener('change', function(e) {
+            const novos = Array.from(e.target.files);
+            if (!novos.length) return;
+            novos.forEach(file => {
+                fotosAtivas.push({ file, url: URL.createObjectURL(file) });
+            });
+            renderFotos();
+        });
+    })();
+
+
+    // ══════════════════════════════════════════════════════════════════
+    //  MÁSCARAS
+    // ══════════════════════════════════════════════════════════════════
+
     function mascaraCPF(input) {
         let v = input.value.replace(/\D/g, '');
-        v = v.replace(/(\d{3})(\d)/,    '$1.$2');
-        v = v.replace(/(\d{3})(\d)/,    '$1.$2');
+        v = v.replace(/(\d{3})(\d)/, '$1.$2');
+        v = v.replace(/(\d{3})(\d)/, '$1.$2');
         v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
         input.value = v;
     }
     function mascaraRG(input) {
         let v = input.value.replace(/\D/g, '');
-        v = v.replace(/(\d{2})(\d)/,    '$1.$2');
-        v = v.replace(/(\d{3})(\d)/,    '$1.$2');
+        v = v.replace(/(\d{2})(\d)/, '$1.$2');
+        v = v.replace(/(\d{3})(\d)/, '$1.$2');
         v = v.replace(/(\d{3})(\d{1})$/, '$1-$2');
         input.value = v;
     }
@@ -246,7 +436,11 @@
     document.getElementById('cpf').addEventListener('input', function() { mascaraCPF(this); });
     document.getElementById('rg').addEventListener('input',  function() { mascaraRG(this);  });
 
-    // ── Validação client-side + feedback visual ─────────────────────────────
+
+    // ══════════════════════════════════════════════════════════════════
+    //  VALIDAÇÃO CLIENT-SIDE
+    // ══════════════════════════════════════════════════════════════════
+
     const form = document.getElementById('formulario-inscricao');
 
     function mostrarErro(errId, inputEl) {
@@ -260,15 +454,12 @@
         if (inputEl) inputEl.classList.remove('campo-erro');
     }
 
-    // Remove erros ao digitar
     ['nome_completo','email_contato','cpf','rg','nome_banda'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.addEventListener('input', () => {
-            limparErro('err-' + id.replace('nome_completo','nome')
-                                    .replace('email_contato','email')
-                                    .replace('nome_banda','banda')
-                                    .replace('cpf','cpf')
-                                    .replace('rg','rg'), el);
+            const errMap = { nome_completo:'err-nome', email_contato:'err-email',
+                             cpf:'err-cpf', rg:'err-rg', nome_banda:'err-banda' };
+            limparErro(errMap[id], el);
         });
     });
 
@@ -283,40 +474,29 @@
             { id: 'nome_banda',    errId: 'err-banda'  },
         ];
 
-        // Limpa todos os erros
         campos.forEach(c => limparErro(c.errId, document.getElementById(c.id)));
         limparErro('err-estilo',      document.getElementById('estilo_musical'));
         limparErro('err-integrantes', null);
 
-        // Valida campos de texto
         campos.forEach(c => {
             const el = document.getElementById(c.id);
-            if (!el || !el.value.trim()) {
-                mostrarErro(c.errId, el); ok = false;
-            }
+            if (!el || !el.value.trim()) { mostrarErro(c.errId, el); ok = false; }
         });
 
-        // Valida e-mail
         const emailEl = document.getElementById('email_contato');
         if (emailEl && emailEl.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailEl.value)) {
             mostrarErro('err-email', emailEl); ok = false;
         }
 
-        // Valida estilo musical
         const estilo = document.getElementById('estilo_musical');
-        if (!estilo || !estilo.value) {
-            mostrarErro('err-estilo', estilo); ok = false;
-        }
+        if (!estilo || !estilo.value) { mostrarErro('err-estilo', estilo); ok = false; }
 
-        // Valida integrantes
         const integrante = document.querySelector('input[name="num_integrantes"]:checked');
-        if (!integrante) {
-            mostrarErro('err-integrantes', null); ok = false;
-        }
+        if (!integrante) { mostrarErro('err-integrantes', null); ok = false; }
 
         if (!ok) { e.preventDefault(); return; }
 
-        // ── Animação ripple no botão ao enviar ────────────────────────────
+        // Ripple no botão
         const btn = document.getElementById('btn-enviar');
         btn.disabled = true;
         btn.textContent = 'enviando...';
@@ -326,8 +506,7 @@
         const rect = btn.getBoundingClientRect();
         const size = Math.max(rect.width, rect.height);
         ripple.style.cssText = `
-            width: ${size}px;
-            height: ${size}px;
+            width: ${size}px; height: ${size}px;
             left: ${rect.width / 2 - size / 2}px;
             top:  ${rect.height / 2 - size / 2}px;
         `;
