@@ -1,0 +1,301 @@
+/* =====================================================================
+   login-cadastro.css  –  Estilização conforme protótipo
+   ===================================================================== */
+
+/* ── Variáveis de cor ──────────────────────────────────────────────── */
+:root {
+    --lc-ouro:          #F5A623;
+    --lc-ouro-hover:    #d9911a;
+    --lc-bg:            #0d0d0d;
+    --lc-card:          #272727;
+    --lc-input-bg:      #1c1c1c;
+    --lc-input-border:  #3a3a3a;
+    --lc-texto:         #ffffff;
+    --lc-placeholder:   #7a7a7a;
+    --lc-label:         #f0f0f0;
+    --lc-radius-card:   16px;
+    --lc-radius-btn:    8px;
+    --lc-radius-input:  8px;
+}
+
+/* ── Reset de estilos herdados do perfil.css ───────────────────────── */
+body {
+    background-color: #0d0d0d !important;
+    background-image: url('/img/background-black.jpg') !important;
+    background-repeat: repeat !important;
+    background-size: auto !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-family: 'Roboto', sans-serif !important;
+}
+
+/* ── Botão "Voltar" no canto superior esquerdo ─────────────────────── */
+.lc-voltar {
+    position: fixed;
+    top: 18px;
+    left: 18px;
+    background-color: var(--lc-ouro);
+    color: #1a1100;
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 6px 16px;
+    border-radius: 20px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    z-index: 100;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    letter-spacing: 0.02em;
+}
+.lc-voltar:hover {
+    background-color: var(--lc-ouro-hover);
+    transform: translateY(-1px);
+}
+
+/* ── Wrapper principal da página ───────────────────────────────────── */
+.lc-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 80px 20px 40px 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* ── Card central ──────────────────────────────────────────────────── */
+.lc-card {
+    background-color: var(--lc-card);
+    border-radius: var(--lc-radius-card);
+    padding: 32px 28px 36px 28px;
+    width: 100%;
+    max-width: 340px;
+    box-sizing: border-box;
+    position: relative;
+}
+
+/* ── Título principal (Crie sua conta / Login) ─────────────────────── */
+.lc-titulo {
+    font-size: 2rem;
+    font-weight: 700;
+    font-style: italic;
+    color: var(--lc-ouro);
+    text-align: center;
+    margin: 0 0 28px 0;
+    line-height: 1.15;
+    font-family: 'Roboto', sans-serif;
+    letter-spacing: -0.01em;
+}
+
+/* ── Labels dos campos ─────────────────────────────────────────────── */
+.lc-form label {
+    display: block;
+    color: var(--lc-label);
+    font-size: 0.92rem;
+    font-weight: 500;
+    margin-bottom: 6px;
+    margin-top: 0;
+    font-style: normal;
+    text-align: left;
+}
+
+/* ── Inputs / campos de texto ──────────────────────────────────────── */
+.lc-form input[type="text"],
+.lc-form input[type="email"],
+.lc-form input[type="password"],
+.lc-form input[type="tel"] {
+    width: 100%;
+    background-color: var(--lc-input-bg);
+    border: 1px solid var(--lc-input-border);
+    border-radius: var(--lc-radius-input);
+    color: var(--lc-texto);
+    font-size: 0.9rem;
+    padding: 11px 14px;
+    box-sizing: border-box;
+    margin-bottom: 16px;
+    outline: none;
+    transition: border-color 0.2s ease;
+    font-family: 'Roboto', sans-serif;
+    -webkit-appearance: none;
+}
+.lc-form input::placeholder {
+    color: var(--lc-placeholder);
+    font-size: 0.88rem;
+}
+.lc-form input:focus {
+    border-color: var(--lc-ouro);
+}
+.lc-form input.input-error {
+    border-color: #c0392b !important;
+}
+
+/* ── Mensagem de erro por campo ────────────────────────────────────── */
+.lc-field-error {
+    display: none;
+    color: #ff6b6b;
+    font-size: 0.78rem;
+    margin-top: -12px;
+    margin-bottom: 12px;
+    padding-left: 2px;
+}
+
+/* ── Texto "selecione seu tipo de conta" ───────────────────────────── */
+.lc-role-titulo {
+    color: var(--lc-texto);
+    font-size: 0.88rem;
+    font-weight: 400;
+    text-align: center;
+    margin: 4px 0 14px 0;
+    font-style: normal;
+}
+
+/* ── Seleção de tipo de conta (Artista / Visitante) ────────────────── */
+.lc-role-grupo {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-start;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+.lc-role-grupo input[type="radio"] {
+    display: none;
+}
+.lc-role-grupo label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 22px;
+    border: 1.5px solid #888;
+    border-radius: 20px;
+    color: var(--lc-texto);
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+    background-color: transparent;
+    margin: 0;
+    font-style: normal;
+    letter-spacing: 0.01em;
+}
+.lc-role-grupo input[type="radio"]:checked + label {
+    border-color: var(--lc-ouro);
+    background-color: rgba(245, 166, 35, 0.12);
+    color: var(--lc-ouro);
+}
+.lc-role-grupo label:hover {
+    border-color: #aaa;
+}
+
+/* ── Seção de campos adicionais do artista ─────────────────────────── */
+.lc-artist-fields {
+    display: none;
+    margin-bottom: 4px;
+}
+.lc-artist-fields.visivel {
+    display: block;
+}
+
+/* ── Botão principal (Cadastrar / Entrar) ──────────────────────────── */
+.lc-btn-principal {
+    display: block;
+    width: 100%;
+    background-color: var(--lc-ouro);
+    color: #1a1100;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 13px;
+    border: none;
+    border-radius: var(--lc-radius-btn);
+    cursor: pointer;
+    text-align: center;
+    text-transform: lowercase;
+    letter-spacing: 0.02em;
+    margin-top: 8px;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    font-family: 'Roboto', sans-serif;
+    box-sizing: border-box;
+}
+.lc-btn-principal:hover {
+    background-color: var(--lc-ouro-hover);
+    transform: translateY(-1px);
+}
+.lc-btn-principal:active {
+    transform: translateY(0);
+}
+
+/* ── Link inferior (Já tem conta / Não tem conta) ──────────────────── */
+.lc-rodape-texto {
+    text-align: center;
+    margin-top: 18px;
+    font-size: 0.83rem;
+    color: #aaa;
+}
+.lc-rodape-texto a {
+    color: var(--lc-ouro);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+.lc-rodape-texto a:hover {
+    color: var(--lc-ouro-hover);
+    text-decoration: underline;
+}
+
+/* ── Avisos de erro / sucesso do servidor ──────────────────────────── */
+.lc-aviso {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    padding: 11px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 18px;
+    animation: lc-slide-down 0.3s ease;
+    line-height: 1.4;
+}
+.lc-aviso.erro {
+    background-color: #2a0000;
+    border: 1px solid #c0392b;
+    color: #ff8080;
+}
+.lc-aviso.sucesso {
+    background-color: #002a0d;
+    border: 1px solid #27ae60;
+    color: #6bffaa;
+}
+.lc-aviso .lc-aviso-icone {
+    flex-shrink: 0;
+    font-size: 0.95rem;
+    margin-top: 1px;
+}
+.lc-aviso a {
+    color: var(--lc-ouro);
+    font-weight: 700;
+    text-decoration: underline;
+}
+@keyframes lc-slide-down {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Responsivo ────────────────────────────────────────────────────── */
+@media (max-width: 400px) {
+    .lc-card {
+        padding: 28px 20px 32px 20px;
+        border-radius: 12px;
+    }
+    .lc-titulo {
+        font-size: 1.75rem;
+    }
+    .lc-container {
+        padding-top: 70px;
+    }
+}

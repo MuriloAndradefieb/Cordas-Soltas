@@ -8,16 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
-    <div vw class="enabled">
-        <div vw-access-button class="active"></div>
-        <div vw-plugin-wrapper>
-            <div class="vw-plugin-top-wrapper"></div>
-        </div>
-    </div>
-    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
-    <script>new window.VLibras.Widget('https://vlibras.gov.br/app');</script>
-    <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
+
 
     <%- include("../partials/header"); %>
 
@@ -115,5 +106,183 @@
     <%- include("../partials/menu"); %>
 
     <script src="js/script.js"></script>
+    <div id="azup-a11y-toolbar" class="azup-a11y-toolbar azup-a11y-collapsed" role="region" aria-label="Barra de Acessibilidade">
+    <button id="azup-a11y-toggle" class="azup-a11y-toggle-btn" aria-label="Abrir menu de acessibilidade" aria-expanded="false" title="Acessibilidade">
+        <svg width="32" height="32" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true">
+            <circle cx="256" cy="76" r="52"/>
+            <path d="M432 160H320l0 0H192l0 0H80c-13.3 0-24 10.7-24 24s10.7 24 24 24h96v56l-61.5 148.8c-5.1 12.3 .9 26.3 13.2 31.4s26.3-.9 31.4-13.2L213.2 304h85.6l54.1 126.9c5.1 12.3 19.2 18.2 31.4 13.2s18.2-19.2 13.2-31.4L336 264V208h96c13.3 0 24-10.7 24-24s-10.7-24-24-24z"/>
+        </svg>
+    </button>
+    <div id="azup-a11y-panel" class="azup-a11y-panel" role="dialog" aria-label="Opções de Acessibilidade" aria-hidden="true">
+        <div class="azup-a11y-header">
+            <span class="azup-a11y-title">Acessibilidade Geral</span>
+            <button id="azup-a11y-close" class="azup-a11y-close-btn" aria-label="Fechar menu de acessibilidade">&times;</button>
+        </div>
+        <div class="azup-a11y-options">
+            <div class="azup-a11y-option">
+                <button class="azup-a11y-btn" data-feature="contrast" aria-pressed="false">
+                    <span class="azup-a11y-icon" aria-hidden="true">&#9724;</span>
+                    <span class="azup-a11y-label">Alto Contraste (Tema Escuro)</span>
+                </button>
+            </div>
+            <div class="azup-a11y-zoom-group">
+                <span class="azup-a11y-icon" aria-hidden="true">&#128269;</span>
+                <span class="azup-a11y-label">Tamanho do Texto</span>
+                <div class="azup-a11y-zoom-controls">
+                    <button id="azup-a11y-zoom-down" class="azup-a11y-zoom-btn" aria-label="Diminuir texto">A-</button>
+                    <span id="azup-a11y-zoom-level" class="azup-a11y-zoom-level" aria-live="polite">100%</span>
+                    <button id="azup-a11y-zoom-up" class="azup-a11y-zoom-btn" aria-label="Aumentar texto">A+</button>
+                </div>
+            </div>
+            <div class="azup-a11y-option">
+                <button class="azup-a11y-btn" data-feature="links" aria-pressed="false">
+                    <span class="azup-a11y-icon" aria-hidden="true">&#128279;</span>
+                    <span class="azup-a11y-label">Destacar Links</span>
+                </button>
+            </div>
+            <div class="azup-a11y-option">
+                <button class="azup-a11y-btn" data-feature="ruler" aria-pressed="false">
+                    <span class="azup-a11y-icon" aria-hidden="true">&#9644;</span>
+                    <span class="azup-a11y-label">Guia de Leitura</span>
+                </button>
+            </div>
+            <div class="azup-a11y-option">
+                <button class="azup-a11y-btn" data-feature="font" aria-pressed="false">
+                    <span class="azup-a11y-icon" aria-hidden="true">&#128214;</span>
+                    <span class="azup-a11y-label">Fonte de Fácil Leitura</span>
+                </button>
+            </div>
+            <div class="azup-a11y-option">
+                <button class="azup-a11y-btn" data-feature="spacing" aria-pressed="false">
+                    <span class="azup-a11y-icon" aria-hidden="true">&#8596;</span>
+                    <span class="azup-a11y-label">Aumentar Espaçamento</span>
+                </button>
+            </div>
+            <div class="azup-a11y-option">
+                <button id="azup-a11y-reset" class="azup-a11y-btn azup-a11y-reset-btn" aria-label="Restaurar configurações padrão">
+                    <span class="azup-a11y-icon" aria-hidden="true">&#8634;</span>
+                    <span class="azup-a11y-label">Restaurar Padrão</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="azup-a11y-reading-ruler" class="azup-a11y-reading-ruler" aria-hidden="true"></div>
+<script>
+(function(){
+    "use strict";
+    var state = { contrast: false, links: false, ruler: false, font: false, spacing: false, zoom: 100 };
+    var ZOOM_MIN = 80, ZOOM_MAX = 200, ZOOM_STEP = 10;
+    var STORAGE_KEY = "azup_a11y_state";
+    var CLASS_MAP = {
+        contrast: "azup-a11y-high-contrast",
+        links: "azup-a11y-highlight-links",
+        font: "azup-a11y-readable-font",
+        spacing: "azup-a11y-spacing"
+    };
+
+    function loadState() {
+        try {
+            var saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) { 
+                var p = JSON.parse(saved); 
+                for (var k in p) { if (state.hasOwnProperty(k)) state[k] = p[k]; } 
+            }
+        } catch(e) {}
+    }
+
+    function saveState() {
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+    }
+
+    function applyAll() {
+        var body = document.body;
+        for (var feat in CLASS_MAP) {
+            body.classList.toggle(CLASS_MAP[feat], !!state[feat]);
+        }
+        document.documentElement.style.fontSize = state.zoom + "%";
+        var lvl = document.getElementById("azup-a11y-zoom-level");
+        if (lvl) lvl.textContent = state.zoom + "%";
+        var ruler = document.getElementById("azup-a11y-reading-ruler");
+        if (ruler) ruler.classList.toggle("azup-a11y-ruler-active", state.ruler);
+        
+        var allFeats = Object.keys(CLASS_MAP).concat(["ruler"]);
+        allFeats.forEach(function(f) {
+            var btn = document.querySelector("[data-feature=\"" + f + "\"]");
+            if (btn) btn.setAttribute("aria-pressed", state[f] ? "true" : "false");
+        });
+        saveState();
+    }
+
+    function toggleFeature(feat) {
+        if (state.hasOwnProperty(feat)) {
+            state[feat] = !state[feat];
+            applyAll();
+        }
+    }
+
+    function resetAll() {
+        state.contrast = false;
+        state.links = false;
+        state.ruler = false;
+        state.font = false;
+        state.spacing = false;
+        state.zoom = 100;
+        applyAll();
+    }
+
+    function togglePanel() {
+        var toolbar = document.getElementById("azup-a11y-toolbar");
+        var panel = document.getElementById("azup-a11y-panel");
+        var toggle = document.getElementById("azup-a11y-toggle");
+        if (!toolbar || !panel || !toggle) return;
+        var expanded = toolbar.classList.contains("azup-a11y-expanded");
+        toolbar.classList.toggle("azup-a11y-expanded");
+        toolbar.classList.toggle("azup-a11y-collapsed");
+        panel.setAttribute("aria-hidden", expanded ? "true" : "false");
+        toggle.setAttribute("aria-expanded", expanded ? "false" : "true");
+    }
+
+    function onMouseMove(e) {
+        if (state.ruler) {
+            var ruler = document.getElementById("azup-a11y-reading-ruler");
+            if (ruler) ruler.style.top = (e.clientY - 6) + "px";
+        }
+    }
+
+    function init() {
+        loadState();
+        applyAll();
+        var toggleBtn = document.getElementById("azup-a11y-toggle");
+        var closeBtn = document.getElementById("azup-a11y-close");
+        if (toggleBtn) toggleBtn.addEventListener("click", togglePanel);
+        if (closeBtn) closeBtn.addEventListener("click", togglePanel);
+        
+        document.querySelectorAll("[data-feature]").forEach(function(btn) {
+            btn.addEventListener("click", function() { toggleFeature(btn.getAttribute("data-feature")); });
+        });
+        
+        var zoomUp = document.getElementById("azup-a11y-zoom-up");
+        var zoomDown = document.getElementById("azup-a11y-zoom-down");
+        if (zoomUp) zoomUp.addEventListener("click", function() { if (state.zoom < ZOOM_MAX) { state.zoom += ZOOM_STEP; applyAll(); } });
+        if (zoomDown) zoomDown.addEventListener("click", function() { if (state.zoom > ZOOM_MIN) { state.zoom -= ZOOM_STEP; applyAll(); } });
+        
+        var resetBtn = document.getElementById("azup-a11y-reset");
+        if (resetBtn) resetBtn.addEventListener("click", resetAll);
+        
+        document.addEventListener("mousemove", onMouseMove);
+        document.addEventListener("keydown", function(e) {
+            if (e.key === "Escape") {
+                var toolbar = document.getElementById("azup-a11y-toolbar");
+                if (toolbar && toolbar.classList.contains("azup-a11y-expanded")) togglePanel();
+            }
+            if (e.altKey && (e.key === "a" || e.key === "A")) { e.preventDefault(); togglePanel(); }
+        });
+    }
+
+    if (document.readyState === "loading") { document.addEventListener("DOMContentLoaded", init); }
+    else { init(); }
+})();
+</script>
 </body>
 </html>

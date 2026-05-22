@@ -7,6 +7,80 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/seletivas.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* ── Botão do formulário com animação ─────────────────────────────── */
+        .btn-formulario {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background-color: #FFD700;
+            color: #000;
+            font-weight: 700;
+            font-size: 1.05rem;
+            text-decoration: none;
+            padding: 14px 32px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition:
+                background-color 0.25s ease,
+                box-shadow 0.25s ease,
+                transform 0.15s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+        }
+        .btn-formulario:hover {
+            background-color: #e6c300;
+            box-shadow: 0 0 22px rgba(255, 215, 0, 0.75);
+            transform: translateY(-2px);
+        }
+        .btn-formulario:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        /* Ícone de seta no botão */
+        .btn-formulario .btn-seta {
+            font-size: 1.2rem;
+            transition: transform 0.25s ease;
+        }
+        .btn-formulario:hover .btn-seta {
+            transform: translateX(4px);
+        }
+
+        /* Ripple effect */
+        .btn-formulario .ripple-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.18);
+            transform: scale(0);
+            animation: ripple-expand 0.55s linear;
+            pointer-events: none;
+        }
+        @keyframes ripple-expand {
+            to { transform: scale(4); opacity: 0; }
+        }
+
+        /* Overlay de transição de página */
+        .page-transition-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: #000;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 9999;
+            transition: opacity 0.38s ease;
+            display: none;
+        }
+        .page-transition-overlay.ativo {
+            display: block;
+            opacity: 1;
+            pointer-events: all;
+        }
+    </style>
 </head>
 <body>
     <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
@@ -20,6 +94,9 @@
     <script>new window.VLibras.Widget('https://vlibras.gov.br/app');</script>
     <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
 
+    <!-- Overlay de transição de página -->
+    <div class="page-transition-overlay" id="page-overlay"></div>
+
     <%- include("../partials/header"); %>
 
     <main class="seletivas-main-content">
@@ -31,7 +108,7 @@
             </header>
 
             <figure class="seletivas-image-wrapper">
-                <img src="img/Death_mexico89.jpg" alt="Banda tocando no palco em um show">
+                <img src="img/Death_mexico89.jpg" alt="Banda tocando no palco em um show" width="1050px">
             </figure>
 
             <article class="seletivas-text-block">
@@ -46,11 +123,16 @@
             <section class="seletivas-signup-section">
                 <h2>Inscreva-se</h2>
                 <h3>Atenção! Pela Primeira vez!</h3>
-                <p>As bandas que se inscreverem receberão as informações sobre as próximas etapas por e-mail. Fiquem atentos!</p>
-                <a href="https://docs.google.com/forms/d/e/1FAIpQLSfoBeMMyBPdcFzBmCaBOUrv9GFXvmeM1A7UIpomeUQ23wf-lQ/viewform?usp=dialog" target="_blank" rel="noopener noreferrer" class="form-link">
-                    <img src="img/formulario.png" alt="Formulário de inscrição do Concurso Cordas Soltas" height="190px">
-                </a>
-                <p class="rules-prompt">Leia atenciosamente o regulamento abaixo antes de preencher o formulário.</p>
+                <p>As bandas que se inscreverem receberão as informações sobre as próximas etapas por e-mail. Fiquem atentos! Em breve, mais novidades.</p>
+
+                <!-- Botão do formulário com animação -->
+                <button class="btn-formulario" id="btn-abrir-formulario"
+                        onclick="irParaFormulario(event)">
+                    <span>📋 Acessar Formulário</span>
+                    <span class="btn-seta">&#8594;</span>
+                </button>
+
+                <p class="rules-prompt">leia atenciosamente o regulamento abaixo antes de preencher o formulário, por gentileza.</p>
                 <a href="/regulamento" class="button-regulamento">LER REGULAMENTO</a>
             </section>
 
@@ -66,5 +148,67 @@
     <%- include("../partials/menu"); %>
 
     <script src="js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // ── Garante que o overlay nunca bloqueia a página ao carregar ──────
+            // (impede tela preta ao voltar do formulário via botão do browser)
+            const overlay = document.getElementById('page-overlay');
+            if (overlay) {
+                overlay.classList.remove('ativo');
+                overlay.style.opacity = '0';
+                overlay.style.pointerEvents = 'none';
+            }
+
+            // ── Atualiza link da conta conforme sessão ──────────────────────
+            const accountLink = document.getElementById('account-link');
+            const userProfile = localStorage.getItem('userProfile');
+            if (accountLink && userProfile) {
+                accountLink.href = '/perfil';
+            }
+        });
+
+        // ── Animação ao clicar no botão de formulário ──────────────────────
+        function irParaFormulario(event) {
+            const btn     = document.getElementById('btn-abrir-formulario');
+            const overlay = document.getElementById('page-overlay');
+
+            // Evita clique duplo
+            if (btn.dataset.navegando === 'true') return;
+            btn.dataset.navegando = 'true';
+
+            // 1. Ripple effect no botão
+            const rect   = btn.getBoundingClientRect();
+            const size   = Math.max(rect.width, rect.height);
+            const x      = event.clientX - rect.left - size / 2;
+            const y      = event.clientY - rect.top  - size / 2;
+
+            const ripple = document.createElement('span');
+            ripple.className = 'ripple-circle';
+            ripple.style.cssText = `
+                width:  ${size}px;
+                height: ${size}px;
+                left:   ${x}px;
+                top:    ${y}px;
+            `;
+            btn.appendChild(ripple);
+
+            // 2. Leve compressão do botão
+            btn.style.transform = 'scale(0.97)';
+            setTimeout(() => { btn.style.transform = ''; }, 120);
+
+            // 3. Fade-out da página
+            setTimeout(() => {
+                overlay.classList.add('ativo');
+            }, 180);
+
+            // 4. Navega após a transição
+            setTimeout(() => {
+                window.location.href = '/formulario-seletivas';
+            }, 560);
+
+            // Remove o ripple depois
+            setTimeout(() => ripple.remove(), 700);
+        }
+    </script>
 </body>
 </html>

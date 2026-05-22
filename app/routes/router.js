@@ -1,7 +1,8 @@
-const express        = require('express');
-const router         = express.Router();
-const AuthController  = require('../controllers/authController');
-const PerfilController = require('../controllers/perfilController');
+const express           = require('express');
+const router            = express.Router();
+const AuthController    = require('../controllers/authController');
+const PerfilController  = require('../controllers/perfilController');
+const FormularioController = require('../controllers/formularioController');
 
 // ─── Middleware: verifica se o usuário está logado ──────────────────────────
 function requireAuth(req, res, next) {
@@ -54,6 +55,10 @@ router.get('/pagamento-luth', (req, res) =>
 
 router.get('/pagamento-mensalidade', (req, res) =>
     res.render('pages/pagamento-mensalidade', { titulo: 'Pagamento Mensalidade', usuario: u(req) }));
+
+// ─── Formulário de Seletivas ─────────────────────────────────────────────────
+router.get('/formulario-seletivas',  FormularioController.mostrar);
+router.post('/formulario-seletivas', FormularioController.enviar);
 
 // ─── Cadastro ────────────────────────────────────────────────────────────────
 router.get('/cadastro', (req, res) =>

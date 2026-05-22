@@ -1,0 +1,588 @@
+/* =====================================================================
+   formulario.css  –  Formulário de Inscrição - Seletivas
+   Design: tema escuro coeso, dourado como único acento, sem bordas brancas
+   ===================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Odibee+Sans&display=swap');
+@font-face {
+    font-family: 'Cal Sans';
+    src: url('https://cdn.jsdelivr.net/npm/cal-sans@1.0.1/fonts/CalSans-SemiBold.woff2') format('woff2');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* ── Variáveis ─────────────────────────────────────────────────────── */
+:root {
+    --f-ouro:          #F5A623;
+    --f-ouro-dim:      rgba(245, 166, 35, 0.15);
+    --f-ouro-hover:    #d9911a;
+    --f-bg:            #111111;
+    --f-card:          #191919;
+    --f-input-bg:      #161616;
+    --f-input-border:  #282828;
+    --f-texto:         #e8e8e8;
+    --f-texto-dim:     #888888;
+    --f-placeholder:   #484848;
+    --f-radius:        10px;
+    --f-radius-sm:     7px;
+}
+
+/* ── Reset ────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Body ─────────────────────────────────────────────────────────── */
+body.formulario-page {
+    font-family: 'Cal Sans', 'Roboto', sans-serif;
+    background-color: var(--f-bg);
+    color: var(--f-texto);
+    min-height: 100vh;
+    /* textura pontilhada muito sutil */
+    background-image: radial-gradient(circle, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 24px 24px;
+}
+
+/* ── Wrapper central ──────────────────────────────────────────────── */
+.formulario-wrapper {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 36px 20px 70px;
+}
+
+/* ── Botão Voltar ─────────────────────────────────────────────────── */
+.f-voltar {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--f-texto-dim);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-family: 'Cal Sans', 'Roboto', sans-serif;
+    margin-bottom: 30px;
+    padding: 6px 0;
+    transition: color 0.2s ease;
+    letter-spacing: 0.02em;
+}
+.f-voltar:hover { color: var(--f-ouro); }
+
+/* ── Título principal ─────────────────────────────────────────────── */
+.f-titulo {
+    font-family: 'Odibee Sans', 'Arial Black', sans-serif;
+    font-size: 2.3rem;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--f-ouro);
+    line-height: 1.1;
+    margin-bottom: 32px;
+    letter-spacing: 0.01em;
+    text-shadow: 0 0 30px rgba(245, 166, 35, 0.2);
+}
+
+/* ── Seção agrupadora (card escuro, SEM borda branca) ─────────────── */
+.f-secao {
+    background-color: var(--f-card);
+    border-radius: var(--f-radius);
+    padding: 28px 22px 22px;
+    margin-bottom: 20px;
+    position: relative;
+    /* barra dourada fina só no topo – único acento de cor */
+    border-top: 2px solid rgba(245, 166, 35, 0.55);
+    /* sombra sutil para profundidade */
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+}
+
+/* ── Label da seção (flutua sobre a barra dourada) ───────────────── */
+.f-secao-titulo {
+    font-family: 'Odibee Sans', 'Arial Black', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 400;
+    color: var(--f-ouro);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    position: absolute;
+    top: -10px;
+    left: 20px;
+    background-color: var(--f-card);
+    padding: 0 8px;
+    line-height: 1;
+}
+
+/* ── Grupo de campo ───────────────────────────────────────────────── */
+.f-grupo {
+    margin-bottom: 18px;
+}
+.f-grupo:last-child { margin-bottom: 0; }
+
+/* ── Labels ───────────────────────────────────────────────────────── */
+.f-label {
+    display: block;
+    font-family: 'Cal Sans', 'Roboto', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--f-texto);
+    margin-bottom: 7px;
+    letter-spacing: 0.01em;
+}
+.f-label-obs {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 400;
+    color: var(--f-texto-dim);
+    margin-top: 5px;
+    line-height: 1.5;
+}
+
+/* ── Inputs, Textarea, Select — borda levemente visível no escuro ──── */
+.f-input,
+.f-textarea,
+.f-select {
+    width: 100%;
+    background-color: var(--f-input-bg);
+    border: 1px solid rgba(255, 255, 255, 0.08); /* levemente visível no escuro */
+    border-radius: var(--f-radius-sm);
+    color: var(--f-texto);
+    font-size: 0.87rem;
+    font-family: 'Cal Sans', 'Roboto', sans-serif;
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    -webkit-appearance: none;
+    appearance: none;
+}
+.f-input::placeholder,
+.f-textarea::placeholder { color: var(--f-placeholder); font-size: 0.84rem; }
+
+/* Foco: dourado brilha — sem anel azul do browser */
+.f-input:focus,
+.f-textarea:focus,
+.f-select:focus {
+    border-color: rgba(245, 166, 35, 0.65);
+    box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.1);
+}
+
+/* Erro de campo */
+.f-input.campo-erro,
+.f-select.campo-erro {
+    border-color: rgba(192, 57, 43, 0.75) !important;
+    box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.1);
+}
+
+.f-textarea {
+    resize: vertical;
+    min-height: 82px;
+}
+
+/* ── Select — seta dourada, sem aparência nativa ──────────────────── */
+.f-select-wrapper { position: relative; }
+.f-select {
+    cursor: pointer;
+    padding-right: 40px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%23F5A623' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+}
+.f-select option { background-color: #1a1a1a; color: #e8e8e8; }
+.f-select option:disabled { color: var(--f-placeholder); }
+
+/* ── Radios personalizados ────────────────────────────────────────── */
+.f-radio-grupo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 24px;
+    align-items: center;
+    padding-top: 2px;
+}
+.f-radio-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-family: 'Cal Sans', 'Roboto', sans-serif;
+    color: var(--f-texto-dim);
+    transition: color 0.2s ease;
+    user-select: none;
+}
+.f-radio-item input[type="radio"] { display: none; }
+
+.f-radio-circulo {
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.15); /* sutil mas visível */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+.f-radio-circulo::after {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: var(--f-ouro);
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.f-radio-item input[type="radio"]:checked ~ .f-radio-circulo {
+    border-color: var(--f-ouro);
+    background-color: rgba(245, 166, 35, 0.08);
+}
+.f-radio-item input[type="radio"]:checked ~ .f-radio-circulo::after {
+    opacity: 1;
+    transform: scale(1);
+}
+.f-radio-item input[type="radio"]:checked ~ .f-radio-txt {
+    color: var(--f-ouro);
+}
+
+/* ── Área de upload — estado vazio (clicável) ─────────────────────── */
+.f-upload-area {
+    background-color: var(--f-input-bg);
+    border: 1.5px dashed rgba(255,255,255,0.1); /* visível mas discreta */
+    border-radius: var(--f-radius-sm);
+    padding: 22px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    text-align: center;
+    position: relative;
+    /* SEM overflow:hidden — permite conteúdo se expandir */
+    transition: border-color 0.25s ease, background-color 0.25s ease;
+}
+.f-upload-area:hover {
+    border-color: rgba(245, 166, 35, 0.5);
+    background-color: rgba(245, 166, 35, 0.04);
+}
+
+/* Input transparente cobre toda a área no estado vazio */
+.f-upload-area input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+/* Placeholder (ícone + texto "Adicionar arquivo") */
+.f-upload-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    pointer-events: none;
+}
+.f-upload-icone {
+    font-size: 1.6rem;
+    color: rgba(255,255,255,0.18);
+    line-height: 1;
+}
+.f-upload-txt {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.28);
+    font-family: 'Cal Sans', 'Roboto', sans-serif;
+    letter-spacing: 0.02em;
+}
+
+/* ── Área de upload — estado com arquivo ──────────────────────────── */
+.f-upload-area.tem-arquivo {
+    border-color: rgba(245, 166, 35, 0.35);
+    background-color: rgba(245, 166, 35, 0.04);
+    cursor: default;
+    padding: 14px 14px 12px;
+    align-items: stretch;
+    gap: 10px;
+}
+/* Input oculto (desabilita clique quando já tem arquivo) */
+.f-upload-area.tem-arquivo > input[type="file"] {
+    pointer-events: none;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+/* ── Item de arquivo (vídeo/clipe) — linha estilizada ─────────────── */
+.f-upload-lista {
+    list-style: none;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.f-upload-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #1c1c1c;
+    /* borda com leve acento dourado — harmoniosa com o tema */
+    border: 1px solid rgba(245, 166, 35, 0.2);
+    border-left: 3px solid rgba(245, 166, 35, 0.55);
+    border-radius: 6px;
+    padding: 10px 12px;
+    text-align: left;
+    animation: f-slide-down 0.25s ease;
+}
+
+.f-upload-item-icone {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+    opacity: 0.85;
+}
+.f-upload-item-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+.f-upload-item-nome {
+    font-size: 0.82rem;
+    color: var(--f-texto);
+    font-family: 'Cal Sans', 'Roboto', sans-serif;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+}
+.f-upload-item-tamanho {
+    font-size: 0.7rem;
+    color: var(--f-texto-dim);
+    font-family: 'Cal Sans', 'Roboto', sans-serif;
+}
+
+.f-upload-item-remover {
+    flex-shrink: 0;
+    background: none;
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.35);
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    font-size: 0.6rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: border-color 0.2s, color 0.2s, background-color 0.2s;
+    line-height: 1;
+}
+.f-upload-item-remover:hover {
+    border-color: rgba(192, 57, 43, 0.7);
+    color: #e07070;
+    background-color: rgba(192, 57, 43, 0.12);
+}
+
+/* ── Grade de previews de fotos ───────────────────────────────────── */
+.f-upload-previews {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(82px, 1fr));
+    gap: 8px;
+    width: 100%;
+}
+
+.f-preview-item {
+    position: relative;
+    border-radius: 7px;
+    overflow: hidden;
+    aspect-ratio: 1 / 1;
+    background-color: #1c1c1c;
+    /* borda sutil mas visível — mesma linguagem dos itens de vídeo */
+    border: 1px solid rgba(245, 166, 35, 0.2);
+    animation: f-slide-down 0.3s ease;
+}
+
+/* Placeholder enquanto a miniatura carrega */
+.f-preview-item::before {
+    content: '🖼';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    opacity: 0.15;
+}
+
+.f-preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    position: relative;
+    z-index: 1;
+}
+
+/* Gradiente com nome e tamanho sobre a foto */
+.f-preview-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.78));
+    padding: 18px 6px 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+.f-preview-nome {
+    font-size: 0.58rem;
+    color: #e8e8e8;
+    font-family: 'Cal Sans', 'Roboto', sans-serif;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.25;
+}
+.f-preview-tamanho {
+    font-size: 0.52rem;
+    color: #aaa;
+    font-family: 'Cal Sans', 'Roboto', sans-serif;
+}
+
+/* ── Aviso: mais de 5 fotos selecionadas ──────────────────────────── */
+.f-upload-aviso-max {
+    grid-column: 1 / -1;
+    font-size: 0.72rem;
+    color: var(--f-ouro);
+    font-family: 'Cal Sans', 'Roboto', sans-serif;
+    background: rgba(245, 166, 35, 0.07);
+    border: 1px solid rgba(245, 166, 35, 0.22);
+    border-radius: 5px;
+    padding: 7px 10px;
+    margin-top: 2px;
+    line-height: 1.4;
+}
+
+/* ── Botão "Remover todos" ────────────────────────────────────────── */
+.f-upload-limpar {
+    display: none; /* controlado via JS */
+    align-items: center;
+    gap: 5px;
+    background: none;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.3);
+    font-size: 0.7rem;
+    font-family: 'Cal Sans', 'Roboto', sans-serif;
+    padding: 5px 11px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 2px;
+    align-self: flex-end;
+    transition: border-color 0.2s, color 0.2s, background-color 0.2s;
+    position: relative;
+    z-index: 3;
+    line-height: 1;
+}
+.f-upload-limpar:hover {
+    border-color: rgba(192, 57, 43, 0.6);
+    color: #e07070;
+    background-color: rgba(192, 57, 43, 0.08);
+}
+
+/* ── Mensagem de erro inline ──────────────────────────────────────── */
+.f-campo-erro-msg {
+    display: none;
+    color: #e07070;
+    font-size: 0.73rem;
+    margin-top: 5px;
+    padding-left: 2px;
+    font-family: 'Cal Sans', 'Roboto', sans-serif;
+    line-height: 1.3;
+}
+
+/* ── Erro geral dos radios ────────────────────────────────────────── */
+#err-integrantes { margin-top: 6px; }
+
+/* ── Avisos servidor ──────────────────────────────────────────────── */
+.f-aviso {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 13px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-family: 'Cal Sans', 'Roboto', sans-serif;
+    margin-bottom: 22px;
+    line-height: 1.45;
+    animation: f-slide-down 0.3s ease;
+}
+.f-aviso.erro    { background: #1e0a0a; border: 1px solid rgba(192,57,43,0.5); color: #e07070; }
+.f-aviso.sucesso { background: #0a1e10; border: 1px solid rgba(39,174,96,0.5); color: #70e0a0; }
+.f-aviso-icone   { flex-shrink: 0; font-size: 0.95rem; margin-top: 1px; }
+@keyframes f-slide-down {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Divisor entre seções ─────────────────────────────────────────── */
+.f-divisor {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(245,166,35,0.2), transparent);
+    margin: 4px 0 20px;
+    border: none;
+}
+
+/* ── Botão Enviar ─────────────────────────────────────────────────── */
+.f-btn-enviar {
+    display: block;
+    width: 100%;
+    background-color: var(--f-ouro);
+    color: #160e00;
+    font-family: 'Odibee Sans', 'Arial Black', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: lowercase;
+    padding: 16px;
+    border: none;
+    border-radius: var(--f-radius-sm);
+    cursor: pointer;
+    text-align: center;
+    margin-top: 6px;
+    transition: background-color 0.2s ease, transform 0.12s ease, box-shadow 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+.f-btn-enviar:hover {
+    background-color: var(--f-ouro-hover);
+    box-shadow: 0 4px 20px rgba(245, 166, 35, 0.3);
+    transform: translateY(-1px);
+}
+.f-btn-enviar:active  { transform: translateY(0); }
+.f-btn-enviar:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* ── Ripple ───────────────────────────────────────────────────────── */
+.f-ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(0);
+    animation: f-ripple-anim 0.55s linear;
+    pointer-events: none;
+}
+@keyframes f-ripple-anim {
+    to { transform: scale(4); opacity: 0; }
+}
+
+/* ── Responsivo ───────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+    .formulario-wrapper { padding: 28px 14px 60px; }
+    .f-titulo { font-size: 1.95rem; }
+    .f-secao  { padding: 26px 16px 20px; }
+    .f-radio-grupo { gap: 12px 18px; }
+}

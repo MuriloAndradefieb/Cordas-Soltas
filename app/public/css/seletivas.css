@@ -138,3 +138,73 @@ body {
         text-align: center;
     }
 }
+   .btn-formulario {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background-color: #FFD700;
+            color: #000;
+            font-weight: 700;
+            font-size: 1.05rem;
+            text-decoration: none;
+            padding: 14px 32px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition:
+                background-color 0.25s ease,
+                box-shadow 0.25s ease,
+                transform 0.15s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+        }
+        .btn-formulario:hover {
+            background-color: #e6c300;
+            box-shadow: 0 0 22px rgba(255, 215, 0, 0.75);
+            transform: translateY(-2px);
+        }
+        .btn-formulario:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        /* Ícone de seta no botão */
+        .btn-formulario .btn-seta {
+            font-size: 1.2rem;
+            transition: transform 0.25s ease;
+        }
+        .btn-formulario:hover .btn-seta {
+            transform: translateX(4px);
+        }
+
+        /* Ripple effect */
+        .btn-formulario .ripple-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.18);
+            transform: scale(0);
+            animation: ripple-expand 0.55s linear;
+            pointer-events: none;
+        }
+        @keyframes ripple-expand {
+            to { transform: scale(4); opacity: 0; }
+        }
+
+        /* Overlay de transição de página */
+        .page-transition-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: #000;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 9999;
+            transition: opacity 0.4s ease;
+        }
+        .page-transition-overlay.ativo {
+            opacity: 1;
+            pointer-events: all;
+        }
+
