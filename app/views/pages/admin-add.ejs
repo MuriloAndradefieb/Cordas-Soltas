@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adicionar Administrador - Cordas Soltas</title>
+    <link rel="stylesheet" href="/css/admin-add.css">
+</head>
+<body>
+
+    <div class="top-line"></div>
+
+    <header class="main-header">
+        <div class="logo-container">
+            <h2 style="color: white; font-style: italic; letter-spacing: 1px;">CORDAS SOLTAS</h2>
+        </div>
+    </header>
+
+    <div class="app-container">
+        
+        <aside class="sidebar">
+            <ul>
+                <li class="active">⚙️ Administradores</li>
+                <li>👤 Cadastro</li>
+                <li>🎫 Ingressos</li>
+                <li>🧰 Luthbox</li>
+            </ul>
+        </aside>
+
+        <main class="content-area">
+            
+            <div class="sub-header">
+                <div class="breadcrumb">⚙️ Administradores > Adicionar</div>
+                <div class="title">ADMINISTRADORES</div>
+            </div>
+
+            <% if (erro) { %>
+                <div class="alert alert-error"><%= erro %></div>
+            <% } %>
+            <% if (sucesso) { %>
+                <div class="alert alert-success"><%= sucesso %></div>
+            <% } %>
+
+            <form action="/adm/administradores/adicionar" method="POST" id="form-add-admin">
+                
+                <div class="action-bar">
+                    <button type="button" id="btn-cancel" class="btn-cancel">✖ Cancelar</button>
+                    <button type="submit" class="btn-save">💾 Salvar</button>
+                </div>
+
+                <div class="form-card">
+                    
+                    <div class="form-group">
+                        <label>Nome</label>
+                        <input type="text" name="nome" placeholder="nome" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>E-mail</label>
+                        <input type="email" name="email" placeholder="e-mail" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Usuário</label>
+                        <input type="text" name="usuario" placeholder="usuário" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Senha</label>
+                        <input type="password" name="senha" placeholder="Senha" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Adm Geral</label>
+                        <div class="radio-container">
+                            <label class="radio-label">
+                                <input type="radio" name="adm_geral" value="sim" checked> Sim
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="adm_geral" value="não"> Não
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <script src="/js/admin-add.js"></script>
+</body>
+</html>

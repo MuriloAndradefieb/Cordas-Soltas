@@ -72,6 +72,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
     foto_perfil    MEDIUMTEXT,
     criado_em      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+ALTER TABLE usuarios MODIFY COLUMN role ENUM('artista', 'visitante', 'admin', 'admin_geral') DEFAULT 'visitante';
 
 -- ── Tabela de inscrições nas seletivas ───────────────────────────────
 

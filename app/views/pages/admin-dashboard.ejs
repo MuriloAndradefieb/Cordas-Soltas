@@ -31,7 +31,9 @@
             
             <div class="sub-header">
                 <div class="title">ADMINISTRADORES</div>
-                <button class="btn-add"><span>+</span> Adicionar</button>
+               <a href="/adm/administradores/adicionar" style="text-decoration: none;">
+    <button class="btn-add"><span>+</span> Adicionar</button>
+</a>
             </div>
 
             <div class="search-container">
@@ -52,7 +54,7 @@
                             <% administradores.forEach(function(adm) { %>
                                 <tr>
                                     <td><span class="email-link"><%= adm.email %></span></td>
-                                    <td><%= adm.usuario %></td>
+                                    <td><%= adm.username %></td>
                                     <td>
                                         <button class="btn-action">⚙️</button>
                                     </td>

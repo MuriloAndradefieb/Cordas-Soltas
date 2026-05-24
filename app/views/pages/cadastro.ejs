@@ -8,10 +8,8 @@
     <link rel="stylesheet" href="css/login-cadastro.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;0,700;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
-    <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
     <div vw class="enabled">
         <div vw-access-button class="active"></div>
         <div vw-plugin-wrapper>
@@ -20,18 +18,33 @@
     </div>
     <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
     <script>new window.VLibras.Widget('https://vlibras.gov.br/app');</script>
-    <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
 
-    <!-- Botão Voltar (conforme protótipo) -->
     <a href="/" class="lc-voltar" aria-label="Voltar para a página inicial">&#8592; Voltar</a>
 
     <div class="lc-container">
         <div class="lc-card">
+            
+            <div class="lc-logo-container">
+                <svg class="lc-logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 18V5l12-2v13" />
+                    <circle cx="6" cy="18" r="3" />
+                    <circle cx="18" cy="16" r="3" />
+                </svg>
+                <span class="lc-logo-text">CORDAS<br>SOLTAS</span>
+            </div>
 
-            <!-- Título -->
-            <h1 class="lc-titulo">Crie sua conta</h1>
+            <div class="lc-header-intro">
+                <p class="lc-sub-intro">Cadastro</p>
+                <h1 class="lc-titulo-seja">Seja bem vindo</h1>
+                <p class="lc-desc-intro">Crie sua conta pra acessar nosso site</p>
+            </div>
 
-            <!-- Mensagem de erro do servidor (sem pop-up) -->
+            <div class="lc-tab-container">
+                <div class="lc-tab-toggle" id="tab-toggle-bg"></div>
+                <button type="button" class="lc-tab-btn active" id="btn-tab-visitante">Visitante</button>
+                <button type="button" class="lc-tab-btn" id="btn-tab-artista">Artista</button>
+            </div>
+
             <% if (typeof erro !== 'undefined' && erro) { %>
                 <div class="lc-aviso erro">
                     <span class="lc-aviso-icone">⚠️</span>
@@ -39,7 +52,6 @@
                 </div>
             <% } %>
 
-            <!-- Mensagem de sucesso do servidor (sem pop-up) -->
             <% if (typeof sucesso !== 'undefined' && sucesso) { %>
                 <div class="lc-aviso sucesso">
                     <span class="lc-aviso-icone">✅</span>
@@ -47,150 +59,19 @@
                 </div>
             <% } %>
 
-            <!-- Formulário — faz POST direto ao servidor -->
             <form id="cadastro-form" method="POST" action="/cadastro" novalidate class="lc-form">
+                
+                <input type="hidden" id="role-input" name="role" value="visitante">
 
-                <label for="username">Nome de usuário</label>
-                <input type="text" id="username" name="username"
-                       placeholder="nome de usuário" required autocomplete="username">
-                <span id="username-error" class="lc-field-error"></span>
+                <div id="dynamic-fields-container">
+                    </div>
 
-                <label for="email">E-mail</label>
-                <input type="email" id="email" name="email"
-                       placeholder="Seu email" required autocomplete="email">
-                <span id="email-error" class="lc-field-error"></span>
-
-                <label for="password">Senha</label>
-                <input type="password" id="password" name="password"
-                       placeholder="Sua senha" required autocomplete="new-password">
-                <span id="password-error" class="lc-field-error"></span>
-
-                <!-- Seleção de tipo de conta -->
-                <p class="lc-role-titulo">selecione seu tipo de conta</p>
-                <div class="lc-role-grupo">
-                    <input type="radio" id="role-artista"   name="role" value="Artista" required>
-                    <label for="role-artista">Artista</label>
-
-                    <input type="radio" id="role-visitante" name="role" value="Visitante">
-                    <label for="role-visitante">Visitante</label>
-                </div>
-
-                <!-- Campos extras para artista (ocultos até selecionar Artista) -->
-                <div id="artist-fields" class="lc-artist-fields">
-
-                    <label for="bandName">Nome da Banda/Projeto</label>
-                    <input type="text" id="bandName" name="bandName"
-                           placeholder="Nome da sua banda ou projeto">
-                    <span id="bandName-error" class="lc-field-error"></span>
-
-                    <label for="musicalStyle">Estilo Musical</label>
-                    <input type="text" id="musicalStyle" name="musicalStyle"
-                           placeholder="Ex: Rock, Sertanejo, MPB">
-                    <span id="musicalStyle-error" class="lc-field-error"></span>
-
-                    <label for="instagram">Instagram (Opcional)</label>
-                    <input type="text" id="instagram" name="instagram"
-                           placeholder="@seu_perfil">
-                    <span id="instagram-error" class="lc-field-error"></span>
-
-                </div>
-
-                <button type="submit" class="lc-btn-principal">entrar</button>
+                <button type="submit" class="lc-btn-principal">Cadastrar</button>
             </form>
-
-            <p class="lc-rodape-texto">
-                Já tem uma conta? <a href="/login">Faça login</a>
-            </p>
 
         </div>
     </div>
 
-    <!--
-        JS de validação VISUAL apenas (feedback imediato).
-        Validação real acontece no back-end (authController.js).
-        Sem localStorage. Sem alert().
-        Se válido, o formulário faz POST normalmente ao servidor.
-    -->
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const $ = id => document.getElementById(id);
-
-        const roleArtista   = $('role-artista');
-        const roleVisitante = $('role-visitante');
-        const artistFields  = $('artist-fields');
-        const form          = $('cadastro-form');
-
-        // ── Exibe / oculta campos de artista ────────────────────────
-        const toggleArtistFields = () => {
-            if (roleArtista && roleArtista.checked) {
-                artistFields.classList.add('visivel');
-            } else {
-                artistFields.classList.remove('visivel');
-            }
-        };
-
-        if (roleArtista)   roleArtista.addEventListener('change', toggleArtistFields);
-        if (roleVisitante) roleVisitante.addEventListener('change', toggleArtistFields);
-        toggleArtistFields();
-
-        // ── Funções de marcação de erro visual ───────────────────────
-        const markError = (inputId, errSpanId, msg) => {
-            const inp  = $(inputId);
-            const span = $(errSpanId);
-            if (inp)  inp.classList.add('input-error');
-            if (span) { span.textContent = msg; span.style.display = 'block'; }
-        };
-        const clearError = (inputId, errSpanId) => {
-            const inp  = $(inputId);
-            const span = $(errSpanId);
-            if (inp)  inp.classList.remove('input-error');
-            if (span) { span.textContent = ''; span.style.display = 'none'; }
-        };
-
-        // Remove erro ao digitar
-        ['username','email','password','bandName','musicalStyle'].forEach(id => {
-            const inp = $(id);
-            if (inp) inp.addEventListener('input', () => clearError(id, id + '-error'));
-        });
-
-        // ── Validação antes de enviar (só bloqueia o óbvio) ─────────
-        form.addEventListener('submit', (e) => {
-            let ok = true;
-
-            ['username','email','password','bandName','musicalStyle'].forEach(id => {
-                clearError(id, id + '-error');
-            });
-
-            const username = $('username')?.value.trim();
-            const email    = $('email')?.value.trim();
-            const password = $('password')?.value;
-            const role     = document.querySelector('input[name="role"]:checked');
-
-            if (!username) {
-                markError('username', 'username-error', 'O nome de usuário é obrigatório.');
-                ok = false;
-            }
-            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                markError('email', 'email-error', 'Formato de e-mail inválido.');
-                ok = false;
-            }
-            if (!password || password.length < 6) {
-                markError('password', 'password-error', 'A senha deve ter pelo menos 6 caracteres.');
-                ok = false;
-            }
-            if (!role) {
-                ok = false;
-            }
-            if (roleArtista && roleArtista.checked) {
-                const banda  = $('bandName')?.value.trim();
-                const estilo = $('musicalStyle')?.value.trim();
-                if (!banda)  { markError('bandName',     'bandName-error',     'Nome da banda obrigatório.'); ok = false; }
-                if (!estilo) { markError('musicalStyle', 'musicalStyle-error', 'Estilo musical obrigatório.'); ok = false; }
-            }
-
-            if (!ok) e.preventDefault();
-        });
-    });
-    </script>
+    <script src="js/cadastro.js"></script>
 </body>
 </html>
