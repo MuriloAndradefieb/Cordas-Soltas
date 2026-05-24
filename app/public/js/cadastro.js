@@ -8,11 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const fieldsContainer = $('dynamic-fields-container');
     const form = $('cadastro-form');
 
-    // Templates exatos dos campos conforme o Protótipo de Imagem
     const templateVisitante = `
         <div class="lc-group">
-            <label for="username">Usuario</label>
-            <input type="text" id="username" name="username" placeholder="Nome de usuario" required autocomplete="username">
+            <label for="username">Usuário</label>
+            <input type="text" id="username" name="username" placeholder="Nome de usuário" required autocomplete="username">
             <span id="username-error" class="lc-field-error"></span>
         </div>
 
@@ -29,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
 
         <div class="lc-group">
-            <label for="confirm_password">Senha</label>
+            <label for="confirm_password">Confirmar Senha</label>
             <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirme sua senha" required autocomplete="new-password">
             <span id="confirm_password-error" class="lc-field-error"></span>
         </div>
@@ -49,14 +48,14 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
 
         <div class="lc-group">
-            <label for="confirm_password">Senha</label>
+            <label for="confirm_password">Confirmar Senha</label>
             <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirme sua senha" required autocomplete="new-password">
             <span id="confirm_password-error" class="lc-field-error"></span>
         </div>
 
         <div class="lc-group">
             <label for="bandName">Nome da banda</label>
-            <input type="text" id="bandName" name="bandName" placeholder="nome da sua banda" required>
+            <input type="text" id="bandName" name="bandName" placeholder="Nome da sua banda" required>
             <span id="bandName-error" class="lc-field-error"></span>
         </div>
 
@@ -73,46 +72,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
         <div class="lc-group">
             <label for="musicalStyle">Estilo musical</label>
-            <input type="text" id="musicalStyle" name="musicalStyle" placeholder="Seu estilo" required>
+            <select id="musicalStyle" name="musicalStyle" required class="lc-select-custom">
+                <option value="" disabled selected hidden>Selecione um estilo...</option>
+                <option value="Rock">Rock</option>
+                <option value="Samba">Samba</option>
+                <option value="Pagode">Pagode</option>
+                <option value="Jazz">Jazz</option>
+                <option value="Eletrônica">Eletrônica</option>
+                <option value="Forró">Forró</option>
+                <option value="Sertanejo">Sertanejo</option>
+                <option value="MPB">MPB</option>
+                <option value="Reggae">Reggae</option>
+                <option value="Hip-Hop/Rap">Hip-Hop / Rap</option>
+                <option value="Metal">Metal</option>
+                <option value="Pop">Pop</option>
+                <option value="Outro">Outro</option>
+            </select>
             <span id="musicalStyle-error" class="lc-field-error"></span>
         </div>
     `;
-
-    // Função para renderizar os campos e mover o background da aba
-    const switchTab = (targetRole) => {
-        if (targetRole === 'visitante') {
-            btnVisitante.classList.add('active');
-            btnArtista.classList.remove('active');
-            tabToggleBg.style.left = '4px';
-            roleInput.value = 'visitante';
-            fieldsContainer.innerHTML = templateVisitante;
-        } else {
-            btnArtista.classList.add('active');
-            btnVisitante.classList.remove('active');
-            tabToggleBg.style.left = 'calc(50% - 2px)';
-            roleInput.value = 'artista';
-            fieldsContainer.innerHTML = templateArtista;
-        }
-        setupInputListeners();
-    };
-
-    btnVisitante.addEventListener('click', () => switchTab('visitante'));
-    btnArtista.addEventListener('click', () => switchTab('artista'));
-
-    // Inicializa carregando a aba visitante por padrão (conforme lado direito da imagem)
-    switchTab('visitante');
-
-    // Adiciona limpeza de erro automática ao começar a digitar nos campos dinâmicos
-    function setupInputListeners() {
-        const inputs = fieldsContainer.querySelectorAll('input, select');
-        inputs.forEach(inp => {
-            inp.addEventListener('input', () => {
-                inp.classList.remove('input-error');
-                const errSpan = $(inp.id + '-error');
-                if (errSpan) errSpan.style.display = 'none';
-            });
-        });
-    }
 
     const markVisualError = (inputEl, msg) => {
         if (!inputEl) return;
@@ -124,65 +102,107 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Validação Visual antes de enviar ao Servidor Node
-    form.addEventListener('submit', (e) => {
-        let ok = true;
-        
-        // Limpa erros anteriores
-        const errors = fieldsContainer.querySelectorAll('.lc-field-error');
-        errors.forEach(span => span.style.display = 'none');
+    const setupInputListeners = () => {
         const inputs = fieldsContainer.querySelectorAll('input, select');
-        inputs.forEach(inp => inp.classList.remove('input-error'));
+        inputs.forEach(inp => {
+            const clearError = () => {
+                inp.classList.remove('input-error');
+                const errSpan = $(inp.id + '-error');
+                if (errSpan) errSpan.style.display = 'none';
+            };
+            inp.addEventListener('input', clearError);
+            inp.addEventListener('change', clearError);
+        });
+    };
 
-        const email = $('email');
-        const password = $('password');
-        const confirmPassword = $('confirm_password');
-
-        // Validações básicas comuns
-        if (email && (!email.value.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value))) {
-            markVisualError(email, 'Insira um e-mail válido.');
-            ok = false;
-        }
-
-        if (password && password.value.length < 6) {
-            markVisualError(password, 'A senha necessita ter no mínimo 6 caracteres.');
-            ok = false;
-        }
-
-        if (password && confirmPassword && password.value !== confirmPassword.value) {
-            markVisualError(confirmPassword, 'As senhas informadas não coincidem.');
-            ok = false;
-        }
-
-        // Validações específicas por perfil
-        if (roleInput.value === 'visitante') {
-            const username = $('username');
-            if (username && !username.value.trim()) {
-                markVisualError(username, 'O nome de usuário é obrigatório.');
-                ok = false;
-            }
+    const switchTab = (targetRole) => {
+        if (targetRole === 'visitante') {
+            btnVisitante.classList.add('active');
+            btnArtista.classList.remove('active');
+            if (tabToggleBg) tabToggleBg.style.left = '4px';
+            roleInput.value = 'visitante';
+            fieldsContainer.innerHTML = templateVisitante;
         } else {
-            const bandName = $('bandName');
-            const numIntegrantes = $('numIntegrantes');
-            const musicalStyle = $('musicalStyle');
-
-            if (bandName && !bandName.value.trim()) {
-                markVisualError(bandName, 'O nome da banda é obrigatório.');
-                ok = false;
-            }
-            if (numIntegrantes && !numIntegrantes.value) {
-                markVisualError(numIntegrantes, 'Selecione a quantidade de integrantes.');
-                ok = false;
-            }
-            if (musicalStyle && !musicalStyle.value.trim()) {
-                markVisualError(musicalStyle, 'O estilo musical é obrigatório.');
-                ok = false;
-            }
+            btnArtista.classList.add('active');
+            btnVisitante.classList.remove('active');
+            if (tabToggleBg) tabToggleBg.style.left = 'calc(50% - 2px)';
+            roleInput.value = 'artista';
+            fieldsContainer.innerHTML = templateArtista;
         }
+        setupInputListeners();
+    };
 
-        // Se houver erros, impede o envio do formulário real
-        if (!ok) {
-            e.preventDefault();
-        }
-    });
+    if (btnVisitante) btnVisitante.addEventListener('click', () => switchTab('visitante'));
+    if (btnArtista) btnArtista.addEventListener('click', () => switchTab('artista'));
+
+    if (roleInput && roleInput.value === 'artista') {
+        switchTab('artista');
+    } else {
+        switchTab('visitante');
+    }
+
+    if (form) {
+        form.addEventListener('submit', (e) => {
+            let ok = true;
+            
+            const errors = fieldsContainer.querySelectorAll('.lc-field-error');
+            errors.forEach(span => span.style.display = 'none');
+            const inputs = fieldsContainer.querySelectorAll('input, select');
+            inputs.forEach(inp => inp.classList.remove('input-error'));
+
+            const email = $('email');
+            const password = $('password');
+            const confirmPassword = $('confirm_password');
+
+            if (email) {
+                if (!email.value.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+                    markVisualError(email, 'Insira um e-mail válido.');
+                    ok = false;
+                }
+            }
+
+            if (password) {
+                if (password.value.length < 6) {
+                    markVisualError(password, 'A senha necessita ter no mínimo 6 caracteres.');
+                    ok = false;
+                }
+            }
+
+            if (password && confirmPassword) {
+                if (password.value !== confirmPassword.value) {
+                    markVisualError(confirmPassword, 'As senhas informadas não coincidem.');
+                    ok = false;
+                }
+            }
+
+            if (roleInput.value === 'visitante') {
+                const username = $('username');
+                if (username && !username.value.trim()) {
+                    markVisualError(username, 'O nome de usuário é obrigatório.');
+                    ok = false;
+                }
+            } else if (roleInput.value === 'artista') {
+                const bandName = $('bandName');
+                const numIntegrantes = $('numIntegrantes');
+                const musicalStyle = $('musicalStyle');
+
+                if (bandName && !bandName.value.trim()) {
+                    markVisualError(bandName, 'O nome da banda é obrigatório.');
+                    ok = false;
+                }
+                if (numIntegrantes && !numIntegrantes.value) {
+                    markVisualError(numIntegrantes, 'Selecione a quantidade de integrantes.');
+                    ok = false;
+                }
+                if (musicalStyle && !musicalStyle.value) {
+                    markVisualError(musicalStyle, 'Selecione o estilo musical.');
+                    ok = false;
+                }
+            }
+
+            if (!ok) {
+                e.preventDefault();
+            }
+        });
+    }
 });

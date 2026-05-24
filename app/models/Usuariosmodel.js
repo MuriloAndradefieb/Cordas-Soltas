@@ -17,7 +17,14 @@ const UsuarioModel = {
     },
 
     async criar(dados) {
-        const { username, email, senha, role, nomeBanda, estiloMusical, instagram } = dados;
+        const username = dados.username;
+        const email = dados.email;
+        const senha = dados.senha;
+        const role = dados.role;
+        const nomeBanda = dados.nomeBanda || dados.nome_banda;
+        const estiloMusical = dados.estiloMusical || dados.estilo_musical;
+        const instagram = dados.instagram;
+
         const [result] = await pool.query(
             `INSERT INTO usuarios 
              (username, email, senha, role, nome_banda, estilo_musical, instagram)
@@ -27,9 +34,9 @@ const UsuarioModel = {
                 email,
                 senha,
                 role,
-                nomeBanda    || null,
+                nomeBanda     || null,
                 estiloMusical || null,
-                instagram    || null
+                instagram     || null
             ]
         );
         return result.insertId;
