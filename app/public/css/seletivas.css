@@ -1,3 +1,8 @@
+/* =====================================================================
+   seletivas.css  –  Estrutura do protótipo, escala e estilo do projeto
+   ===================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Odibee+Sans&display=swap');
 
 body {
     background-color: #000;
@@ -7,204 +12,283 @@ body {
 
 .seletivas-main-content {
     background-color: #121212;
-    padding: 1rem;
+    padding: 0;
 }
 
-.seletivas-container {
+/* ================================================================
+   1. CABEÇALHO  —  "tudo sobre nosso__ / Concurso"
+   ================================================================ */
+.seletivas-cabecalho {
+    text-align: center;
+    padding: 2rem 1rem 1.5rem;
+    background-color: #121212;
+}
+
+.seletivas-cabecalho .cabecalho-eyebrow {
+    font-size: 1rem;
+    color: #ccc;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.seletivas-cabecalho .cabecalho-eyebrow::before,
+.seletivas-cabecalho .cabecalho-eyebrow::after {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 1px;
+    background-color: #aaa;
+}
+
+.seletivas-cabecalho h1 {
+    font-family: 'Odibee Sans', sans-serif;
+    font-size: 60px;
+    font-weight: 400;
+    color: #FFD700;
+    margin: 0;
+    line-height: 1.1;
+}
+
+/* ================================================================
+   2. BLOCO INTRO  —  imagem esquerda + texto direita
+   ================================================================ */
+.seletivas-bloco-intro {
+    display: flex;
+    align-items: stretch;
     max-width: 800px;
     margin: 0 auto;
-    text-align: center;
 }
 
-.seletivas-header {
-    margin: 2rem 0;
+.seletivas-bloco-intro .bloco-imagem {
+    flex: 0 0 45%;
+    max-width: 45%;
+    overflow: hidden;
 }
 
-.seletivas-header p {
-    font-size: 1.2rem;
-    color: #ccc;
-    margin: 0;
-    text-transform: lowercase;
+.seletivas-bloco-intro .bloco-imagem img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
-.seletivas-header h1 {
-    font-size: 4rem;
-    color: #FFD700;
-    font-weight: 700;
-    margin: 0;
-    text-transform: uppercase;
-    line-height: 1;
-    text-shadow: 0 0 8px rgba(255, 215, 0, 0.7),
-                 0 0 15px rgba(255, 215, 0, 0.5),
-                 0 0 25px rgba(255, 215, 0, 0.3);
+.seletivas-bloco-intro .bloco-texto {
+    flex: 1;
+    background-color: #121212;
+    padding: 1.5rem 1.4rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.75rem;
 }
 
-.seletivas-image-wrapper {
-    margin: 2rem 0;
-}
-
-.seletivas-image-wrapper img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-}
-
-.seletivas-text-block {
+.seletivas-bloco-intro .bloco-texto p {
     font-size: 1rem;
     line-height: 1.6;
     color: #e0e0e0;
-    max-width: 600px;
-    margin: 0 auto 2rem auto;
-    text-align: left;
 }
 
-.seletivas-signup-section {
-    margin: 4rem 0;
+/* ================================================================
+   3. SEPARADOR  —  espaço escuro entre os dois blocos
+   ================================================================ */
+.seletivas-separador {
+    display: block;
+    height: 50px;
+    border: none;
+    background-color: #121212;
+    margin: 0;
 }
 
-.seletivas-signup-section h2 {
+/* ================================================================
+   4. IMAGEM LARGA  —  full width dentro do container
+   ================================================================ */
+.seletivas-imagem-larga {
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 0;
+}
+
+.seletivas-imagem-larga img {
+    width: 100%;
+    height: auto;
+    max-height: 350px;
+    object-fit: cover;
+    display: block;
+}
+
+/* ================================================================
+   5. SEÇÃO INSCREVA-SE
+   ================================================================ */
+.seletivas-inscricao {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2.5rem 2rem 3rem;
+    text-align: center;
+    background-color: #121212;
+}
+
+.seletivas-inscricao h2 {
     font-size: 2.5rem;
-    color: #FFD700;
     font-weight: 700;
-    margin-bottom: 0.5rem;
-    text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
-}
-
-.seletivas-signup-section h3 {
-    font-size: 1.2rem;
-    color: #fff;
-    font-weight: 400;
-    margin-bottom: 1rem;
-}
-
-.seletivas-signup-section p {
-    color: #ccc;
+    color: #FFD700;
     margin-bottom: 1.5rem;
 }
 
-.form-link img {
-    max-width: 100%;
-    border-radius: 4px;
-    border: 1px solid #444;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+/* Bloco de atenção */
+.inscricao-atencao {
+    margin-bottom: 1.2rem;
+    text-align: center;
 }
 
-.form-link:hover img {
-    transform: scale(1.02);
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+.inscricao-atencao .atencao-label {
+    display: block;
+    color: #FFD700;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 0.4rem;
 }
 
-.rules-prompt {
-    margin-top: 2rem;
+.inscricao-atencao p {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #e0e0e0;
+    font-weight: 700;
+}
+
+/* Aviso "clique abaixo" */
+.inscricao-aviso-clique {
+    font-size: 0.95rem;
+    color: #ccc;
+    margin-bottom: 1.2rem;
+    text-align: center;
+    line-height: 1.6;
     font-style: italic;
 }
 
-.button-regulamento {
-    display: inline-block;
-    background-color: #FFD700;
-    color: #000;
-    font-weight: bold;
+.inscricao-aviso-clique strong {
+    color: #FFD700;
+    font-style: normal;
+    font-weight: 700;
+}
+
+/* ================================================================
+   6. BOTÕES  —  Regulamento e Formulário
+   ================================================================ */
+.inscricao-botoes {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.btn-inscricao {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background-color: #252424;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.05rem;
     text-decoration: none;
-    padding: 1rem 2.5rem;
-    border-radius: 4px;
-    text-transform: uppercase;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    margin-top: 0.5rem;
-    box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+    padding: 14px 20px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    transition: background-color 0.25s ease,
+                box-shadow 0.25s ease,
+                transform 0.15s ease;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
 }
 
-.button-regulamento:hover {
-    background-color: #e6c300;
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+.btn-inscricao:hover {
+    background-color: #333131;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+    transform: translateY(-2px);
 }
 
-.seletivas-footer {
+.btn-inscricao:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.btn-inscricao .btn-icone {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+}
+
+/* ================================================================
+   7. FOOTER
+   ================================================================ */
+.seletivas-rodape {
     text-align: center;
     padding: 2rem 1rem;
     font-size: 0.8rem;
     color: #888;
     border-top: 1px solid #333;
     line-height: 1.5;
+    background-color: #000;
 }
 
+/* ================================================================
+   8. OVERLAY DE TRANSIÇÃO
+   ================================================================ */
+.page-transition-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background-color: #000;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transition: opacity 0.38s ease;
+}
+
+.page-transition-overlay.ativo {
+    display: block;
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* ================================================================
+   9. RESPONSIVO
+   ================================================================ */
 @media (max-width: 768px) {
-    .seletivas-header h1 {
-        font-size: 3rem;
-    }
-    .seletivas-signup-section h2 {
+    .seletivas-cabecalho h1 {
         font-size: 2rem;
     }
-    .seletivas-text-block {
-        text-align: center;
+
+    .seletivas-bloco-intro {
+        flex-direction: column;
+    }
+
+    .seletivas-bloco-intro .bloco-imagem {
+        flex: none;
+        max-width: 100%;
+        max-height: 220px;
+    }
+
+    .seletivas-separador {
+        height: 30px;
+    }
+
+    .seletivas-inscricao h2 {
+        font-size: 2rem;
+    }
+
+    .btn-inscricao {
+        font-size: 1rem;
+        padding: 12px 16px;
     }
 }
-   .btn-formulario {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            background-color: #FFD700;
-            color: #000;
-            font-weight: 700;
-            font-size: 1.05rem;
-            text-decoration: none;
-            padding: 14px 32px;
-            border-radius: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            transition:
-                background-color 0.25s ease,
-                box-shadow 0.25s ease,
-                transform 0.15s ease;
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-            border: none;
-            box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
-        }
-        .btn-formulario:hover {
-            background-color: #e6c300;
-            box-shadow: 0 0 22px rgba(255, 215, 0, 0.75);
-            transform: translateY(-2px);
-        }
-        .btn-formulario:active {
-            transform: translateY(0) scale(0.98);
-        }
-
-        /* Ícone de seta no botão */
-        .btn-formulario .btn-seta {
-            font-size: 1.2rem;
-            transition: transform 0.25s ease;
-        }
-        .btn-formulario:hover .btn-seta {
-            transform: translateX(4px);
-        }
-
-        /* Ripple effect */
-        .btn-formulario .ripple-circle {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(0, 0, 0, 0.18);
-            transform: scale(0);
-            animation: ripple-expand 0.55s linear;
-            pointer-events: none;
-        }
-        @keyframes ripple-expand {
-            to { transform: scale(4); opacity: 0; }
-        }
-
-        /* Overlay de transição de página */
-        .page-transition-overlay {
-            position: fixed;
-            inset: 0;
-            background-color: #000;
-            opacity: 0;
-            pointer-events: none;
-            z-index: 9999;
-            transition: opacity 0.4s ease;
-        }
-        .page-transition-overlay.ativo {
-            opacity: 1;
-            pointer-events: all;
-        }
-
