@@ -3,6 +3,46 @@ const bcrypt       = require('bcryptjs');
 
 const PerfilController = {
 
+    // ─── EXIBIR PERFIL (BUSCA DADOS ATUALIZADOS DO BANCO) ──────────────────────
+    async exibir(req, res) {
+        try {
+            const id = req.session.usuario.id;
+
+            // Busca os dados em tempo real do banco para evitar cache ou lixo na sessão
+            const usuarioBanco = await UsuariosModel.buscarPorId(id);
+
+            if (!usuarioBanco) {
+                return res.redirect('/login?erro=Usuario+nao+encontrado');
+            }
+
+            // Atualiza a sessão com os dados reais do banco
+            req.session.usuario = usuarioBanco;
+
+            return res.render('pages/perfil', {
+                titulo: 'Meu Perfil',
+                usuario: usuarioBanco,
+                erro: req.query.erro || null,
+                sucesso: req.query.sucesso || null
+            });
+
+        } catch (error) {
+            console.error('Erro ao carregar perfil:', error);
+            return res.redirect('/?erro=Erro+ao+carregar+perfil');
+        }
+    },
+
+    // ─── LOGOUT / SAIR DA CONTA ───────────────────────────────────────────────
+    logout(req, res) {
+        req.session.destroy((err) => {
+            if (err) {
+                console.error('Erro ao destruir sessão:', err);
+                return res.redirect('/perfil?erro=Erro+ao+sair');
+            }
+            res.clearCookie('connect.sid'); // Limpa o cookie de sessão no navegador
+            return res.redirect('/'); // Redireciona para a home limpo
+        });
+    },
+
     // ─── EDITAR DADOS DO PERFIL ───────────────────────────────────────────────
     async editar(req, res) {
         try {
@@ -14,11 +54,6 @@ const PerfilController = {
             }
 
             await UsuariosModel.atualizar(id, { username, email, telefone });
-
-            // Atualiza a sessão
-            req.session.usuario.username = username;
-            req.session.usuario.email    = email;
-            req.session.usuario.telefone = telefone || null;
 
             return res.redirect('/perfil?sucesso=Perfil+atualizado+com+sucesso');
 
@@ -64,7 +99,6 @@ const PerfilController = {
             }
 
             await UsuariosModel.atualizarRole(id, role);
-            req.session.usuario.role = role;
 
             return res.redirect('/perfil?sucesso=Perfil+atualizado');
 
@@ -85,7 +119,6 @@ const PerfilController = {
             }
 
             await UsuariosModel.atualizarFoto(id, fotoBase64);
-            req.session.usuario.fotoPerfil = fotoBase64;
 
             return res.json({ ok: true });
 

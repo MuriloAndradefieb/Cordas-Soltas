@@ -337,3 +337,323 @@ a {
         display: none; /* Esconde o botão hambúrguer no PC */
     }
 }
+/* BOTÃO DE LOGOUT / SAIR DA CONTA */
+.logout-section {
+    margin-top: 40px;
+    text-align: center;
+}
+
+.btn-logout {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 200px;
+    padding: 12px 20px;
+    background-color: transparent;
+    border: 2px solid #ff4d4d;
+    color: #ff4d4d;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.btn-logout:hover {
+    background-color: #ff4d4d;
+    color: #ffffff;
+    box-shadow: 0 0 15px rgba(255, 77, 77, 0.4);
+}
+/* =====================================================================
+   MODAL DE LOGOUT SEMÂNTICO (<dialog>) - DESIGN CORDAS SOLTAS
+   ===================================================================== */
+
+/* Reseta e estiliza a caixa principal do Dialog */
+dialog.modal-caixa {
+    all: unset; /* Remove completamente os estilos cinzas padrão do navegador */
+    box-sizing: border-box;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #111111; /* Fundo super escuro combinando com o site */
+    border: 1px solid #222222;
+    width: 90%;
+    max-width: 420px;
+    padding: 35px 30px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
+    z-index: 2000;
+}
+
+/* Pseudo-elemento nativo que cria o fundo escuro desbotado ao fundo */
+dialog.modal-caixa::backdrop {
+    background-color: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(6px); /* Lindo efeito de desfoque de estúdio */
+}
+
+/* Estrutura do Cabeçalho */
+.modal-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+    padding: 0;
+    background: none;
+}
+
+/* Ícone de Alerta em Vermelho Neon */
+.modal-icon {
+    font-size: 38px;
+    color: #ff3333;
+    text-shadow: 0 0 15px rgba(255, 51, 51, 0.3);
+}
+
+.modal-titulo {
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.02em;
+    margin: 0;
+}
+
+/* Texto descritivo */
+.modal-texto {
+    font-size: 14px;
+    color: #888888;
+    margin: 0 0 30px 0;
+    line-height: 1.5;
+}
+
+/* Menu de Botões (Flexbox corrigido para ficarem lado a lado sem quebrar) */
+.modal-botoes {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 15px;
+    width: 100%;
+    justify-content: center;
+}
+
+/* Estilo base para os botões internos do modal */
+.modal-botoes button, 
+.modal-botoes a {
+    all: unset;
+    box-sizing: border-box;
+    flex: 1; /* Força os dois botões a terem o mesmo tamanho exato */
+    padding: 14px 20px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s, color 0.2s;
+}
+
+/* Botão Cancelar (Cinza escuro discreto) */
+.btn-modal-cancelar {
+    background-color: #222222;
+    color: #aaaaaa;
+    border: 1px solid #333333;
+}
+
+.btn-modal-cancelar:hover {
+    background-color: #2a2a2a;
+    color: #ffffff;
+    border-color: #444444;
+}
+
+/* Botão Confirmar Sair (Vermelho Sólido) */
+.btn-modal-confirmar {
+    background-color: #ff3333;
+    color: #ffffff;
+    border: 1px solid #ff3333;
+}
+
+.btn-modal-confirmar:hover {
+    background-color: #e62e2e;
+    border-color: #e62e2e;
+    box-shadow: 0 0 20px rgba(255, 51, 51, 0.4);
+}
+
+
+/* =====================================================================
+   ESTILOS DE TÍTULOS E TAGS DO PERFIL
+   ===================================================================== */
+.perfil-main-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #ffffff;
+    text-transform: uppercase;
+    margin-bottom: 25px;
+    letter-spacing: 0.05em;
+}
+
+.tipo-conta-tag {
+    font-size: 15px;
+    font-weight: 500;
+    color: #ffaa00;
+    margin-top: 8px;
+    letter-spacing: 0.02em;
+}
+
+/* =====================================================================
+   MODAL DE LOGOUT SEMÂNTICO (<dialog>)
+   ===================================================================== */
+dialog.modal-caixa {
+    padding: 0;
+    border: none;
+    background: transparent;
+    max-width: 420px;
+    width: 90%;
+    border-radius: 12px;
+    overflow: visible;
+}
+
+dialog.modal-caixa:not([open]) {
+    display: none !important;
+}
+
+.modal-conteudo-interno {
+    background-color: #111111;
+    border: 1px solid #222222;
+    padding: 35px 30px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9);
+}
+
+dialog.modal-caixa::backdrop {
+    background-color: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(6px);
+}
+
+.modal-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 15px;
+    background: none;
+    padding: 0;
+}
+
+.modal-icon {
+    font-size: 38px;
+    color: #ff3333;
+    text-shadow: 0 0 15px rgba(255, 51, 51, 0.3);
+}
+
+.modal-titulo {
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+}
+
+.modal-texto {
+    font-size: 14px;
+    color: #888888;
+    margin: 0 0 30px 0;
+    line-height: 1.5;
+}
+
+.modal-botoes {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 15px;
+    width: 100%;
+    justify-content: center;
+}
+
+.modal-botoes button, 
+.modal-botoes a {
+    all: unset;
+    box-sizing: border-box;
+    flex: 1;
+    padding: 14px 20px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s, color 0.2s;
+}
+
+.btn-modal-cancelar {
+    background-color: #222222;
+    color: #aaaaaa;
+    border: 1px solid #333333;
+}
+
+.btn-modal-cancelar:hover {
+    background-color: #2a2a2a;
+    color: #ffffff;
+    border-color: #444444;
+}
+
+.btn-modal-confirmar {
+    background-color: #ff3333;
+    color: #ffffff;
+    border: 1px solid #ff3333;
+}
+
+.btn-modal-confirmar:hover {
+    background-color: #e62e2e;
+    border-color: #e62e2e;
+    box-shadow: 0 0 20px rgba(255, 51, 51, 0.4);
+}
+
+/* =====================================================================
+   BOTÃO DE SAIR ORIGINAL (NA PÁGINA DE PERFIL)
+   ===================================================================== */
+.logout-section {
+    margin-top: 50px;
+    margin-bottom: 30px;
+    text-align: center;
+    width: 100%;
+    clear: both;
+    display: flex;
+    justify-content: center;
+}
+
+button.btn-logout {
+    all: unset;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 220px;
+    padding: 14px 24px;
+    background-color: transparent;
+    border: 2px solid #ff3333;
+    color: #ff3333;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+button.btn-logout:hover {
+    background-color: #ff3333;
+    color: #ffffff;
+    box-shadow: 0 0 15px rgba(255, 51, 51, 0.3);
+}

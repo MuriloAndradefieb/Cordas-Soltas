@@ -54,7 +54,7 @@ router.get('/adm/acesso-direto', async (req, res) => {
 // ROTAS DE ADMINISTRADORES (COMPLETO)
 // =========================================================================
 
-// 1. Rota GET - Abre o formulário de cadastro (Resolve o Cannot GET)
+// 1. Rota GET - Abre o formulário de cadastro
 router.get('/adm/administradores/adicionar', (req, res) => {
     res.render('pages/admin-add', { erro: null, sucesso: null });
 });
@@ -64,7 +64,6 @@ router.post('/adm/administradores/adicionar', async (req, res) => {
     const { email, usuario, senha, adm_geral } = req.body;
 
     try {
-        // Verifica duplicidade usando o campo correto (username)
         const queryChecagem = 'SELECT id FROM usuarios WHERE email = ? OR username = ?';
         const [existe] = await db.query(queryChecagem, [email, usuario]);
         
@@ -75,17 +74,12 @@ router.post('/adm/administradores/adicionar', async (req, res) => {
             });
         }
 
-        // Criptografa a senha
         const senhaCriptografada = await bcrypt.hash(senha, 10);
-
-        // Define a role (Agora aceita 'admin_geral' ou 'admin' graças ao seu ALTER TABLE!)
         const role = (adm_geral === 'sim') ? 'admin_geral' : 'admin';
 
-        // Insere na tabela 'usuarios' usando as colunas exatas do seu banco
         const queryInsert = 'INSERT INTO usuarios (email, username, senha, role) VALUES (?, ?, ?, ?)';
         await db.query(queryInsert, [email, usuario, senhaCriptografada, role]);
 
-        // Retorna sucesso para a tela escura do admin-add
         return res.render('pages/admin-add', { 
             erro: null, 
             sucesso: 'Novo administrador cadastrado com sucesso!' 
@@ -104,7 +98,6 @@ router.post('/adm/administradores/adicionar', async (req, res) => {
 // MIDDLEWARES E HELPERS
 // =========================================================================
 
-// ─── Middleware: verifica se o usuário está logado ──────────────────────────
 function requireAuth(req, res, next) {
     if (req.session && req.session.usuario) {
         return next();
@@ -112,7 +105,6 @@ function requireAuth(req, res, next) {
     return res.redirect('/login');
 }
 
-// ─── Helper: passa o usuário da sessão para todas as views ──────────────────
 function u(req) {
     return req.session.usuario || null;
 }
@@ -174,24 +166,23 @@ router.get('/login', (req, res) => {
 
 router.post('/login', AuthController.login);
 
-// ─── Logout ──────────────────────────────────────────────────────────────────
+// ─── Logout (Centralizado pelo AuthController) ───────────────────────────────
 router.get('/logout', AuthController.logout);
 router.post('/logout', AuthController.logout);
 
 // =========================================================================
 // GET/POST – Páginas protegidas (exigem login)
 // =========================================================================
-router.get('/perfil', requireAuth, (req, res) => {
-    const erro    = req.query.erro    || null;
-    const sucesso = req.query.sucesso || null;
-    res.render('pages/perfil', { titulo: 'Perfil', usuario: u(req), erro, sucesso });
-});
+
+// 💡 CORREÇÃO AQUI: Agora usa a função 'exibir' do controller que busca do banco em tempo real!
+router.get('/perfil', requireAuth, PerfilController.exibir);
 
 router.post('/perfil/editar',  requireAuth, PerfilController.editar);
 router.post('/perfil/senha',   requireAuth, PerfilController.alterarSenha);
 router.post('/perfil/role',    requireAuth, PerfilController.alterarRole);
 router.post('/perfil/foto',    requireAuth, PerfilController.atualizarFoto);
 
+// Rota auxiliar caso queira usar uma view intermediária para saída
 router.get('/sair', requireAuth, (req, res) =>
     res.render('pages/sair', { titulo: 'Sair da conta', usuario: u(req) }));
 
