@@ -235,3 +235,17 @@ document.addEventListener('DOMContentLoaded', () => {
     Profile.loadUserProfile(); 
     bindEvents();
 });
+        function editarCampo(campo, valorAtual) {
+            console.log('Editando o campo:', campo, 'Valor atual:', valorAtual);
+        }
+
+        // 💡 NOVA FUNÇÃO: Caixa de confirmação ao sair
+        function confirmarSaida(event) {
+            // Mostra o aviso na tela com opções "OK" e "Cancelar"
+            const desejaSair = confirm("Deseja mesmo sair da conta?");
+            
+            // Se o usuário clicar em "Cancelar", impede o redirecionamento para a rota /logout
+            if (!desejaSair) {
+                event.preventDefault();
+            }
+        }

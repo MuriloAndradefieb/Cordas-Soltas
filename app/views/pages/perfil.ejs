@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= titulo %> - Cordas Soltas</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/perfil.css">
+    <link rel="stylesheet" href="/css/perfil.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
@@ -15,14 +14,23 @@
     <main class="perfil-container">
         
         <section class="perfil-avatar-section">
+            <h1 class="perfil-main-title">
+                PERFIL <%= (usuario && usuario.role === 'artista') ? 'Artista' : '' %>
+            </h1>
+
             <figure class="avatar-wrapper" onclick="document.getElementById('upload-foto').click()">
-                <% if (usuario.fotoPerfil) { %>
+                <% if (usuario && usuario.fotoPerfil) { %>
                     <img src="<%= usuario.fotoPerfil %>" alt="Foto de perfil de <%= usuario.username %>" id="avatar-img">
                 <% } else { %>
                     <span class="avatar-placeholder" aria-hidden="true"></span>
                 <% } %>
             </figure>
             <p class="avatar-legenda">Toque para alterar a foto</p>
+            
+            <p class="tipo-conta-tag">
+                <%= (usuario && usuario.role === 'artista') ? 'Conta Artista' : 'Conta Visitante' %>
+            </p>
+
             <input type="file" id="upload-foto" style="display: none;" accept="image/*">
         </section>
 
@@ -85,7 +93,7 @@
                     <button class="btn-editar-campo" aria-label="Editar CPF" onclick="editarCampo('cpf', '<%= usuario.cpf %>')"><i class="fas fa-edit" aria-hidden="true"></i></button>
                 </li>
 
-                <% if (usuario.role === 'artista') { %>
+                <% if (usuario && usuario.role === 'artista') { %>
                     <li class="perfil-item">
                         <article class="item-dados">
                             <i class="fas fa-users item-icon" aria-hidden="true"></i>
@@ -135,27 +143,64 @@
                     </article>
                     <button class="btn-editar-campo" aria-label="Alterar Senha" onclick="window.location.href='/perfil/alterar-senha'"><i class="fas fa-edit" aria-hidden="true"></i></button>
                 </li>
-                <li class="perfil-item">
-                    <article class="item-dados">
-                        <i class="fas fa-shield-alt item-icon" aria-hidden="true"></i>
-                        <header>
-                            <span class="item-label">Verificaçao de duas estapa</span>
-                            <p class="item-valor">Desativada</p>
-                        </header>
-                    </article>
-                    <button class="btn-editar-campo" aria-label="Configurar Verificação em duas etapas"><i class="fas fa-edit" aria-hidden="true"></i></button>
-                </li>
             </ul>
         </section>
+
+        <section class="logout-section">
+            <button type="button" class="btn-logout" onclick="abrirModalLogout()">
+                <i class="fas fa-sign-out-alt"></i> Sair da Conta
+            </button>
+        </section>
+
     </main>
+
+    <dialog id="modal-logout" class="modal-caixa">
+        <div class="modal-conteudo-interno">
+            <header class="modal-header">
+                <i class="fas fa-exclamation-triangle modal-icon" aria-hidden="true"></i>
+                <h3 class="modal-titulo">Deseja mesmo sair?</h3>
+            </header>
+            
+            <p class="modal-texto">Você precisará fazer login novamente para acessar seus dados.</p>
+            
+            <menu class="modal-botoes">
+                <button type="button" class="btn-modal-cancelar" onclick="fecharModalLogout()">Cancelar</button>
+                <a href="/logout" class="btn-modal-confirmar">Sair da Conta</a>
+            </menu>
+        </div>
+    </dialog>
 
     <%- include("../partials/menu"); %>
 
-    <script src="js/script.js"></script>
+    <script src="/js/script.js"></script>
     <script>
         function editarCampo(campo, valorAtual) {
             console.log('Editando o campo:', campo, 'Valor atual:', valorAtual);
         }
+
+        const modal = document.getElementById('modal-logout');
+
+        function abrirModalLogout() {
+            if (typeof modal.showModal === "function") {
+                modal.showModal();
+            } else {
+                modal.setAttribute('open', 'true');
+            }
+        }
+
+        function fecharModalLogout() {
+            if (typeof modal.close === "function") {
+                modal.close();
+            } else {
+                modal.removeAttribute('open');
+            }
+        }
+
+        modal.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                fecharModalLogout();
+            }
+        });
     </script>
 </body>
 </html>
