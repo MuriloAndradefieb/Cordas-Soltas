@@ -156,6 +156,8 @@ a {
 /* ── CONTEÚDO PRINCIPAL ───────────────────────────────────────────── */
 .main-content {
     background-color: var(--bg-main);
+    width: 100%;
+    min-height: calc(100vh - var(--header-h));
 }
 
 /* ── BANNER CARROSSEL ─────────────────────────────────────────────── */
@@ -163,7 +165,8 @@ a {
     width: 100%;
     position: relative;
     overflow: hidden;
-    height: 220px;
+    height: 260px;
+    min-height: 280px;
 }
 
 .banner-slide {
@@ -300,12 +303,12 @@ a {
 /* Faixa de cards */
 .carousel-cards {
     display: flex;
-    gap: 0.85rem;
+    gap: 1rem;
     overflow-x: scroll;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    padding: 4px 2px 8px;
+    padding: 6px 12px 12px;
     flex: 1;
 }
 
@@ -316,26 +319,26 @@ a {
 /* ── CARD DE EVENTO ───────────────────────────────────────────────── */
 .card {
     flex-shrink: 0;
-    width: 165px;
-    border-radius: 10px;
+    width: 190px;
+    border-radius: 12px;
     overflow: hidden;
     background-color: var(--card-bg);
     border: 1px solid var(--card-borda);
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
     transition: transform 0.25s ease, box-shadow 0.25s ease;
     cursor: pointer;
     display: block;
 }
 
 .card:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+    transform: translateY(-5px) scale(1.03);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
     border-color: rgba(255, 215, 0, 0.3);
 }
 
 .card-image {
     width: 100%;
-    height: 140px;
+    height: 165px;
     object-fit: cover;
     display: block;
 }
@@ -472,25 +475,26 @@ a {
    ══════════════════════════════════════════════════════════════════════ */
 @media (min-width: 640px) {
     .banner-carousel {
-        height: 290px;
+        height: 320px;
+        min-height: 340px;
     }
 
     .card {
-        width: 190px;
+        width: 220px;
     }
 
     .card-image {
-        height: 155px;
+        height: 175px;
     }
 }
 
 @media (min-width: 768px) {
     .header {
-        padding: 0 2rem;
+        padding: 0 2.5rem;
     }
 
     .logo {
-        height: 50px;
+        height: 52px;
     }
 
     .hamburger-button {
@@ -502,23 +506,24 @@ a {
     }
 
     .banner-carousel {
-        height: 360px;
+        height: 420px;
+        min-height: 420px;
     }
 
     .carousels-container {
-        padding: 1.5rem 2rem 3rem;
+        padding: 2rem 2.5rem 3.5rem;
     }
 
     .carousel-header h2 {
-        font-size: 2rem;
+        font-size: 2.2rem;
     }
 
     .card {
-        width: 210px;
+        width: 240px;
     }
 
     .card-image {
-        height: 170px;
+        height: 190px;
     }
 
     .carousel-nav {
@@ -539,17 +544,18 @@ a {
     }
 
     .banner-carousel {
-        height: 420px;
+        height: 55vh;
+        min-height: 520px;
     }
 
     .carousels-container {
-        max-width: 1200px;
+        max-width: 1440px;
         margin: 0 auto;
-        padding: 2rem 1.5rem 3.5rem;
+        padding: 2.5rem 2rem 4rem;
     }
 
     .main-content {
-        max-width: 1200px;
+        max-width: 1440px;
         margin: 0 auto;
     }
 
@@ -558,15 +564,19 @@ a {
     }
 
     .card {
-        width: 230px;
+        width: 260px;
     }
 
     .card-image {
-        height: 185px;
+        height: 210px;
+    }
+
+    .carousel-header h2 {
+        font-size: 2.4rem;
     }
 
     .nav-desktop a {
-        font-size: 0.85rem;
+        font-size: 0.9rem;
     }
 }
 .azup-a11y-toolbar {

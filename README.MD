@@ -20,3 +20,5 @@ npm install bcryptjs
 
 npm install bcrypt
 
+npm install multer
+

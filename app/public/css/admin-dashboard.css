@@ -20,26 +20,33 @@ body {
     width: 100%;
 }
 
-/* Cabeçalho */
+/* Cabeçalho Principal */
 .main-header {
     background-color: #262626;
     padding: 15px 30px;
     border-bottom: 2px solid #121212;
 }
 
+.main-header h2 {
+    color: white; 
+    font-style: italic; 
+    letter-spacing: 1px;
+}
+
 .logo-container img {
     height: 45px;
 }
 
-/* Layout Principal */
+/* Layout Principal - Suporta div ou section com a classe */
 .app-container {
     display: table;
     width: 100%;
     height: calc(100vh - 79px);
 }
 
-/* Barra Lateral (Sidebar) */
-.sidebar {
+/* Barra Lateral - Suporta tanto <nav>, <aside> quanto .sidebar antiga */
+.sidebar,
+.sidebar-nav {
     display: table-cell;
     width: 240px;
     background-color: #262626;
@@ -48,11 +55,13 @@ body {
     padding-top: 10px;
 }
 
-.sidebar ul {
+.sidebar ul,
+.sidebar-nav ul {
     list-style: none;
 }
 
-.sidebar li {
+.sidebar li,
+.sidebar-nav li {
     padding: 15px 20px;
     display: flex;
     align-items: center;
@@ -64,23 +73,32 @@ body {
     transition: background 0.2s;
 }
 
-.sidebar li:hover {
+.sidebar li a,
+.sidebar-nav li a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.sidebar li:hover,
+.sidebar-nav li:hover {
     background-color: #333333;
 }
 
-/* Item ativo (Administradores) */
-.sidebar li.active {
+/* Item ativo */
+.sidebar li.active,
+.sidebar-nav li.active {
     background-color: #1e1e1e;
     border-left: 4px solid #ffb800;
     color: #ffffff;
 }
 
-.sidebar li img {
+.sidebar li img,
+.sidebar-nav li img {
     width: 18px;
     height: 18px;
 }
 
-/* Conteúdo da Direita */
+/* Área de Conteúdo - Suporta <main> ou .content-area antiga */
 .content-area {
     display: table-cell;
     vertical-align: top;
@@ -143,11 +161,27 @@ body {
     cursor: pointer;
 }
 
-/* Tabela de Administradores */
+/* Estilos de Tabela e Seções Globais */
+.category-title {
+    color: #ffb800;
+    font-size: 16px;
+    font-weight: 700;
+    margin: 25px 0 12px 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.user-section,
+.genre-section {
+    margin-bottom: 35px;
+    display: block;
+}
+
 .table-container {
     background-color: #2b2b2b;
     border-radius: 4px;
     overflow: hidden;
+    display: block;
 }
 
 .adm-table {
@@ -172,7 +206,6 @@ body {
     font-size: 14px;
 }
 
-/* Linhas vazias simulando a imagem */
 .adm-table tr.empty-row td {
     height: 48px;
 }
@@ -183,7 +216,7 @@ body {
     cursor: pointer;
 }
 
-/* Botão de Ação (Engrenagem) */
+/* Botão de Engrenagem */
 .btn-action {
     background-color: #1a1a1a;
     border: 1px solid #ffb800;
@@ -197,4 +230,18 @@ body {
 .btn-action:hover {
     background-color: #ffb800;
     color: #1a1a1a;
+}
+
+/* Customizações para pôsteres da página de Ingressos */
+.show-poster {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #444;
+}
+
+.ingressos-table td {
+    vertical-align: middle !important;
+    padding: 10px 20px;
 }

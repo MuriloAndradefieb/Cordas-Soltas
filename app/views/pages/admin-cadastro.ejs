@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - Cordas Soltas</title>
+    <link rel="stylesheet" href="/css/admin-dashboard.css">
+</head>
+<body>
+
+    <hr class="top-line">
+
+    <header class="main-header">
+        <h2>CORDAS SOLTAS</h2>
+    </header>
+
+    <section class="app-container">
+        
+        <nav class="sidebar-nav">
+            <ul>
+                <li onclick="window.location.href='/adm/acesso-direto'">⚙️ Administradores</li>
+                <li class="active">👤 Cadastro</li>
+                <li onclick="window.location.href='/adm/ingressos'">🎫 Ingressos</li>
+                <li>🧰 Luthbox</li>
+            </ul>
+        </nav>
+
+        <main class="content-area">
+            
+            <header class="sub-header">
+                <span class="title">CADASTRO</span>
+                <button class="btn-add"><span>+</span> Adicionar</button>
+            </header>
+
+            <section class="search-container">
+                <button class="btn-search">🔍</button>
+            </section>
+
+            <section class="user-section">
+                <h2 class="category-title">Visitante</h2>
+                <section class="table-container">
+                    <table class="adm-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 45%;">E-MAIL</th>
+                                <th style="width: 35%;">USUÁRIOS</th>
+                                <th style="width: 20%;">AÇÕES</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (typeof visitantes !== 'undefined' && visitantes.length > 0) { %>
+                                <% visitantes.forEach(function(visitante) { %>
+                                    <tr>
+                                        <td><span class="email-link"><%= visitante.email %></span></td>
+                                        <td><%= visitante.username %></td>
+                                        <td>
+                                            <button class="btn-action">⚙️</button>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="3" style="text-align: center; color: #999; font-style: italic; padding: 20px;">Nenhum visitante encontrado.</td>
+                                </tr>
+                            <% } %>
+                            <tr class="empty-row"><td></td><td></td><td></td></tr>
+                            <tr class="empty-row"><td></td><td></td><td></td></tr>
+                        </tbody>
+                    </table>
+                </section>
+            </section>
+
+            <section class="user-section">
+                <h2 class="category-title">Artista</h2>
+                <section class="table-container">
+                    <table class="adm-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 45%;">E-MAIL</th>
+                                <th style="width: 35%;">USUÁRIOS</th>
+                                <th style="width: 20%;">AÇÕES</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (typeof artistas !== 'undefined' && artistas.length > 0) { %>
+                                <% artistas.forEach(function(artista) { %>
+                                    <tr>
+                                        <td><span class="email-link"><%= artista.email %></span></td>
+                                        <td><%= artista.username %></td>
+                                        <td>
+                                            <button class="btn-action">⚙️</button>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="3" style="text-align: center; color: #999; font-style: italic; padding: 20px;">Nenhum artista encontrado.</td>
+                                </tr>
+                            <% } %>
+                            <tr class="empty-row"><td></td><td></td><td></td></tr>
+                            <tr class="empty-row"><td></td><td></td><td></td></tr>
+                        </tbody>
+                    </table>
+                </section>
+            </section>
+
+        </main>
+    </section>
+
+    <script src="/js/admin-dashboard.js"></script>
+</body>
+</html>

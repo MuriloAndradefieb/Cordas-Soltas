@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingressos - Cordas Soltas</title>
+    <link rel="stylesheet" href="/css/admin-dashboard.css">
+    <style>
+        /* Customizações finas para a listagem visual com imagens de posters */
+        .genre-section {
+            margin-bottom: 40px;
+        }
+        .genre-title {
+            color: #ffb800;
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0 0 15px 5px;
+            text-transform: uppercase;
+        }
+        .show-poster {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #444;
+        }
+        /* Alinhamento vertical centralizado para as células dessa tabela específica */
+        .ingressos-table td {
+            vertical-align: middle !important;
+            padding: 10px 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-line"></div>
+
+    <header class="main-header">
+        <div class="logo-container">
+            <h2 style="color: white; font-style: italic; letter-spacing: 1px;">CORDAS SOLTAS</h2>
+        </div>
+    </header>
+
+    <div class="app-container">
+        
+        <aside class="sidebar">
+            <ul>
+                <li onclick="window.location.href='/adm/acesso-direto'">⚙️ Administradores</li>
+                <li onclick="window.location.href='/adm/cadastro'">👤 Cadastro</li>
+                <li class="active">🎫 Ingressos</li>
+                <li onclick="window.location.href='/adm/luthbox'">🧰 Luthbox</li>
+            </ul>
+        </aside>
+
+        <main class="content-area">
+            
+            <div class="sub-header">
+                <div class="title">INGRESSOS</div>
+                <button class="btn-add" onclick="window.location.href='/adm/ingressos/adicionar'">
+                    <span>+</span> Adicionar
+                </button>
+            </div>
+
+            <div class="search-container">
+                <button class="btn-search">🔍 Adicionar Filtros</button>
+            </div>
+
+            <% if (typeof showsPorEstilo !== 'undefined' && Object.keys(showsPorEstilo).length > 0) { %>
+                
+                <% for (let estilo in showsPorEstilo) { %>
+                    <section class="genre-section">
+                        <h2 class="genre-title"><%= estilo %></h2>
+                        
+                        <div class="table-container">
+                            <table class="adm-table ingressos-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 25%;">INGRESSO</th>
+                                        <th style="width: 45%;">LOCAL</th>
+                                        <th style="width: 15%;">DATA</th>
+                                        <th style="width: 15%;">AÇÕES</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% showsPorEstilo[estilo].forEach(function(show) { %>
+                                        <tr>
+                                            <td>
+                                                <img src="<%= show.imagem_url %>" alt="Poster do Show" class="show-poster">
+                                            </td>
+                                            <td style="color: #b3b3b3; font-weight: 600;"><%= show.local %></td>
+                                            <td style="color: #b3b3b3;"><%= show.data_show %></td>
+                                            <td>
+                                                <button class="btn-action">⚙️</button>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                <% } %>
+
+            <% } else { %>
+                <div class="table-container" style="padding: 40px; text-align: center; color: #999; font-style: italic;">
+                    Nenhum show ou ingresso listado no banco de dados.
+                </div>
+            <% } %>
+
+        </main>
+    </div>
+
+</body>
+</html>

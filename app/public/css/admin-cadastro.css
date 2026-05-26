@@ -1,0 +1,195 @@
+/* =========================================================================
+   ESTILO REAPROVEITADO DA PRIMEIRA PÁGINA (ADMIN-DASHBOARD)
+   ========================================================================= */
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #121212; /* Fundo grafite bem escuro igual ao original */
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* Topbar Superior */
+.topbar {
+    background-color: #1a1a1a;
+    padding: 18px 24px;
+    border-bottom: 2px solid #2a2a2a;
+}
+
+.topbar .logo-text {
+    font-weight: 800;
+    color: #ffffff;
+    font-size: 18px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+/* Layout Split (Menu + Conteúdo) */
+.panel-container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* Sidebar Lateral Esquerda (Fiel ao print) */
+.sidebar {
+    width: 220px;
+    background-color: #1a1a1a;
+    padding-top: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar a {
+    color: #aaaaaa;
+    text-decoration: none;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    border-left: 3px solid transparent;
+}
+
+.sidebar a:hover {
+    color: #ffffff;
+    background-color: #222222;
+}
+
+.sidebar a.active {
+    color: #ffffff;
+    background-color: #222222;
+    border-left: 3px solid #ff9f1c; /* Detalhe amarelo na borda esquerda */
+}
+
+/* Bloco de Conteúdo da Direita */
+.content {
+    flex: 1;
+    padding: 40px;
+    background-color: #121212;
+    overflow-y: auto;
+}
+
+/* Cabeçalho "CADASTRO" com botão + Adicionar */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1a1a1a;
+    padding: 15px 24px;
+    border-radius: 4px;
+    margin-bottom: 30px;
+    border: 1px solid #222222;
+}
+
+.section-header h1 {
+    margin: 0;
+    font-size: 12px;
+    color: #ffffff;
+    letter-spacing: 1px;
+    font-weight: 700;
+}
+
+/* Botão + Adicionar */
+.btn-add {
+    background-color: #2a2a2a;
+    color: #ffffff;
+    border: 1px solid #3a3a3a;
+    padding: 6px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.btn-add:hover {
+    background-color: #3a3a3a;
+}
+
+/* Títulos das tabelas (VISITANTE / ARTISTA) */
+.category-title {
+    color: #ff9f1c; /* Amarelo ouro idêntico ao protótipo */
+    font-size: 18px;
+    font-weight: 700;
+    margin: 30px 0 15px 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Configuração de espaçamento das seções */
+.user-section {
+    margin-bottom: 40px;
+}
+
+/* =========================================================================
+   ESTRUTURA DAS TABELAS (COPIADO DO PRINT ORIGINAL)
+   ========================================================================= */
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #1a1a1a;
+    border-radius: 4px;
+}
+
+.admin-table th {
+    background-color: #1a1a1a;
+    color: #ff9f1c;
+    text-align: left;
+    padding: 16px 20px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    border-bottom: 1px solid #262626;
+}
+
+.admin-table td {
+    padding: 16px 20px;
+    border-bottom: 1px solid #222222;
+    font-size: 13px;
+    color: #e0e0e0;
+    vertical-align: middle;
+}
+
+/* Efeito zebrado idêntico à primeira tela */
+.admin-table tr:nth-child(even) {
+    background-color: #1d1d1d;
+}
+
+/* Links de E-mail */
+.email-link {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+.email-link:hover {
+    color: #ff9f1c;
+}
+
+/* Botão de Engrenagem Amarelo */
+.btn-action {
+    background-color: transparent;
+    border: 1px solid #ff9f1c;
+    color: #ff9f1c;
+    padding: 5px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-action:hover {
+    background-color: #ff9f1c;
+    color: #1a1a1a;
+}
+
+.empty-row {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    padding: 30px !important;
+}

@@ -35,7 +35,7 @@
 }
 
 /* ── Navegação central ────────────────────────────────────────── */
-.header-nav {
+.nav-desktop {
     display: flex;
     align-items: center;
     gap: 2.5rem;
@@ -127,7 +127,7 @@
         height: 64px;
     }
 
-    .header-nav {
+    .nav-desktop {
         display: none; /* Sidebar continua disponível via JS se necessário */
     }
 

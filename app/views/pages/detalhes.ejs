@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalhes do Show</title>
+    <title>Detalhes do Show - <%= show.titulo %></title>
+    <link rel="stylesheet" href="css/header-nav.css">
     <link rel="stylesheet" href="css/detalhes.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* ── Avisos de validação ─────────────────────────────────────────── */
+        /* ── Avisos de validação dinâmicos ────────────────────────────────── */
         .aviso-validacao {
             display: flex;
             align-items: flex-start;
@@ -20,7 +21,7 @@
             opacity: 0;
             visibility: hidden;
             transform: translateY(-8px);
-            transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+            transition: all 0.3s ease;
         }
         .aviso-validacao.visivel {
             opacity: 1;
@@ -37,254 +38,109 @@
             border: 1px solid #b8860b;
             color: #ffd700;
         }
-        .aviso-validacao .aviso-icon {
-            font-size: 1.1rem;
-            flex-shrink: 0;
-            margin-top: 1px;
-        }
         .aviso-validacao a {
             color: #FFD700;
             font-weight: 700;
             text-decoration: underline;
         }
-        .aviso-validacao a:hover { color: #fff; }
     </style>
 </head>
 <body>
-    <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
-    <div vw class="enabled">
-        <div vw-access-button class="active"></div>
-        <div vw-plugin-wrapper>
-            <div class="vw-plugin-top-wrapper"></div>
-        </div>
-    </div>
-    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
-    <script>new window.VLibras.Widget('https://vlibras.gov.br/app');</script>
-    <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
-
-    <header class="header">
-        <a href="/" class="logo-link">
-            <img src="img/LOGO CORDAS SOLTAS SITE.png" alt="Logo Cordas Soltas" class="logo">
-        </a>
-        <nav class="nav-icons">
-            <button class="hamburger-button" aria-label="Abrir menu">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </button>
-            <a href="<%- usuario ? '/perfil' : '/login' %>" class="account-icon" aria-label="Conta">&#128100;</a>
-            <a href="#" class="cart-icon" aria-label="Carrinho">&#128722;</a>
-        </nav>
-    </header>
+    <section vw class="enabled">
+        <section vw-access-button class="active"></section>
+        <section vw-plugin-wrapper>
+            <section class="vw-plugin-top-wrapper"></section>
+        </section>
+    </section>
+    <%- include("../partials/header.ejs"); %>
 
     <main class="main-content">
         <aside class="banner-side left">
-            <img src="https://i.pinimg.com/736x/ac/b3/72/acb3728c928849aa524c05f41efa1773.jpg" alt="Anúncio Lateral Esquerdo">
+            <img src="https://i.pinimg.com/736x/ac/b3/72/acb3728c928849aa524c05f41efa1773.jpg" alt="Anúncio">
         </aside>
 
         <section class="details-and-back-container">
             <a href="/" class="back-link">&larr; Voltar para Eventos</a>
-            <section id="show-details-container" class="show-details-container">
-                <p>Carregando detalhes do show...</p>
-            </section>
+            
+            <article class="show-details-container">
+                <section class="show-image-wrapper">
+                    <img src="<%= show.imagem_url %>" alt="<%= show.titulo %>" class="show-image">
+                </section>
+
+                <section class="show-info-wrapper">
+                    <header class="show-info">
+                        <h1><%= show.titulo %></h1>
+                        <p>🎸 Gênero: <strong><%= show.estilo %></strong></p>
+                        <p>📅 Data: <%= show.data_show %></p>
+                        <p>📍 Local: <%= show.local %></p>
+                    </header>
+
+                    <section class="purchase-section">
+                        <section class="ticket-option">
+                            <section class="ticket-name">
+                                <h3>Pista Inteira</h3>
+                                <span class="ticket-price">
+                                    <%= parseFloat(show.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) %>
+                                </span>
+                            </section>
+                            <section class="quantity-control">
+                                <button class="quantity-btn minus" data-type="full" type="button">-</button>
+                                <input type="number" id="qty-full" value="0" min="0" max="10" readonly>
+                                <button class="quantity-btn plus" data-type="full" type="button">+</button>
+                            </section>
+                        </section>
+
+                        <section class="ticket-option">
+                            <section class="ticket-name">
+                                <h3>Pista Meia-Entrada</h3>
+                                <span class="ticket-price">
+                                    <%= parseFloat(show.preco / 2).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) %>
+                                </span>
+                            </section>
+                            <section class="quantity-control">
+                                <button class="quantity-btn minus" data-type="half" type="button">-</button>
+                                <input type="number" id="qty-half" value="0" min="0" max="10" readonly>
+                                <button class="quantity-btn plus" data-type="half" type="button">+</button>
+                            </section>
+                        </section>
+
+                        <section class="total-summary">
+                            <h3>Total:</h3>
+                            <span id="total-value" class="total-price">R$ 0,00</span>
+                        </section>
+
+                        <button id="buy-button" class="buy-button">Comprar Ingressos</button>
+
+                        <section id="error-message" class="aviso-validacao erro" role="alert">
+                            <span>⚠️ Selecione pelo menos um ingresso para continuar.</span>
+                        </section>
+
+                        <section id="aviso-login" class="aviso-validacao aviso" role="alert">
+                            <span>🔒 Você precisa estar logado para comprar. <a href="/login">Fazer Login</a></span>
+                        </section>
+                    </section>
+                </section>
+            </article>
         </section>
 
         <aside class="banner-side right">
-            <img src="https://st2.depositphotos.com/3802717/48785/v/1600/depositphotos_487853802-stock-illustration-live-rock-music-show-concert.jpg" alt="Anúncio Lateral Direito">
+            <img src="https://st2.depositphotos.com/3802717/48785/v/1600/depositphotos_487853802-stock-illustration-live-rock-music-show-concert.jpg" alt="Anúncio">
         </aside>
     </main>
 
-    <%- include("../partials/menu"); %>
-
-    <!-- Sessão injetada pelo servidor -->
-    <script>const usuarioLogado = <%- usuario ? 'true' : 'false' %>;</script>
-
-    <script src="js/shows.js"></script>
+    <%- include("../partials/header.ejs"); %>
 
     <script>
-    document.addEventListener('DOMContentLoaded', () => {
-
-        // ── Menu lateral ──────────────────────────────────────────────────────
-        const hamburger = document.querySelector('.hamburger-button');
-        const sidebar   = document.getElementById('sidebar-menu');
-        const overlay   = document.getElementById('menu-overlay');
-        const closeBtn  = document.getElementById('close-menu-btn');
-
-        function toggleMenu() {
-            if (!sidebar || !overlay) return;
-            const open = sidebar.classList.toggle('open');
-            overlay.classList.toggle('open');
-            document.body.style.overflow = open ? 'hidden' : '';
-        }
-        if (hamburger) hamburger.addEventListener('click', toggleMenu);
-        if (closeBtn)  closeBtn.addEventListener('click', toggleMenu);
-        if (overlay)   overlay.addEventListener('click', toggleMenu);
-        document.querySelectorAll('.sidebar-links a').forEach(a =>
-            a.addEventListener('click', () => sidebar?.classList.contains('open') && toggleMenu())
-        );
-
-        // ── Busca show pelo id da URL ─────────────────────────────────────────
-        const params    = new URLSearchParams(window.location.search);
-        const showId    = params.get('id');
-        const container = document.getElementById('show-details-container');
-        const show      = shows.find(s => s.id === showId);
-
-        if (!show) {
-            container.innerHTML = '<h2>Show não encontrado</h2><p>Volte para a página inicial.</p>';
-            return;
-        }
-
-        // ── Formata moeda ─────────────────────────────────────────────────────
-        const fmt = v => parseFloat(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-
-        // ── Renderiza HTML do show + área de avisos CSS ───────────────────────
-        container.innerHTML = `
-            <section class="show-image-wrapper">
-                <img src="${show.image}" alt="${show.title}" class="show-image">
-            </section>
-
-            <section class="show-info-wrapper">
-                <section class="show-info">
-                    <h1>${show.title}</h1>
-                    <p>📅 ${show.date}</p>
-                    <p>📍 ${show.location}</p>
-                </section>
-
-                <section class="purchase-section">
-
-                    <section class="ticket-option">
-                        <section class="ticket-name">
-                            <h3>Inteira</h3>
-                            <span class="ticket-count" id="count-full"></span>
-                            <span class="ticket-price">${fmt(show.priceFull)}</span>
-                        </section>
-                        <section class="quantity-control">
-                            <button class="quantity-btn minus" data-type="full">-</button>
-                            <input type="number" id="qty-full" value="0" min="0" max="10" readonly>
-                            <button class="quantity-btn plus"  data-type="full">+</button>
-                        </section>
-                    </section>
-
-                    <section class="ticket-option">
-                        <section class="ticket-name">
-                            <h3>Meia-Entrada</h3>
-                            <span class="ticket-count" id="count-half"></span>
-                            <span class="ticket-price">${fmt(show.priceHalf)}</span>
-                        </section>
-                        <section class="quantity-control">
-                            <button class="quantity-btn minus" data-type="half">-</button>
-                            <input type="number" id="qty-half" value="0" min="0" max="10" readonly>
-                            <button class="quantity-btn plus"  data-type="half">+</button>
-                        </section>
-                    </section>
-
-                    <section class="total-summary">
-                        <h3>Total:</h3>
-                        <span id="total-value" class="total-price">R$ 0,00</span>
-                    </section>
-
-                    <button id="buy-button" class="buy-button">Comprar Ingressos</button>
-
-                    <!-- Aviso: nenhum ingresso selecionado -->
-                    <div id="aviso-quantidade" class="aviso-validacao erro" role="alert">
-                        <span class="aviso-icon">⚠️</span>
-                        <span>Selecione pelo menos um ingresso para continuar.</span>
-                    </div>
-
-                    <!-- Aviso: usuário não está logado -->
-                    <div id="aviso-login" class="aviso-validacao aviso" role="alert">
-                        <span class="aviso-icon">🔒</span>
-                        <span>Você precisa estar <strong>logado</strong> para comprar ingressos.
-                            <a href="/login">Fazer login</a> ou <a href="/cadastro">criar conta</a>.
-                        </span>
-                    </div>
-
-                </section>
-            </section>
-        `;
-
-        // ── Referências aos elementos criados ─────────────────────────────────
-        const state      = { full: 0, half: 0 };
-        const totalEl    = document.getElementById('total-value');
-        const buyBtn     = document.getElementById('buy-button');
-        const inputFull  = document.getElementById('qty-full');
-        const inputHalf  = document.getElementById('qty-half');
-        const countFull  = document.getElementById('count-full');
-        const countHalf  = document.getElementById('count-half');
-        const avisoQtd   = document.getElementById('aviso-quantidade');
-        const avisoLogin = document.getElementById('aviso-login');
-
-        let avisoTimeout;
-
-        // ── Funções de aviso CSS ──────────────────────────────────────────────
-        function mostrarAviso(el) {
-            ocultarTodosAvisos();
-            el.classList.add('visivel');
-            clearTimeout(avisoTimeout);
-            avisoTimeout = setTimeout(() => el.classList.remove('visivel'), 6000);
-        }
-
-        function ocultarTodosAvisos() {
-            [avisoQtd, avisoLogin].forEach(el => el.classList.remove('visivel'));
-        }
-
-        // ── Atualiza UI após mudar quantidade ────────────────────────────────
-        function updateUI() {
-            const total = (state.full * show.priceFull) + (state.half * show.priceHalf);
-            totalEl.textContent = fmt(total);
-
-            countFull.textContent = state.full > 0 ? `${state.full}x` : '';
-            countFull.classList.toggle('visible', state.full > 0);
-            countHalf.textContent = state.half > 0 ? `${state.half}x` : '';
-            countHalf.classList.toggle('visible', state.half > 0);
-
-            if (total > 0) ocultarTodosAvisos();
-        }
-
-        // ── Botões + / - ──────────────────────────────────────────────────────
-        document.querySelectorAll('.quantity-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const type  = btn.dataset.type;
-                const delta = btn.classList.contains('plus') ? 1 : -1;
-                const input = type === 'full' ? inputFull : inputHalf;
-
-                state[type] = Math.max(0, Math.min(10, state[type] + delta));
-                input.value = state[type];
-                updateUI();
-            });
-        });
-
-        // ── Botão Comprar ─────────────────────────────────────────────────────
-        buyBtn.addEventListener('click', () => {
-            const total = (state.full * show.priceFull) + (state.half * show.priceHalf);
-
-            // Validação 1: nenhum ingresso selecionado
-            if (total === 0) {
-                mostrarAviso(avisoQtd);
-                return;
-            }
-
-            // Validação 2: não está logado
-            if (!usuarioLogado) {
-                mostrarAviso(avisoLogin);
-                return;
-            }
-
-            // Tudo ok → salva pedido e vai para pagamento
-            localStorage.setItem('currentOrder', JSON.stringify({
-                showId:    show.id,
-                title:     show.title,
-                tickets:   { full: state.full, half: state.half },
-                total,
-                orderDate: new Date().toISOString()
-            }));
-            window.location.href = '/pagamento';
-        });
-
-        updateUI();
-    });
+        const usuarioLogado = <%- usuario ? 'true' : 'false' %>;
+        const showRealDoBanco = {
+            id: "<%= show.id %>",
+            title: "<%= show.titulo %>",
+            priceFull: parseFloat("<%= show.preco %>"),
+            priceHalf: parseFloat("<%= show.preco / 2 %>")
+        };
     </script>
 
+    <script src="js/detalhes.js"></script>
     <script src="js/script.js"></script>
 </body>
 </html>

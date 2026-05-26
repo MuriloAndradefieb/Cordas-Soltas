@@ -96,3 +96,13 @@ CREATE TABLE IF NOT EXISTS formulario_seletivas (
     status           ENUM('pendente','aprovado','reprovado') DEFAULT 'pendente',
     enviado_em       TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+CREATE TABLE IF NOT EXISTS shows (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(155) NOT NULL,
+    local VARCHAR(255) NOT NULL,
+    data_show VARCHAR(50) NOT NULL, -- Ex: '11/09' ou usar DATE
+    estilo VARCHAR(50) NOT NULL,    -- Ex: 'ROCK', 'SERTANEJO', 'POP'
+    imagem_url VARCHAR(255) DEFAULT '/img/default-show.png' -- Caminho do poster
+);
+ALTER TABLE shows ADD COLUMN preco DECIMAL(10,2) NOT NULL DEFAULT 0.00;
+ALTER TABLE shows ADD COLUMN quantidade INT NOT NULL DEFAULT 0;
