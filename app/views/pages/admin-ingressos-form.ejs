@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ingressos > Adicionar - Cordas Soltas</title>
+    <title><%= show ? 'Ingressos > Editar' : 'Ingressos > Adicionar' %> - Cordas Soltas</title>
     <link rel="stylesheet" href="/css/admin-dashboard.css">
     <style>
-        /* Painel escentralizado e expandido baseado na última versão */
         .painel-cadastro {
             background-color: #333333;
             border-radius: 4px;
@@ -17,14 +16,12 @@
             display: block;
         }
 
-        /* Estrutura de colunas voltando ao design original (Banner na esquerda, Campos na direita) */
         .grid-formulario {
             display: flex;
             gap: 40px;
-            align-items: stretch; /* Garante que as duas colunas fiquem com a mesma altura */
+            align-items: stretch;
         }
 
-        /* Coluna da Esquerda: Destinada ao Banner Grande */
         .coluna-banner-lateral {
             flex: 1.1;
             display: flex;
@@ -32,16 +29,14 @@
             gap: 10px;
         }
 
-        /* Coluna da Direita: Destinada aos inputs do formulário */
         .coluna-campos-laterais {
             flex: 1.2;
             display: flex;
             flex-direction: column;
             gap: 20px;
-            justify-content: space-between; /* Distribui os campos uniformemente acompanhando a altura do banner */
+            justify-content: space-between;
         }
 
-        /* Estilização dos Grupos de Input */
         .grupo-input {
             border: none;
             padding: 0;
@@ -65,13 +60,12 @@
             border: none;
             color: #ffffff;
             padding: 12px 15px;
-            border-radius: 10px; /* Bordas arredondadas originais */
+            border-radius: 10px;
             font-size: 15px;
             width: 100%;
             box-sizing: border-box;
         }
 
-        /* Customização do Select de Estilo Musical */
         .grupo-input select {
             height: 45px;
             cursor: pointer;
@@ -83,7 +77,6 @@
             background-position: right 12px top 50%;
         }
 
-        /* Ícone decorativo de edição */
         .icone-edicao {
             position: absolute;
             right: 15px;
@@ -93,11 +86,10 @@
             pointer-events: none;
         }
 
-        /* Área do Banner Lateral Ampliada e Estilizada */
         .container-upload-poster {
             width: 100%;
-            flex: 1; /* Faz o container ocupar toda a altura disponível da coluna */
-            min-height: 380px; /* Garante que ele seja grande e imponente */
+            flex: 1;
+            min-height: 380px;
             background-color: #404040;
             border-radius: 8px;
             display: flex;
@@ -114,7 +106,6 @@
             border-color: #ffb800;
         }
 
-        /* Botão interno do Upload */
         .botao-adicionar-banner {
             background-color: #4c4c4c;
             border: 1px solid #666;
@@ -135,7 +126,6 @@
             height: 18px;
         }
 
-        /* Renderização da Imagem selecionada do computador */
         .img-preview-render {
             width: 100%;
             height: 100%;
@@ -147,7 +137,6 @@
             z-index: 1;
         }
 
-        /* Botões superiores de ação */
         .container-botoes-topo {
             display: flex;
             justify-content: flex-end;
@@ -191,10 +180,31 @@
             background-color: #e6a600;
         }
 
-        /* Ajuste do ícone do input de data */
         input[type="date"]::-webkit-calendar-picker-indicator {
             filter: invert(77%) sepia(85%) saturate(1243%) hue-rotate(359deg) brightness(102%) contrast(106%);
             cursor: pointer;
+        }
+
+        #modal_exclusao {
+            position: fixed !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            margin: 0 !important;
+            background-color: #1e1e1e !important;
+            border: 1px solid #ffb800 !important;
+            border-radius: 8px !important;
+            padding: 30px !important;
+            max-width: 450px !important;
+            width: 90% !important;
+            text-align: center !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8) !important;
+            z-index: 100000 !important;
+        }
+
+        #modal_exclusao::backdrop {
+            background-color: rgba(0, 0, 0, 0.6) !important;
+            backdrop-filter: blur(3px) !important;
         }
     </style>
 </head>
@@ -219,15 +229,17 @@
 
         <main class="content-area">
             
-            <form action="/adm/ingressos/adicionar" method="POST" enctype="multipart/form-data">
+            <form action="<%= show ? '/adm/ingressos/editar/' + show.id : '/adm/ingressos/adicionar' %>" method="POST" enctype="multipart/form-data">
 
                 <header class="sub-header" style="background: transparent; padding: 0; margin-bottom: 5px;">
-                    <span class="title" style="font-size: 14px; color: #b3b3b3; font-weight: normal;">Ingressos > Adicionar</span>
+                    <span class="title" style="font-size: 14px; color: #b3b3b3; font-weight: normal;">
+                        Ingressos &gt; <%= show ? 'Editar' : 'Adicionar' %>
+                    </span>
                 </header>
 
                 <section class="container-botoes-topo">
                     <button type="button" class="btn-topo-cancela" onclick="window.location.href='/adm/ingressos'">
-                        <span style="color: #ff4a4a; font-weight: bold;">✕</span> Cancela
+                        <span style="color: #ff4a4a; font-weight: bold;">✕</span> Cancelar
                     </button>
                     <button type="submit" class="btn-topo-salvar">
                         💾 Salvar
@@ -240,14 +252,16 @@
                         <aside class="coluna-banner-lateral">
                             <div class="grupo-input" style="height: 100%;">
                                 <label>Banner do Pôster</label>
-                                <label for="file_upload" class="container-upload-poster">
-                                    <section class="botao-adicionar-banner" id="wrapper_botao_upload">
+                                <label for="file_upload" class="container-upload-poster" style="<%= (show && show.imagem_url) ? 'border: none;' : '' %>">
+                                    
+                                    <section class="botao-adicionar-banner" id="wrapper_botao_upload" style="<%= (show && show.imagem_url) ? 'display: none;' : '' %>">
                                         <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
                                         Adicionar banner
                                     </section>
-                                    <img src="" id="render_preview" class="img-preview-render" alt="Preview do Banner">
+                                    
+                                    <img src="<%= show ? show.imagem_url : '' %>" id="render_preview" class="img-preview-render" alt="Preview do Banner" style="<%= (show && show.imagem_url) ? 'display: block;' : '' %>">
                                 </label>
-                                <input type="file" id="file_upload" name="image_file" accept="image/*" style="display: none;" required>
+                                <input type="file" id="file_upload" name="image_file" accept="image/*" style="display: none;" <%= show ? '' : 'required' %>>
                             </div>
                         </aside>
 
@@ -255,37 +269,37 @@
                             
                             <fieldset class="grupo-input">
                                 <label for="titulo">Show</label>
-                                <input type="text" id="titulo" name="titulo" placeholder="Ex: Rock" required>
+                                <input type="text" id="titulo" name="titulo" placeholder="Ex: Rock" value="<%= show ? show.titulo : '' %>" required>
                             </fieldset>
 
                             <fieldset class="grupo-input">
                                 <label for="estilo">Estilo Musical</label>
                                 <select id="estilo" name="estilo" required>
                                     <% estilos.forEach(function(estiloItem) { %>
-                                        <option value="<%= estiloItem %>"><%= estiloItem %></option>
+                                        <option value="<%= estiloItem %>" <%= (show && show.estilo === estiloItem) ? 'selected' : '' %>><%= estiloItem %></option>
                                     <% }); %>
                                 </select>
                             </fieldset>
 
                             <fieldset class="grupo-input">
                                 <label for="preco">Preço</label>
-                                <input type="number" id="preco" name="preco" step="0.01" min="0" placeholder="R$ 00,00" required>
+                                <input type="text" id="preco" name="preco" placeholder="R$ 0" value="<%= show ? show.preco : '' %>" oninput="formatarPrecoInteiro(this)" maxlength="14" required>
                                 <span class="icone-edicao">📝</span>
                             </fieldset>
 
                             <fieldset class="grupo-input">
                                 <label for="quantidade">Quantidade de Ingressos</label>
-                                <input type="number" id="quantidade" name="quantidade" min="1" placeholder="Ex: 50" required>
+                                <input type="number" id="quantidade" name="quantidade" min="1" placeholder="Ex: 50" value="<%= show ? show.quantidade : '' %>" required>
                             </fieldset>
 
                             <fieldset class="grupo-input">
                                 <label for="data_show">Data</label>
-                                <input type="date" id="data_show" name="data_show" required>
+                                <input type="date" id="data_show" name="data_show" value="<%= show ? show.data_show : '' %>" required>
                             </fieldset>
 
                             <fieldset class="grupo-input">
                                 <label for="local">Local</label>
-                                <input type="text" id="local" name="local" placeholder="Ex: Praças das Artes-SP" required>
+                                <input type="text" id="local" name="local" placeholder="Ex: Praças das Artes-SP" value="<%= show ? show.local : '' %>" required>
                                 <span class="icone-edicao">📝</span>
                             </fieldset>
 
@@ -313,9 +327,64 @@
                     imagemRender.src = event.target.result;
                     imagemRender.style.display = 'block';
                     botaoUpload.style.display = 'none';
-                    containerUpload.style.border = 'none'; // Remove a borda pontilhada quando a foto entra
+                    containerUpload.style.border = 'none';
                 }
                 leitor.readAsDataURL(arquivo);
+            }
+        });
+      
+        function formatarPrecoInteiro(campo) {
+            let valor = campo.value;
+
+            // 1. Remove o "R$ " para fazer os cálculos limpos
+            valor = valor.replace(/^R\$\s?/, "");
+
+            if (valor === "") {
+                campo.value = "";
+                return;
+            }
+
+            // 2. Permite apenas números e uma única vírgula para os centavos
+            valor = valor.replace(/[^\d,]/g, "");
+            
+            let partes = valor.split(",");
+            let parteInteira = partes[0];
+            let parteDecimal = partes.length > 1 ? "," + partes[1].slice(0, 2) : "";
+
+            // TRAVA DE SEGURANÇA: Limita a parte puramente inteira a 7 dígitos (máximo de 9.999.999)
+            // Isso evita que o usuário digite trilhões e cause erro interno no banco de dados.
+            if (parteInteira.length > 7) {
+                parteInteira = parteInteira.slice(0, 7);
+            }
+
+            // 3. Coloca os pontos de milhar apenas (ex: 2340 vira 2.340)
+            parteInteira = parteInteira.replace(/\D/g, ""); 
+            if (parteInteira !== "") {
+                parteInteira = parseInt(parteInteira, 10).toString(); // Tira zeros à esquerda
+                parteInteira = parteInteira.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+            } else {
+                parteInteira = "0";
+            }
+
+            // 4. Devolve o valor formatado para a tela do usuário
+            campo.value = "R$ " + parteInteira + parteDecimal;
+        }
+
+        // Quando a página carregar (no modo editar), formata o valor que veio do banco
+        document.addEventListener("DOMContentLoaded", function() {
+            const campo = document.getElementById("preco");
+            if(campo && campo.value) {
+                formatarPrecoInteiro(campo);
+            }
+
+            // TRUQUE PARA SALVAR SEM ERRO: intercepta o envio do formulário
+            const formulario = campo.closest("form");
+            if (formulario) {
+                formulario.addEventListener("submit", function() {
+                    // Antes de enviar, remove "R$ ", tira os pontos de milhar e troca a vírgula por ponto decimal pro banco aceitar
+                    let valorLimpo = campo.value.replace(/^R\$\s?/, "").replace(/\./g, "").replace(",", ".");
+                    campo.value = valorLimpo; // Envia o número limpo (ex: 2340 ou 200.00)
+                });
             }
         });
     </script>

@@ -1,8 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const inputFull      = document.getElementById('qty-full');
-    const inputHalf      = document.getElementById('qty-half');
+    const inputFull       = document.getElementById('qty-full');
+    const inputHalf       = document.getElementById('qty-half');
     const totalValueEl   = document.getElementById('total-value');
     const buyButton      = document.getElementById('buy-button');
+    const addToCartBtn   = document.getElementById('add-to-cart-button');
     const errorMessageEl = document.getElementById('error-message');
     const avisoLoginEl   = document.getElementById('aviso-login');
 
@@ -36,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (ticketState.total > 0) limparAvisos();
     }
 
+    // Gerenciador dos botões de + e -
     document.querySelectorAll('.quantity-btn').forEach(botao => {
         botao.addEventListener('click', () => {
             const tipo = botao.dataset.type;
@@ -53,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // ── BOTÃO: COMPRAR INGRESSOS (Mantém validação de login para checkout direto) ──
     if (buyButton) {
         buyButton.addEventListener('click', () => {
             if (ticketState.total === 0) {
@@ -65,7 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Gera o payload final para a página de pagamento
             const currentOrder = {
                 showId:       showRealDoBanco.id,
                 title:        showRealDoBanco.title,
@@ -76,6 +78,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
             localStorage.setItem('currentOrder', JSON.stringify(currentOrder));
             window.location.href = '/pagamento';
+        });
+    }
+
+    // ── BOTÃO: ADICIONAR AO CARRINHO (Livre e Dinâmico, sem barreira de login) ──
+    if (addToCartBtn) {
+        addToCartBtn.addEventListener('click', async () => {
+            // A única validação necessária é garantir que ele escolheu pelo menos 1 ingresso
+            if (ticketState.total === 0) {
+                mostrarFeedback(errorMessageEl);
+                return;
+            }
+
+            try {
+                // Envia as quantidades selecionadas para a sessão do carrinho
+                const resposta = await fetch('/carrinho/adicionar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        showId: showRealDoBanco.id,
+                        quantidadeInteira: ticketState.full,
+                        quantidadeMeia: ticketState.half
+                    })
+                });
+
+                const resultado = await resposta.json();
+
+                if (resultado.sucesso) {
+                    // Vai para a página do carrinho exibir a lista com o cálculo dinâmico
+                    window.location.href = '/carrinho';
+                } else {
+                    alert(resultado.mensagem || 'Erro ao adicionar itens ao carrinho.');
+                }
+
+            } catch (erro) {
+                console.error('Erro na requisição do carrinho:', erro);
+                alert('Não foi possível se conectar ao servidor.');
+            }
         });
     }
 

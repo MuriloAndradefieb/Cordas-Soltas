@@ -53,3 +53,42 @@
         }
 
     });
+    document.addEventListener("DOMContentLoaded", () => {
+    const inputBusca = document.getElementById("input-busca");
+    const selectEstilo = document.getElementById("filtro-estilo-select");
+    
+    // Classes do seu layout dinâmico
+    const blocosEstilo = document.querySelectorAll(".bloco-estilo-musical"); 
+    const cardsShows = document.querySelectorAll(".card-show"); 
+
+    function aplicarFiltroSutil() {
+        const termoBusca = inputBusca.value.toLowerCase().trim();
+        const estiloSelecionado = selectEstilo.value;
+
+        cardsShows.forEach(card => {
+            const titulo = card.querySelector("h3")?.textContent.toLowerCase() || "";
+            const local = card.querySelector("p")?.textContent.toLowerCase() || "";
+            const estiloCard = card.getAttribute("data-estilo") || ""; 
+
+            // Regras lógicas cruzadas (Busca por texto + Categoria selecionada no Select)
+            const bateComEstilo = (estiloSelecionado === "todos" || estiloCard.toLowerCase() === estiloSelecionado.toLowerCase());
+            const bateComTexto = (titulo.includes(termoBusca) || local.includes(termoBusca));
+
+            if (bateComEstilo && bateComTexto) {
+                card.style.display = ""; // Mantém o comportamento original (flex/grid)
+            } else {
+                card.style.display = "none";
+            }
+        });
+
+        // Limpa blocos vazios da tela para manter o visual clean
+        blocosEstilo.forEach(bloco => {
+            const temCardsVisiveis = Array.from(bloco.querySelectorAll(".card-show")).some(card => card.style.display !== "none");
+            bloco.style.display = temCardsVisiveis ? "" : "none";
+        });
+    }
+
+    // Escuta eventos de digitação na busca e mudanças no select drop-down
+    inputBusca.addEventListener("input", aplicarFiltroSutil);
+    selectEstilo.addEventListener("change", aplicarFiltroSutil);
+});

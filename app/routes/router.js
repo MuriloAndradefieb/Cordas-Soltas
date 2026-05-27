@@ -91,12 +91,184 @@ router.get('/detalhes', async (req, res) => {
         return res.render('pages/detalhes', { 
             titulo: 'Detalhes', 
             usuario: req.session.usuario || null,
-            show: showEncontrado
+            show: showEncontrado,
+            itensCarrinho: req.session.carrinho || [] // Evita ReferenceError se a view checar o estado do carrinho
         });
 
     } catch (err) {
         console.error("Erro ao carregar detalhes do show:", err.message);
         return res.status(500).send("Erro interno ao carregar os detalhes do show.");
+    }
+});
+
+// =========================================================================
+// ROTAS DO FLUXO DO CARRINHO DE COMPRAS (SESSÃO + PERSISTÊNCIA NO BANCO)
+// =========================================================================
+
+// 1. POST – Adicionar Item ao Carrinho (Banco se logado, Sessão se deslogado)
+router.post('/carrinho/adicionar', async (req, res) => {
+    try {
+        const { showId, quantidadeInteira, quantidadeMeia } = req.body;
+        const usuarioLogado = req.session.usuario;
+
+        // Busca os dados do show no banco para garantir consistência
+        const [rows] = await db.query("SELECT * FROM shows WHERE id = ?", [showId]);
+        if (rows.length === 0) {
+            return res.status(422).json({ sucesso: false, message: "Show inválido ou inexistente." });
+        }
+        const showItem = rows[0];
+
+        // SE O USUÁRIO ESTIVER LOGADO -> SALVA E ATUALIZA DIRETO NO BANCO DE DADOS
+        if (usuarioLogado) {
+            if (parseInt(quantidadeInteira) > 0) {
+                const [existeInteira] = await db.query(
+                    "SELECT id FROM carrinho WHERE usuario_id = ? AND show_id = ? AND tipo_ingresso = 'Pista Inteira'",
+                    [usuarioLogado.id, showId]
+                );
+                if (existeInteira.length > 0) {
+                    await db.query("UPDATE carrinho SET quantidade = quantidade + ? WHERE id = ?", [parseInt(quantidadeInteira), existeInteira[0].id]);
+                } else {
+                    await db.query("INSERT INTO carrinho (usuario_id, show_id, tipo_ingresso, quantidade) VALUES (?, ?, 'Pista Inteira', ?)", [usuarioLogado.id, showId, parseInt(quantidadeInteira)]);
+                }
+            }
+
+            if (parseInt(quantidadeMeia) > 0) {
+                const [existeMeia] = await db.query(
+                    "SELECT id FROM carrinho WHERE usuario_id = ? AND show_id = ? AND tipo_ingresso = 'Pista Meia-Entrada'",
+                    [usuarioLogado.id, showId]
+                );
+                if (existeMeia.length > 0) {
+                    await db.query("UPDATE carrinho SET quantidade = quantidade + ? WHERE id = ?", [parseInt(quantidadeMeia), existeMeia[0].id]);
+                } else {
+                    await db.query("INSERT INTO carrinho (usuario_id, show_id, tipo_ingresso, quantidade) VALUES (?, ?, 'Pista Meia-Entrada', ?)", [usuarioLogado.id, showId, parseInt(quantidadeMeia)]);
+                }
+            }
+        } 
+        // SE NÃO ESTIVER LOGADO -> MANTÉM NA SESSÃO TEMPORÁRIA
+        else {
+            if (!req.session.carrinho) {
+                req.session.carrinho = [];
+            }
+
+            const dataFormato = showItem.data_show instanceof Date ? showItem.data_show.toLocaleDateString('pt-BR') : showItem.data_show;
+
+            // Processar Ingresso Inteira na Sessão
+            if (parseInt(quantidadeInteira) > 0) {
+                const idItemInteira = `${showId}-inteira`;
+                const itemExistenteInteira = req.session.carrinho.find(item => item.cartId === idItemInteira);
+
+                if (itemExistenteInteira) {
+                    itemExistenteInteira.quantidade += parseInt(quantidadeInteira);
+                } else {
+                    req.session.carrinho.push({
+                        cartId: idItemInteira,
+                        id: showItem.id,
+                        titulo: showItem.titulo,
+                        tipo_ingresso: 'Pista Inteira',
+                        local: showItem.local,
+                        data_formatada: dataFormato,
+                        estilo: showItem.estilo,
+                        preco: parseFloat(showItem.preco),
+                        imagem_url: showItem.imagem_url,
+                        quantidade: parseInt(quantidadeInteira)
+                    });
+                }
+            }
+
+            // Processar Ingresso Meia na Sessão
+            if (parseInt(quantidadeMeia) > 0) {
+                const idItemMeia = `${showId}-meia`;
+                const itemExistenteMeia = req.session.carrinho.find(item => item.cartId === idItemMeia);
+
+                if (itemExistenteMeia) {
+                    itemExistenteMeia.quantidade += parseInt(quantidadeMeia);
+                } else {
+                    req.session.carrinho.push({
+                        cartId: idItemMeia,
+                        id: showItem.id,
+                        titulo: showItem.titulo,
+                        tipo_ingresso: 'Pista Meia-Entrada',
+                        local: showItem.local,
+                        data_formatada: dataFormato,
+                        estilo: showItem.estilo,
+                        preco: parseFloat(showItem.preco) / 2,
+                        imagem_url: showItem.imagem_url,
+                        quantidade: parseInt(quantidadeMeia)
+                    });
+                }
+            }
+        }
+
+        return res.json({ sucesso: true, mensagem: "Adicionado ao carrinho com sucesso!" });
+    } catch (err) {
+        console.error("Erro na rota do carrinho:", err);
+        return res.status(500).json({ sucesso: false, message: "Erro ao processar adição." });
+    }
+});
+
+// 2. GET – Visualizar Listagem do Carrinho Dinâmico (Banco ou Sessão)
+router.get('/carrinho', async (req, res) => {
+    try {
+        let itens = [];
+
+        // Se o usuário estiver logado, faz a busca unificada direto na tabela do banco usando JOIN
+        if (req.session.usuario) {
+            const queryBanco = `
+                SELECT c.id AS cartId, s.id, s.titulo, c.tipo_ingresso, s.local, s.data_show, s.estilo, s.preco, s.imagem_url, c.quantidade 
+                FROM carrinho c
+                JOIN shows s ON c.show_id = s.id
+                WHERE c.usuario_id = ?`;
+            
+            const [rows] = await db.query(queryBanco, [req.session.usuario.id]);
+            
+            itens = rows.map(item => {
+                const dataFormato = item.data_show instanceof Date ? item.data_show.toLocaleDateString('pt-BR') : item.data_show;
+                return {
+                    cartId: String(item.cartId), // Mantido como string para compatibilidade no Front
+                    id: item.id,
+                    titulo: item.titulo,
+                    tipo_ingresso: item.tipo_ingresso,
+                    local: item.local,
+                    data_formatada: dataFormato,
+                    estilo: item.estilo,
+                    preco: item.tipo_ingresso === 'Pista Meia-Entrada' ? parseFloat(item.preco) / 2 : parseFloat(item.preco),
+                    imagem_url: item.imagem_url,
+                    quantidade: item.quantidade
+                };
+            });
+        } else {
+            // Se não houver login, puxa a listagem temporária da sessão
+            itens = req.session.carrinho || [];
+        }
+
+        return res.render('pages/carrinho', {
+            titulo: 'Carrinho de Compras',
+            usuario: req.session.usuario || null,
+            itensCarrinho: itens
+        });
+    } catch (err) {
+        console.error("Erro ao carregar carrinho:", err);
+        return res.status(500).send("Erro interno ao carregar a página do carrinho.");
+    }
+});
+
+// 3. POST – Remover Item do Carrinho (Trata tanto Banco quanto Sessão)
+router.post('/carrinho/remover/:id', async (req, res) => {
+    try {
+        const idParaRemover = req.params.id;
+
+        if (req.session.usuario) {
+            // Se logado, remove a linha correspondente no Banco de Dados
+            await db.query("DELETE FROM carrinho WHERE id = ? AND usuario_id = ?", [idParaRemover, req.session.usuario.id]);
+        } else if (req.session.carrinho) {
+            // Se deslogado, remove filtrando o array da sessão
+            req.session.carrinho = req.session.carrinho.filter(item => item.cartId !== idParaRemover && item.id !== parseInt(idParaRemover));
+        }
+        
+        return res.json({ sucesso: true, mensagem: "Item removido com sucesso." });
+    } catch (err) {
+        console.error("Erro ao remover item do carrinho:", err);
+        return res.status(500).json({ sucesso: false, message: "Erro ao remover item." });
     }
 });
 
@@ -185,8 +357,8 @@ router.get('/adm/ingressos', async (req, res) => {
 });
 
 router.get('/adm/ingressos/adicionar', (req, res) => {
-    const estilosOficiais = ['Rock', 'Samba', 'Pagode', 'Jazz', 'Eletrônica', 'Forró', 'Sertanejo', 'MPB', 'Reggae', 'Hip-Hop / Rap', 'Metal', 'Pop', 'Outro'];
-    return res.render('pages/admin-ingressos-form', { estilos: estilosOficiais });
+    const stylesOficiais = ['Rock', 'Samba', 'Pagode', 'Jazz', 'Eletrônica', 'Forró', 'Sertanejo', 'MPB', 'Reggae', 'Hip-Hop / Rap', 'Metal', 'Pop', 'Outro'];
+    return res.render('pages/admin-ingressos-form', { estilos: stylesOficiais, show: null });
 });
 
 router.post('/adm/ingressos/adicionar', upload.single('image_file'), async (req, res) => {
@@ -203,8 +375,80 @@ router.post('/adm/ingressos/adicionar', upload.single('image_file'), async (req,
     }
 });
 
+router.get('/adm/ingressos/editar/:id', async (req, res) => {
+    try {
+        const showId = req.params.id;
+        const estilosOficiais = ['Rock', 'Samba', 'Pagode', 'Jazz', 'Eletrônica', 'Forró', 'Sertanejo', 'MPB', 'Reggae', 'Hip-Hop / Rap', 'Metal', 'Pop', 'Outro'];
+        
+        const [rows] = await db.query("SELECT * FROM shows WHERE id = ?", [showId]);
+        
+        if (rows.length === 0) {
+            return res.status(404).send("Ingresso/Show não encontrado.");
+        }
+
+        const showEncontrado = rows[0];
+
+        if (showEncontrado.data_show instanceof Date) {
+            showEncontrado.data_show = showEncontrado.data_show.toISOString().split('T')[0];
+        } else if (typeof showEncontrado.data_show === 'string' && showEncontrado.data_show.includes('/')) {
+            const partes = showEncontrado.data_show.split('/');
+            showEncontrado.data_show = `${partes[2]}-${partes[1]}-${partes[0]}`;
+        }
+
+        return res.render('pages/admin-ingressos-form', { estilos: estilosOficiais, show: showEncontrado });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).send("Erro ao buscar dados do show.");
+    }
+});
+
+router.post('/adm/ingressos/editar/:id', upload.single('image_file'), async (req, res) => {
+    try {
+        const showId = req.params.id;
+        const { titulo, estilo, data_show, local, preco, quantidade } = req.body;
+
+        let queryUpdate = "UPDATE shows SET titulo = ?, estilo = ?, data_show = ?, local = ?, preco = ?, quantidade = ? WHERE id = ?";
+        let params = [titulo.trim(), estilo, data_show, local.trim(), parseFloat(preco), parseInt(quantidade), showId];
+
+        if (req.file) {
+            queryUpdate = "UPDATE shows SET titulo = ?, estilo = ?, data_show = ?, local = ?, preco = ?, quantidade = ?, imagem_url = ? WHERE id = ?";
+            params = [titulo.trim(), estilo, data_show, local.trim(), parseFloat(preco), parseInt(quantidade), `/img/${req.file.filename}`, showId];
+        }
+
+        await db.query(queryUpdate, params);
+        return res.redirect('/adm/ingressos');
+    } catch (err) {
+        console.error(err);
+        return res.status(500).send("Erro ao atualizar o ingresso.");
+    }
+});
+
+router.post('/adm/ingressos/excluir/:id', async (req, res) => {
+    try {
+        const showId = req.params.id;
+        const queryDelete = "DELETE FROM shows WHERE id = ?";
+        const [result] = await db.query(queryDelete, [showId]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ sucesso: false, mensagem: "Show não encontrado." });
+        }
+
+        if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+            return res.json({ sucesso: true, message: "Ingresso excluído com sucesso!" });
+        }
+
+        return res.redirect('/adm/ingressos');
+    } catch (err) {
+        console.error("Erro ao excluir show:", err.message);
+        if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+            return res.status(500).json({ sucesso: false, mensagem: "Erro interno ao excluir." });
+        }
+        return res.status(500).send("Erro interno ao excluir o ingresso.");
+    }
+});
+
 // =========================================================================
-// DEMAIS PÁGINAS DO ECOSSISTEMA
+// DEMAIS PÁGINAS DO ECOSSISTEMA E MIDDLEWARES
 // =========================================================================
 function requireAuth(req, res, next) {
     if (req.session && req.session.usuario) return next();
@@ -220,7 +464,10 @@ router.get('/seletivas', (req, res) => res.render('pages/seletivas', { titulo: '
 router.get('/regulamento', (req, res) => res.render('pages/regulamento', { titulo: 'Regulamento', usuario: u(req) }));
 router.get('/sobre', (req, res) => res.render('pages/sobre', { titulo: 'Sobre', usuario: u(req) }));
 router.get('/mensalidade', (req, res) => res.render('pages/mensalidade', { titulo: 'Mensalidade', usuario: u(req) }));
-router.get('/pagamento', (req, res) => res.render('pages/pagamento', { titulo: 'Pagamento', usuario: u(req) }));
+
+// Aplicação do requireAuth para proteger a tela final de pagamento
+router.get('/pagamento', requireAuth, (req, res) => res.render('pages/pagamento', { titulo: 'Pagamento', usuario: u(req) }));
+
 router.get('/pagamento-luth', (req, res) => res.render('pages/pagamento-luth', { titulo: 'Pagamento Luth', usuario: u(req) }));
 router.get('/pagamento-mensalidade', (req, res) => res.render('pages/pagamento-mensalidade', { titulo: 'Pagamento Mensalidade', usuario: u(req) }));
 router.get('/formulario-seletivas', FormularioController.mostrar);

@@ -106,3 +106,12 @@ CREATE TABLE IF NOT EXISTS shows (
 );
 ALTER TABLE shows ADD COLUMN preco DECIMAL(10,2) NOT NULL DEFAULT 0.00;
 ALTER TABLE shows ADD COLUMN quantidade INT NOT NULL DEFAULT 0;
+CREATE TABLE IF NOT EXISTS carrinho (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    show_id INT NOT NULL,
+    tipo_ingresso VARCHAR(50) NOT NULL, -- 'Pista Inteira' ou 'Pista Meia-Entrada'
+    quantidade INT NOT NULL,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    FOREIGN KEY (show_id) REFERENCES shows(id) ON DELETE CASCADE
+);

@@ -267,3 +267,26 @@ body {
         object-position: center;
     }
 }
+/* Espaçamento e estilo do novo botão de carrinho */
+.cart-button {
+    width: 100%;
+    background-color: transparent;
+    color: #ffffff;
+    border: 2px solid #ffb800;
+    padding: 15px;
+    border-radius: 4px; /* Mantendo o padrão dos seus inputs */
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px; /* Cria o espaçamento abaixo do botão Comprar */
+    transition: background-color 0.2s ease, color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.cart-button:hover {
+    background-color: #ffb800;
+    color: #000000;
+}

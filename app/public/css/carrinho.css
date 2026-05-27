@@ -1,0 +1,346 @@
+/* ── Reset Geral ── */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #000000;
+    color: #ffffff;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ── Navbar ── */
+.navbar {
+    background-color: #1a1a1a;
+    border-bottom: 2px solid #ffb800;
+    padding: 15px 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 22px;
+    font-style: italic;
+    letter-spacing: -1px;
+    color: #ffffff;
+}
+
+.destaque-logo {
+    color: #ffb800;
+}
+
+.nav-links {
+    display: flex;
+    gap: 30px;
+}
+
+.nav-links a {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.nav-links a.active, 
+.nav-links a:hover {
+    color: #ffb800;
+}
+
+.nav-icons {
+    display: flex;
+    gap: 20px;
+}
+
+.btn-icone {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.nav-icons svg {
+    fill: #ffffff;
+    width: 24px;
+    height: 24px;
+}
+
+/* ── Container Layout Principal ── */
+.carrinho-container {
+    max-width: 1200px;
+    margin: 50px auto;
+    display: grid;
+    grid-template-columns: 1.8fr 1fr;
+    gap: 40px;
+    padding: 0 20px;
+}
+
+.lista-ingressos {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* ── Card de Ingresso ── */
+.item-ingresso {
+    background-color: #222222;
+    border-radius: 15px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border: 1px solid #333333;
+}
+
+/* ── Controle de Seleção Quadrado e Ativo ── */
+.controle-selecao {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+}
+
+.checkbox-nativo {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.checkbox-customizado {
+    width: 22px;
+    height: 22px;
+    border: 2px solid #ffb800;
+    border-radius: 4px;
+    background-color: transparent;
+    display: block;
+    position: relative;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.item-checkbox:checked ~ .checkbox-customizado,
+.checkbox-nativo:checked ~ .checkbox-customizado {
+    background-color: #ffb800;
+    border-color: #ffb800;
+}
+
+.checkbox-customizado::after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 11px;
+    border: solid #000000;
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+}
+
+.item-checkbox:checked ~ .checkbox-customizado::after,
+.checkbox-nativo:checked ~ .checkbox-customizado::after {
+    display: block;
+}
+
+.btn-remover-item {
+    display: none !important;
+}
+
+/* ── Infos Internas do Card ── */
+.banner-show {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.info-show {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 14px;
+    color: #a6a6a6;
+}
+
+.info-show span {
+    color: #ffffff;
+}
+
+.destaque-texto {
+    color: #ffb800;
+}
+
+/* ── Contador de Quantidade ── */
+.controles-quantidade {
+    display: flex;
+    align-items: center;
+    border: 2px solid #ffffff;
+    border-radius: 4px;
+}
+
+.btn-qtd {
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 18px;
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.qtd-num {
+    color: #ffb800;
+    font-weight: bold;
+    font-size: 16px;
+    width: 30px;
+    text-align: center;
+}
+
+/* ── Resumo Lateral da Compra ── */
+.resumo-compra {
+    background-color: #222222;
+    border-radius: 15px;
+    padding: 25px;
+    height: fit-content;
+    border: 1px solid #333333;
+}
+
+.resumo-titulo {
+    color: #ffb800;
+    font-size: 14px;
+    margin-bottom: 20px;
+    font-weight: normal;
+    text-transform: capitalize;
+}
+
+/* ── Alinhamento da Tabela de Resumo Lateral ── */
+.tabela-resumo {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.tabela-resumo td {
+    padding: 12px 0;
+    font-size: 16px;
+    color: #ffffff;
+    vertical-align: middle;
+}
+
+.tabela-resumo .valor-resumo {
+    text-align: right;
+}
+
+.tabela-resumo .total-geral td {
+    font-weight: bold;
+    font-size: 20px;
+    border-top: 1px solid #333333;
+    padding-top: 20px;
+}
+
+/* ── Botão Comprar ── */
+.btn-comprar {
+    width: 100%;
+    background-color: #ffb800;
+    color: #000000;
+    border: none;
+    padding: 15px;
+    border-radius: 25px;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: background-color 0.2s ease;
+}
+
+.btn-comprar:hover {
+    background-color: #e6a600;
+}
+
+.carrinho-vazio {
+    text-align: center;
+    color: #a6a6a6;
+    margin-top: 40px;
+}
+
+/* ── Reset do Ícone de Perfil (Navbar Fix) ── */
+.nav-icons .account-icon svg,
+.nav-icons #account-link svg,
+.nav-icons #account-link-container svg {
+    fill: none !important;
+    stroke: currentColor !important;
+    stroke-width: 2px !important;
+    color: #ffffff !important;
+}
+
+.nav-icons .account-icon svg path,
+.nav-icons #account-link svg path,
+.nav-icons #account-link-container svg path {
+    fill: #ffffff !important;
+}
+.item-nome-show {
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+/* ── Alerta Customizado de Erro (Idêntico ao do Painel de Ingressos) ── */
+.alerta-erro-ingresso {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #2a0808;  /* Vermelho extremamente escuro para o fundo */
+    border: 1px solid #5a1818;  /* Borda sutil em tom vermelho escuro */
+    color: #ff4d4d;             /* Texto em vermelho vivo/alerta idêntico ao print */
+    padding: 10px 15px;
+    border-radius: 6px;
+    margin-top: 15px;
+    font-size: 14px;
+    font-weight: 500;
+    width: 100%;
+}
+/* ── Alerta Amarelo de Login Obrigatório (Idêntico ao novo print) ── */
+.alerta-login-obrigatorio {
+    display: flex;
+    align-items: center;
+    background-color: #141103;  /* Fundo preto com leve tom de amarelo/âmbar */
+    border: 1px solid #ffb800;  /* Borda amarela idêntica à identidade da sua navbar */
+    color: #ffffff;             /* Texto base branco */
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+    font-size: 14px;
+    font-weight: 500;
+    width: 100%;
+}
+
+.alerta-login-obrigatorio span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Link destacado em amarelo e sublinhado */
+.link-alerta-login {
+    color: #ffb800 !important;
+    text-decoration: underline !important;
+    font-weight: bold;
+    margin-left: 4px;
+}
+
+.link-alerta-login:hover {
+    color: #e6a600 !important;
+}   

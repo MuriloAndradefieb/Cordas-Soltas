@@ -579,124 +579,81 @@ a {
         font-size: 0.9rem;
     }
 }
-.azup-a11y-toolbar {
-    position: fixed !important; right: 0 !important; top: 50% !important; transform: translateY(-50%) !important;
-    z-index: 9999999 !important; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-    font-size: 14px; line-height: 1.4; direction: ltr; text-align: left;
-    height: auto !important; width: auto !important;
-}
-.azup-a11y-toggle-btn {
-    position: absolute; right: 0; top: 50%; transform: translateY(-50%);
-    width: 52px; height: 52px; border-radius: 10px 0 0 10px;
-    background: #1565C0; color: #fff; border: none; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: -2px 2px 8px rgba(0,0,0,0.3); transition: background 0.2s;
-    padding: 0;
-}
-.azup-a11y-toggle-btn:hover { background: #0D47A1; }
-.azup-a11y-toggle-btn:focus { outline: 3px solid #FFD600; outline-offset: 2px; }
-.azup-a11y-panel {
-    position: absolute; right: 56px; top: 50%; transform: translateY(-50%);
-    width: 280px; background: #fff; border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.18); overflow: hidden;
-    transition: opacity 0.2s, visibility 0.2s;
-}
-.azup-a11y-collapsed .azup-a11y-panel { opacity: 0; visibility: hidden; pointer-events: none; }
-.azup-a11y-expanded .azup-a11y-panel { opacity: 1; visibility: visible; pointer-events: auto; }
-.azup-a11y-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 16px; background: #1565C0; color: #fff;
-}
-.azup-a11y-title { font-weight: 700; font-size: 15px; }
-.azup-a11y-close-btn {
-    background: none; border: none; color: #fff; font-size: 22px;
-    cursor: pointer; padding: 0; line-height: 1; width: 28px; height: 28px;
-    display: flex; align-items: center; justify-content: center; border-radius: 4px;
-}
-.azup-a11y-close-btn:hover { background: rgba(255,255,255,0.2); }
-.azup-a11y-close-btn:focus { outline: 2px solid #FFD600; }
-.azup-a11y-options { padding: 8px; display: flex; flex-direction: column; gap: 4px; }
-.azup-a11y-btn {
-    display: flex; align-items: center; gap: 10px; width: 100%;
-    padding: 10px 14px; background: #f5f7fa; border: 2px solid transparent;
-    border-radius: 8px; cursor: pointer; font-size: 13px; color: #333;
-    transition: all 0.15s; font-family: inherit; text-align: left;
-}
-.azup-a11y-btn:hover { background: #e3f2fd; border-color: #90CAF9; }
-.azup-a11y-btn:focus { outline: 3px solid #FFD600; outline-offset: 1px; }
-.azup-a11y-btn[aria-pressed="true"] { background: #1565C0; color: #fff; border-color: #1565C0; }
-.azup-a11y-btn[aria-pressed="true"]:hover { background: #0D47A1; }
-.azup-a11y-icon { font-size: 18px; min-width: 24px; text-align: center; }
-.azup-a11y-label { font-weight: 500; }
-.azup-a11y-zoom-group {
-    display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
-    padding: 10px 14px; background: #f5f7fa; border-radius: 8px;
-}
-.azup-a11y-zoom-controls { display: flex; align-items: center; gap: 8px; margin-left: auto; }
-.azup-a11y-zoom-btn {
-    width: 36px; height: 36px; background: #1565C0; color: #fff;
-    border: none; border-radius: 6px; font-size: 14px; font-weight: 700;
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-    transition: background 0.2s; font-family: inherit;
-}
-.azup-a11y-zoom-btn:hover { background: #0D47A1; }
-.azup-a11y-zoom-btn:focus { outline: 3px solid #FFD600; outline-offset: 1px; }
-.azup-a11y-zoom-level { font-weight: 700; min-width: 42px; text-align: center; font-size: 13px; }
-.azup-a11y-reset-btn { background: #fff3e0 !important; border-color: #e65100 !important; color: #e65100 !important; }
-.azup-a11y-reset-btn:hover { background: #ffe0b2 !important; }
-.azup-a11y-footer {
-    padding: 8px 12px; text-align: center; border-top: 1px solid #eee; font-size: 11px;
-}
-.azup-a11y-footer a { color: #1565C0; text-decoration: none; }
-.azup-a11y-footer a:hover { text-decoration: underline; }
-.azup-a11y-reading-ruler {
-    display: none; position: fixed; left: 0; width: 100%;
-    height: 12px; background: rgba(255,235,59,0.4);
-    border-top: 2px solid #F9A825; border-bottom: 2px solid #F9A825;
-    pointer-events: none; z-index: 999998; transition: top 0.05s linear;
-}
-.azup-a11y-reading-ruler.azup-a11y-ruler-active { display: block; }
 
-/* REGRAS DE ALTERAÇÃO DO TEMA (Contraste) */
-body.azup-a11y-high-contrast { background: #000 !important; color: #FFD600 !important; }
-body.azup-a11y-high-contrast * { background-color: #000 !important; color: #FFD600 !important; border-color: #FFD600 !important; }
-body.azup-a11y-high-contrast a { color: #00E5FF !important; text-decoration: underline !important; }
-body.azup-a11y-high-contrast img { filter: contrast(1.2) brightness(1.1); }
-body.azup-a11y-high-contrast .azup-a11y-toolbar,
-body.azup-a11y-high-contrast .azup-a11y-toolbar * { background-color: revert !important; color: revert !important; border-color: revert !important; }
-body.azup-a11y-high-contrast .azup-a11y-btn[aria-pressed="true"] { background: #1565C0 !important; color: #fff !important; }
-body.azup-a11y-high-contrast .azup-a11y-header { background: #1565C0 !important; color: #fff !important; }
-body.azup-a11y-high-contrast .azup-a11y-panel { background: #fff !important; }
-body.azup-a11y-high-contrast .azup-a11y-btn { color: #333 !important; background: #f5f7fa !important; }
+/* ── SEÇÃO DE FILTROS (HOME) ─────────────────────────────────────── */
+.filtro-container {
+    max-width: 1200px;
+    margin: 30px auto 15px auto;
+    padding: 0 4%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
 
-/* OUTRAS OPÇÕES VARIADAS */
-body.azup-a11y-highlight-links a {
-    outline: 3px solid #FF6D00 !important; outline-offset: 2px !important;
-    background-color: #FFF8E1 !important; color: #BF360C !important;
-    text-decoration: underline !important; font-weight: bold !important;
-    padding: 1px 3px !important; border-radius: 2px !important;
+/* Barra de Busca com Lupa */
+.filtro-busca-wrapper {
+    display: flex;
+    align-items: center;
+    background-color: #181818;
+    border: 1px solid #252525;
+    border-radius: 8px;
+    padding: 0 20px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
-body.azup-a11y-highlight-links .azup-a11y-toolbar a {
-    outline: none !important; background: inherit !important; color: inherit !important;
-    text-decoration: inherit !important; font-weight: inherit !important; padding: inherit !important;
+
+.filtro-busca-wrapper:focus-within {
+    border-color: #ffb703;
+    box-shadow: 0 0 10px rgba(255, 183, 3, 0.2);
 }
-body.azup-a11y-readable-font,
-body.azup-a11y-readable-font * {
-    font-family: Arial, Helvetica, "Segoe UI", sans-serif !important;
-    letter-spacing: 0.03em !important;
+
+.icone-lupa {
+    font-size: 1.2rem;
+    color: #a0a0a0;
+    margin-right: 15px;
 }
-body.azup-a11y-readable-font .azup-a11y-toolbar,
-body.azup-a11y-readable-font .azup-a11y-toolbar * {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-    letter-spacing: normal !important;
+
+#input-busca {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 18px 0;
+    color: #ffffff;
+    font-size: 1.05rem;
+    outline: none;
 }
-body.azup-a11y-spacing * {
-    line-height: 2 !important;
-    letter-spacing: 0.08em !important;
-    word-spacing: 0.16em !important;
+
+#input-busca::placeholder {
+    color: #666666;
 }
-body.azup-a11y-spacing .azup-a11y-toolbar * {
-    line-height: 1.4 !important;
-    letter-spacing: normal !important;
-    word-spacing: normal !important;
+
+/* Botões de Categorias Rápidas */
+.filtro-categorias {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.btn-categoria {
+    background-color: #121212;
+    color: #a0a0a0;
+    border: 1px solid #252525;
+    padding: 10px 22px;
+    border-radius: 20px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-categoria:hover {
+    color: #ffffff;
+    border-color: #444444;
+    background-color: #181818;
+}
+
+.btn-categoria.ativo {
+    background-color: #ffb703;
+    color: #000000;
+    border-color: #ffb703;
+    font-weight: 700;
 }
