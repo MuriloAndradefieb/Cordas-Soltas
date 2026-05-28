@@ -17,7 +17,7 @@
         <section class="lista-ingressos">
             <% if (itensCarrinho && itensCarrinho.length > 0) { %>
                 <% itensCarrinho.forEach(item => { %>
-                    <article class="item-ingresso" data-id="<%= item.id %>">
+                    <article class="item-ingresso" data-cart-id="<%= item.cartId %>" data-show-id="<%= item.id %>">
                         
                         <label class="controle-selecao">
                             <input type="checkbox" class="checkbox-nativo item-checkbox" checked>
@@ -25,7 +25,7 @@
                         </label>
 
                         <figure>
-                            <img src="<%= item.imagem_url %>" alt="Banner do Show" class="banner-show">
+                            <img src="<%= item.imagem_url || '/img/pexels-wendywei-1190297.jpg' %>" alt="Banner do Show" class="banner-show" onerror="this.onerror=null;this.src='/img/pexels-wendywei-1190297.jpg';">
                         </figure>
 
                         <section class="info-show">

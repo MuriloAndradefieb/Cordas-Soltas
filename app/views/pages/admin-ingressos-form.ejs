@@ -259,7 +259,7 @@
                                         Adicionar banner
                                     </section>
                                     
-                                    <img src="<%= show ? show.imagem_url : '' %>" id="render_preview" class="img-preview-render" alt="Preview do Banner" style="<%= (show && show.imagem_url) ? 'display: block;' : '' %>">
+                                    <img src="<%= show ? (show.imagem_url || '/img/pexels-wendywei-1190297.jpg') : '' %>" id="render_preview" class="img-preview-render" alt="Preview do Banner" style="<%= (show && show.imagem_url) ? 'display: block;' : '' %>" onerror="this.onerror=null;this.src='/img/pexels-wendywei-1190297.jpg';">
                                 </label>
                                 <input type="file" id="file_upload" name="image_file" accept="image/*" style="display: none;" <%= show ? '' : 'required' %>>
                             </div>

@@ -102,8 +102,9 @@ CREATE TABLE IF NOT EXISTS shows (
     local VARCHAR(255) NOT NULL,
     data_show VARCHAR(50) NOT NULL, -- Ex: '11/09' ou usar DATE
     estilo VARCHAR(50) NOT NULL,    -- Ex: 'ROCK', 'SERTANEJO', 'POP'
-    imagem_url VARCHAR(255) DEFAULT '/img/default-show.png' -- Caminho do poster
+    imagem_url MEDIUMTEXT -- Caminho ou data URL do poster
 );
+ALTER TABLE shows MODIFY COLUMN imagem_url MEDIUMTEXT;
 ALTER TABLE shows ADD COLUMN preco DECIMAL(10,2) NOT NULL DEFAULT 0.00;
 ALTER TABLE shows ADD COLUMN quantidade INT NOT NULL DEFAULT 0;
 CREATE TABLE IF NOT EXISTS carrinho (

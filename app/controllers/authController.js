@@ -1,4 +1,5 @@
 const UsuariosModel = require('../models/Usuariosmodel');
+const CarrinhoModel = require('../models/CarrinhoModel');
 const bcrypt       = require('bcryptjs');
 
 const AuthController = {
@@ -138,6 +139,11 @@ const AuthController = {
                 telefone:      usuario.telefone,
                 fotoPerfil:    usuario.foto_perfil
             };
+
+            if (Array.isArray(req.session.carrinho) && req.session.carrinho.length > 0) {
+                await CarrinhoModel.mesclarDaSessao(usuario.id, req.session.carrinho);
+                delete req.session.carrinho;
+            }
 
             return res.redirect('/perfil');
 

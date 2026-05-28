@@ -5,29 +5,39 @@ const AuthController    = require('../controllers/authController');
 const PerfilController  = require('../controllers/perfilController');
 const FormularioController = require('../controllers/formularioController');
 const multer            = require('multer');
-const path              = require('path');
-const fs                = require('fs');
 
 const db = require('../../config/pool_conexoes');
+const CarrinhoModel = require('../models/CarrinhoModel');
+const ShowImageModel = require('../models/ShowImageModel');
 
 // =========================================================================
-// CONFIGURAÇÃO DO MULTER (CAMINHO ABSOLUTO SEGURO E CRIAÇÃO DE PASTA)
+// CONFIGURAÇÃO DO MULTER (UPLOAD EM MEMÓRIA PARA SALVAR NO BANCO)
 // =========================================================================
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const dir = path.join(__dirname, '..', 'public', 'img');
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
-        }
-        cb(null, dir);
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: {
+        fileSize: ShowImageModel.MAX_UPLOAD_BYTES
     },
-    filename: (req, file, cb) => {
-        const ext = path.extname(file.originalname);
-        cb(null, Date.now() + ext); 
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype && file.mimetype.startsWith('image/')) {
+            return cb(null, true);
+        }
+
+        return cb(new Error('Envie apenas arquivos de imagem.'));
     }
 });
 
-const upload = multer({ storage: storage });
+function processarUploadBanner(req, res, next) {
+    upload.single('image_file')(req, res, (err) => {
+        if (!err) return next();
+
+        if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
+            return res.status(400).send('A imagem do banner deve ter no maximo 5 MB.');
+        }
+
+        return res.status(400).send(err.message || 'Erro ao enviar a imagem do banner.');
+    });
+}
 
 // =========================================================================
 // GET – PÁGINA INICIAL (PÚBLICA - DINÂMICA COM BANCO DE DADOS)
@@ -110,39 +120,34 @@ router.post('/carrinho/adicionar', async (req, res) => {
     try {
         const { showId, quantidadeInteira, quantidadeMeia } = req.body;
         const usuarioLogado = req.session.usuario;
+        const showIdNumerico = Number.parseInt(showId, 10);
+        const qtdInteira = Math.max(0, Number.parseInt(quantidadeInteira, 10) || 0);
+        const qtdMeia = Math.max(0, Number.parseInt(quantidadeMeia, 10) || 0);
+
+        if (!showIdNumerico) {
+            return res.status(400).json({ sucesso: false, mensagem: "Show invalido." });
+        }
+
+        if (qtdInteira === 0 && qtdMeia === 0) {
+            return res.status(400).json({ sucesso: false, mensagem: "Selecione pelo menos um ingresso." });
+        }
 
         // Busca os dados do show no banco para garantir consistência
-        const [rows] = await db.query("SELECT * FROM shows WHERE id = ?", [showId]);
+        const [rows] = await db.query("SELECT * FROM shows WHERE id = ?", [showIdNumerico]);
         if (rows.length === 0) {
-            return res.status(422).json({ sucesso: false, message: "Show inválido ou inexistente." });
+            return res.status(422).json({ sucesso: false, mensagem: "Show invalido ou inexistente." });
         }
         const showItem = rows[0];
 
         // SE O USUÁRIO ESTIVER LOGADO -> SALVA E ATUALIZA DIRETO NO BANCO DE DADOS
         if (usuarioLogado) {
-            if (parseInt(quantidadeInteira) > 0) {
-                const [existeInteira] = await db.query(
-                    "SELECT id FROM carrinho WHERE usuario_id = ? AND show_id = ? AND tipo_ingresso = 'Pista Inteira'",
-                    [usuarioLogado.id, showId]
-                );
-                if (existeInteira.length > 0) {
-                    await db.query("UPDATE carrinho SET quantidade = quantidade + ? WHERE id = ?", [parseInt(quantidadeInteira), existeInteira[0].id]);
-                } else {
-                    await db.query("INSERT INTO carrinho (usuario_id, show_id, tipo_ingresso, quantidade) VALUES (?, ?, 'Pista Inteira', ?)", [usuarioLogado.id, showId, parseInt(quantidadeInteira)]);
-                }
+            const usuarioId = Number.parseInt(usuarioLogado.id, 10);
+            if (!usuarioId) {
+                return res.status(401).json({ sucesso: false, mensagem: "Sessao de usuario invalida. Faca login novamente." });
             }
 
-            if (parseInt(quantidadeMeia) > 0) {
-                const [existeMeia] = await db.query(
-                    "SELECT id FROM carrinho WHERE usuario_id = ? AND show_id = ? AND tipo_ingresso = 'Pista Meia-Entrada'",
-                    [usuarioLogado.id, showId]
-                );
-                if (existeMeia.length > 0) {
-                    await db.query("UPDATE carrinho SET quantidade = quantidade + ? WHERE id = ?", [parseInt(quantidadeMeia), existeMeia[0].id]);
-                } else {
-                    await db.query("INSERT INTO carrinho (usuario_id, show_id, tipo_ingresso, quantidade) VALUES (?, ?, 'Pista Meia-Entrada', ?)", [usuarioLogado.id, showId, parseInt(quantidadeMeia)]);
-                }
-            }
+            await CarrinhoModel.adicionar(usuarioId, showIdNumerico, CarrinhoModel.TIPOS_INGRESSO.INTEIRA, qtdInteira);
+            await CarrinhoModel.adicionar(usuarioId, showIdNumerico, CarrinhoModel.TIPOS_INGRESSO.MEIA, qtdMeia);
         } 
         // SE NÃO ESTIVER LOGADO -> MANTÉM NA SESSÃO TEMPORÁRIA
         else {
@@ -153,47 +158,47 @@ router.post('/carrinho/adicionar', async (req, res) => {
             const dataFormato = showItem.data_show instanceof Date ? showItem.data_show.toLocaleDateString('pt-BR') : showItem.data_show;
 
             // Processar Ingresso Inteira na Sessão
-            if (parseInt(quantidadeInteira) > 0) {
-                const idItemInteira = `${showId}-inteira`;
+            if (qtdInteira > 0) {
+                const idItemInteira = `${showIdNumerico}-inteira`;
                 const itemExistenteInteira = req.session.carrinho.find(item => item.cartId === idItemInteira);
 
                 if (itemExistenteInteira) {
-                    itemExistenteInteira.quantidade += parseInt(quantidadeInteira);
+                    itemExistenteInteira.quantidade += qtdInteira;
                 } else {
                     req.session.carrinho.push({
                         cartId: idItemInteira,
                         id: showItem.id,
                         titulo: showItem.titulo,
-                        tipo_ingresso: 'Pista Inteira',
+                        tipo_ingresso: CarrinhoModel.TIPOS_INGRESSO.INTEIRA,
                         local: showItem.local,
                         data_formatada: dataFormato,
                         estilo: showItem.estilo,
                         preco: parseFloat(showItem.preco),
                         imagem_url: showItem.imagem_url,
-                        quantidade: parseInt(quantidadeInteira)
+                        quantidade: qtdInteira
                     });
                 }
             }
 
             // Processar Ingresso Meia na Sessão
-            if (parseInt(quantidadeMeia) > 0) {
-                const idItemMeia = `${showId}-meia`;
+            if (qtdMeia > 0) {
+                const idItemMeia = `${showIdNumerico}-meia`;
                 const itemExistenteMeia = req.session.carrinho.find(item => item.cartId === idItemMeia);
 
                 if (itemExistenteMeia) {
-                    itemExistenteMeia.quantidade += parseInt(quantidadeMeia);
+                    itemExistenteMeia.quantidade += qtdMeia;
                 } else {
                     req.session.carrinho.push({
                         cartId: idItemMeia,
                         id: showItem.id,
                         titulo: showItem.titulo,
-                        tipo_ingresso: 'Pista Meia-Entrada',
+                        tipo_ingresso: CarrinhoModel.TIPOS_INGRESSO.MEIA,
                         local: showItem.local,
                         data_formatada: dataFormato,
                         estilo: showItem.estilo,
                         preco: parseFloat(showItem.preco) / 2,
                         imagem_url: showItem.imagem_url,
-                        quantidade: parseInt(quantidadeMeia)
+                        quantidade: qtdMeia
                     });
                 }
             }
@@ -202,7 +207,7 @@ router.post('/carrinho/adicionar', async (req, res) => {
         return res.json({ sucesso: true, mensagem: "Adicionado ao carrinho com sucesso!" });
     } catch (err) {
         console.error("Erro na rota do carrinho:", err);
-        return res.status(500).json({ sucesso: false, message: "Erro ao processar adição." });
+        return res.status(500).json({ sucesso: false, mensagem: "Erro ao processar adicao ao carrinho." });
     }
 });
 
@@ -213,29 +218,7 @@ router.get('/carrinho', async (req, res) => {
 
         // Se o usuário estiver logado, faz a busca unificada direto na tabela do banco usando JOIN
         if (req.session.usuario) {
-            const queryBanco = `
-                SELECT c.id AS cartId, s.id, s.titulo, c.tipo_ingresso, s.local, s.data_show, s.estilo, s.preco, s.imagem_url, c.quantidade 
-                FROM carrinho c
-                JOIN shows s ON c.show_id = s.id
-                WHERE c.usuario_id = ?`;
-            
-            const [rows] = await db.query(queryBanco, [req.session.usuario.id]);
-            
-            itens = rows.map(item => {
-                const dataFormato = item.data_show instanceof Date ? item.data_show.toLocaleDateString('pt-BR') : item.data_show;
-                return {
-                    cartId: String(item.cartId), // Mantido como string para compatibilidade no Front
-                    id: item.id,
-                    titulo: item.titulo,
-                    tipo_ingresso: item.tipo_ingresso,
-                    local: item.local,
-                    data_formatada: dataFormato,
-                    estilo: item.estilo,
-                    preco: item.tipo_ingresso === 'Pista Meia-Entrada' ? parseFloat(item.preco) / 2 : parseFloat(item.preco),
-                    imagem_url: item.imagem_url,
-                    quantidade: item.quantidade
-                };
-            });
+            itens = await CarrinhoModel.listarPorUsuario(req.session.usuario.id);
         } else {
             // Se não houver login, puxa a listagem temporária da sessão
             itens = req.session.carrinho || [];
@@ -259,7 +242,7 @@ router.post('/carrinho/remover/:id', async (req, res) => {
 
         if (req.session.usuario) {
             // Se logado, remove a linha correspondente no Banco de Dados
-            await db.query("DELETE FROM carrinho WHERE id = ? AND usuario_id = ?", [idParaRemover, req.session.usuario.id]);
+            await CarrinhoModel.remover(req.session.usuario.id, idParaRemover);
         } else if (req.session.carrinho) {
             // Se deslogado, remove filtrando o array da sessão
             req.session.carrinho = req.session.carrinho.filter(item => item.cartId !== idParaRemover && item.id !== parseInt(idParaRemover));
@@ -268,7 +251,7 @@ router.post('/carrinho/remover/:id', async (req, res) => {
         return res.json({ sucesso: true, mensagem: "Item removido com sucesso." });
     } catch (err) {
         console.error("Erro ao remover item do carrinho:", err);
-        return res.status(500).json({ sucesso: false, message: "Erro ao remover item." });
+        return res.status(500).json({ sucesso: false, mensagem: "Erro ao remover item." });
     }
 });
 
@@ -361,10 +344,12 @@ router.get('/adm/ingressos/adicionar', (req, res) => {
     return res.render('pages/admin-ingressos-form', { estilos: stylesOficiais, show: null });
 });
 
-router.post('/adm/ingressos/adicionar', upload.single('image_file'), async (req, res) => {
+router.post('/adm/ingressos/adicionar', processarUploadBanner, async (req, res) => {
     try {
         const { titulo, estilo, data_show, local, preco, quantidade } = req.body;
-        const imagem_url = req.file ? `/img/${req.file.filename}` : '/img/default-show.png';
+        await ShowImageModel.garantirColunaImagem();
+
+        const imagem_url = ShowImageModel.uploadParaDataUrl(req.file) || ShowImageModel.DEFAULT_SHOW_IMAGE;
 
         const queryInsert = "INSERT INTO shows (titulo, estilo, imagem_url, data_show, local, preco, quantidade) VALUES (?, ?, ?, ?, ?, ?, ?)";
         await db.query(queryInsert, [titulo.trim(), estilo, imagem_url, data_show, local.trim(), parseFloat(preco), parseInt(quantidade)]);
@@ -402,17 +387,19 @@ router.get('/adm/ingressos/editar/:id', async (req, res) => {
     }
 });
 
-router.post('/adm/ingressos/editar/:id', upload.single('image_file'), async (req, res) => {
+router.post('/adm/ingressos/editar/:id', processarUploadBanner, async (req, res) => {
     try {
         const showId = req.params.id;
         const { titulo, estilo, data_show, local, preco, quantidade } = req.body;
+        await ShowImageModel.garantirColunaImagem();
 
         let queryUpdate = "UPDATE shows SET titulo = ?, estilo = ?, data_show = ?, local = ?, preco = ?, quantidade = ? WHERE id = ?";
         let params = [titulo.trim(), estilo, data_show, local.trim(), parseFloat(preco), parseInt(quantidade), showId];
 
         if (req.file) {
+            const imagem_url = ShowImageModel.uploadParaDataUrl(req.file);
             queryUpdate = "UPDATE shows SET titulo = ?, estilo = ?, data_show = ?, local = ?, preco = ?, quantidade = ?, imagem_url = ? WHERE id = ?";
-            params = [titulo.trim(), estilo, data_show, local.trim(), parseFloat(preco), parseInt(quantidade), `/img/${req.file.filename}`, showId];
+            params = [titulo.trim(), estilo, data_show, local.trim(), parseFloat(preco), parseInt(quantidade), imagem_url, showId];
         }
 
         await db.query(queryUpdate, params);

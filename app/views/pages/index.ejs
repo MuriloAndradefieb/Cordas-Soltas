@@ -53,7 +53,7 @@
                                 <% showsPorEstilo[estilo].forEach(function(show) { %>
                                     <a href="/detalhes?id=<%= show.id %>">
                                         <li class="card">
-                                            <img src="<%= show.imagem_url || show.imagem %>" alt="<%= show.titulo %>" class="card-image">
+                                            <img src="<%= show.imagem_url || show.imagem || '/img/pexels-wendywei-1190297.jpg' %>" alt="<%= show.titulo %>" class="card-image" onerror="this.onerror=null;this.src='/img/pexels-wendywei-1190297.jpg';">
                                             
                                             <section class="card-info">
                                                 <h3><%= show.titulo %></h3>
