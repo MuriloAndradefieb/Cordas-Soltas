@@ -47,9 +47,9 @@ body {
 
 .seletivas-cabecalho h1 {
     font-family: 'Odibee Sans', sans-serif;
-    font-size: 60px;
+    font-size: 67px;
     font-weight: 400;
-    color: #FFD700;
+    color: #F9AF11;
     margin: 0;
     line-height: 1.1;
 }
@@ -133,9 +133,10 @@ body {
 }
 
 .seletivas-inscricao h2 {
+    font-family: 'Odibee Sans', sans-serif;
     font-size: 2.5rem;
     font-weight: 700;
-    color: #FFD700;
+    color: #F9AF11;
     margin-bottom: 1.5rem;
 }
 
@@ -147,7 +148,7 @@ body {
 
 .inscricao-atencao .atencao-label {
     display: block;
-    color: #FFD700;
+    color: #F9AF11;
     font-weight: 700;
     font-size: 1rem;
     margin-bottom: 0.4rem;
@@ -171,7 +172,7 @@ body {
 }
 
 .inscricao-aviso-clique strong {
-    color: #FFD700;
+    color: #F9AF11;
     font-style: normal;
     font-weight: 700;
 }

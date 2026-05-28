@@ -1,115 +1,119 @@
+@import url('https://fonts.googleapis.com/css2?family=Odibee+Sans&family=Roboto:wght@400;700&display=swap');
 
+/* ── Reset & Base ─────────────────────────────────────────────── */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #0a0a0a;
+    color: #fff;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* ── Container principal ──────────────────────────────────────── */
 .sobre-main-content {
-    background-color: #121212;
-    padding: 1rem;
-    background-image: url('/img/background-black.jpg'); 
-    background-repeat: repeat;
-    background-size: 50%;
+    background-color: #0a0a0a;
+    padding: 0;
 }
 
 .sobre-container {
-    max-width: 600px; 
+    max-width: 480px;
     margin: 0 auto;
     text-align: center;
 }
 
-.sobre-header {
-    margin: 3rem 0 1.5rem 0;
+/* ══════════════════════════════════════════════════════════════
+   1. HERO — imagem com texto sobreposto
+   ══════════════════════════════════════════════════════════════ */
+.sobre-hero {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
 }
 
-.sobre-header p {
-    font-size: 1.1rem;
-    color: #ccc;
-    margin: 0;
-    text-transform: lowercase;
-    font-weight: 400;
-}
-
-.sobre-header h1 {
-    font-size: 3rem;
-    color: #FFD700;
-    font-weight: 700;
-    margin: 0;
-    text-transform: uppercase;
-    line-height: 1;
-    text-shadow: 0 0 8px rgba(255, 215, 0, 0.7), 
-                 0 0 15px rgba(255, 215, 0, 0.5); 
-}
-
-
-.sobre-image-wrapper {
-    margin: 2.5rem 0 1.5rem 0;
-    max-width: 100%;
-}
-
-.sobre-image-wrapper img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 0;
+.sobre-hero img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    object-position: center 30%;
     display: block;
-    margin: 0 auto;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); 
+    filter: brightness(0.55);
 }
 
-
-.sobre-text-block {
-    font-size: 0.95rem;
-    line-height: 1.8; 
-    color: #e0e0e0;
+.sobre-hero-texto {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
     padding: 0 1rem;
-    text-align: left;
-    margin-bottom: 3rem; 
+    line-height: 1;
 }
 
-.sobre-text-block h2 {
-    color: #FFD700; 
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    text-transform: uppercase;
-    border-bottom: 2px solid #333; 
-    padding-bottom: 0.5rem;
-    text-align: center;
-    letter-spacing: 1px;
-}
-
-.sobre-text-block p {
-    margin-bottom: 1.5rem; 
-
-.sobre-text-block strong {
-    color: #FFD700;
+.sobre-hero-eyebrow {
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.85rem;
     font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
 }
 
-.sobre-text-block em {
-    color: #ccc;
-    font-style: italic;
+.sobre-hero-titulo {
+    font-family: 'Odibee Sans', sans-serif;
+    font-size: 60px;
+    font-weight: 400;
+    color: #F9AF11;
+    text-transform: lowercase;
+    text-shadow: none;
+    line-height: 1;
+    margin: 0;
 }
 
-
-.sobre-text-block ul {
-    list-style: none; 
-    padding: 0;
-    margin: 1.5rem 0;
+/* ══════════════════════════════════════════════════════════════
+   2. BLOCOS DE TEXTO
+   ══════════════════════════════════════════════════════════════ */
+.sobre-bloco-texto {
+    padding: 2rem 1.5rem;
+    text-align: center;
 }
 
-.sobre-text-block ul li {
-    background-color: #1e1e1e; 
-    margin-bottom: 0.5rem;
-    padding: 0.8rem 1rem;
-    border-left: 3px solid #FFD700;
-    font-size: 1rem;
-    color: #f0f0f0;
-    text-align: left;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+.sobre-bloco-texto p {
+    font-size: 0.95rem;
+    line-height: 1.75;
+    color: #d8d8d8;
+    margin: 0;
 }
 
+/* ══════════════════════════════════════════════════════════════
+   3. IMAGENS INTERNAS (full-width do container)
+   ══════════════════════════════════════════════════════════════ */
+.sobre-imagem {
+    width: 100%;
+    line-height: 0;
+}
 
+.sobre-imagem img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+}
+
+/* ── Footer ───────────────────────────────────────────────────── */
 .sobre-footer {
     text-align: center;
     padding: 2rem 1rem;
     font-size: 0.8rem;
     color: #888;
-    border-top: 1px solid #333;
+    border-top: 1px solid #222;
     line-height: 1.5;
 }
 
@@ -117,46 +121,17 @@
     margin: 0.2rem 0;
 }
 
-.social-icons {
-
-    position: absolute;
-    bottom: 20px; 
-    right: 20px;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.social-icons img {
-    width: 25px;
-    height: 25px;
-    opacity: 0.8;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.social-icons img:hover {
-    opacity: 1;
-    transform: scale(1.1);
-}
-
-
-@media (max-width: 768px) {
-    .sobre-header h1 {
-        font-size: 2.5rem;
+/* ── Responsivo ───────────────────────────────────────────────── */
+@media (max-width: 600px) {
+    .sobre-container {
+        max-width: 100%;
     }
-    .sobre-text-block h2 {
-        font-size: 1.3rem;
+
+    .sobre-hero img {
+        height: 150px;
     }
-    .sobre-text-block {
-        text-align: left;
+
+    .sobre-hero-titulo {
+        font-size: 2.2rem;
     }
-    .social-icons {
-        position: relative;
-        justify-content: center;
-        margin-top: 1rem;
-        right: auto;
-        bottom: auto;
-        width: 100%;
-    }
-}
 }

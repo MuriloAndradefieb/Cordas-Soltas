@@ -3,93 +3,357 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seguros Luthbox - Equipamentos por Estilo</title>
+    <title>Luthbox - Equipamentos por Estilo</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Odibee+Sans&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/luthbox-seguros.css"> <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ── Reset base ─────────────────────────────────── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: #0d0d0d;
+            color: #fff;
+            font-family: 'Roboto', sans-serif;
+            background-image: url('https://i.pinimg.com/1200x/de/d2/d7/ded2d7ac9173cb81662a4037e64df8e6.jpg');
+            background-repeat: repeat;
+        }
+
+        /* ── Wrapper principal ──────────────────────────── */
+        .luth-page {
+            max-width: 420px;
+            margin: 0 auto;
+            padding: 0 0 60px;
+        }
+
+        /* ── Cabeçalho ──────────────────────────────────── */
+        .luth-header {
+            text-align: center;
+            padding: 28px 16px 18px;
+        }
+
+        .luth-header__title {
+            font-family: 'Odibee Sans', sans-serif;
+            font-size: 3.2rem;
+            font-weight: 400;
+            color: #F9AF11;
+            line-height: 1;
+            letter-spacing: 1px;
+        }
+
+        .luth-header__subtitle {
+            font-size: 0.85rem;
+            font-weight: 400;
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 2px;
+        }
+
+        /* ── Grade 2 colunas ───────────────────────────── */
+        .luth-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            padding: 0 10px;
+        }
+
+        /* Samba fica centralizado na última linha */
+        .luth-grid .luth-card:last-child:nth-child(odd) {
+            grid-column: 1 / -1;
+            max-width: 50%;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* ── Card ───────────────────────────────────────── */
+        .luth-card {
+            background-color: #141414;
+            border: 1px solid #2a2a2a;
+            border-radius: 6px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Cabeçalho do card (título do estilo) */
+        .luth-card__style-name {
+            font-family: 'Odibee Sans', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 400;
+            color: #F9AF11;
+            text-align: center;
+            padding: 8px 6px 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background-color: #0d0d0d;
+        }
+
+        /* Imagem */
+        .luth-card__img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Corpo do card */
+        .luth-card__body {
+            padding: 10px 12px 12px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .luth-card__desc-label {
+            font-size: 0.78rem;
+            color: #F9AF11;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            text-transform: lowercase;
+        }
+
+        .luth-card__list {
+            list-style: none;
+            padding: 0;
+            flex: 1;
+        }
+
+        .luth-card__list li {
+            font-size: 0.82rem;
+            color: #e0e0e0;
+            line-height: 1.65;
+        }
+
+        .luth-card__list li::before {
+            content: attr(data-qty) 'x ';
+            color: #e0e0e0;
+        }
+
+        .luth-card__price {
+            font-size: 0.8rem;
+            color: #b0b0b0;
+            margin-top: 8px;
+        }
+
+        /* ── Botão assinar ─────────────────────────────── */
+        .luth-card__btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            width: 100%;
+            background-color: #1c1c1c;
+            border: 1px solid #333;
+            color: #ffffff;
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 11px 0;
+            cursor: pointer;
+            margin-top: 12px;
+            border-radius: 3px;
+            text-decoration: none;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        .luth-card__btn:hover {
+            background-color: #F9AF11;
+            border-color: #F9AF11;
+            color: #000;
+        }
+
+        .luth-card__btn-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            background-color: #F9AF11;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .luth-card__btn:hover .luth-card__btn-icon {
+            background-color: #000;
+        }
+
+        .luth-card__btn-icon svg {
+            width: 11px;
+            height: 11px;
+            fill: #000;
+        }
+
+        .luth-card__btn:hover .luth-card__btn-icon svg {
+            fill: #F9AF11;
+        }
+
+        /* ── Footer ─────────────────────────────────────── */
+        .luth-footer {
+            text-align: center;
+            padding: 24px 16px 12px;
+            font-size: 0.7rem;
+            color: #666;
+            border-top: 1px solid #1e1e1e;
+            margin-top: 30px;
+            line-height: 1.7;
+        }
+    </style>
 </head>
 <body>
-       
-    <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
-     <div vw class="enabled">
-    <div vw-access-button class="active"></div>
-    <div vw-plugin-wrapper>
-      <div class="vw-plugin-top-wrapper"></div>
+
+    <!-- Plugin VLibras — não remover -->
+    <div vw class="enabled">
+        <div vw-access-button class="active"></div>
+        <div vw-plugin-wrapper>
+            <div class="vw-plugin-top-wrapper"></div>
+        </div>
     </div>
-  </div>
-  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
-  <script>
-    new window.VLibras.Widget('https://vlibras.gov.br/app');
-  </script>
-<!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script>new window.VLibras.Widget('https://vlibras.gov.br/app');</script>
 
+    <%- include("../partials/header"); %>
 
+    <main class="luth-page">
 
-      <%- include("../partials/header"); %>
+        <!-- Cabeçalho -->
+        <header class="luth-header">
+            <h1 class="luth-header__title">luthbox</h1>
+            <p class="luth-header__subtitle">Equipamentos</p>
+        </header>
 
-    <main class="seguros-main-content">
-        <article class="seguros-container"> 
-            
-            <header class="seguros-header">
-                <h1>Luthbox</h1>
-                <p>equipamentos de ótima qualidade</p>
-            </header>
+        <!-- Grade de cards -->
+        <section class="luth-grid" aria-label="Kits de equipamentos por estilo musical">
 
-            <section class="seguro-card-section">
-                <h2>Rock</h2>
-                <a href="/estilos?estilo=rock" class="seguro-card">
-                    <img src="img/luthrock.jpg" alt="Setup completo para Rock com bateria, guitarras e amplificadores">
-                    <p class="card-description">Setup completo</p>
-                    <p class="card-price">R$150,00</p>
-                </a>
-            </section>
+            <!-- ROCK -->
+            <article class="luth-card">
+                <h2 class="luth-card__style-name">Rock</h2>
+                <img class="luth-card__img"
+                     src="img/luthrock.jpg"
+                     alt="Setup de Rock com bateria e guitarras">
+                <div class="luth-card__body">
+                    <p class="luth-card__desc-label">descrição</p>
+                    <ul class="luth-card__list">
+                        <li data-qty="1">Bateria</li>
+                        <li data-qty="3">Guitarras</li>
+                        <li data-qty="2">Microfones</li>
+                        <li data-qty="2">Caixas de som</li>
+                    </ul>
+                    <p class="luth-card__price">Apartir de : R$45,00</p>
+                    <a href="/estilos?estilo=rock" class="luth-card__btn">
+                            <img src="img/assinatura-icon.png" width="20px">
+                        assinar
+                    </a>
+                </div>
+            </article>
 
-            <section class="seguro-card-section">
-                <h2>Samba</h2>
-                <a href="/estilos?estilo=samba" class="seguro-card">
-                    <img src="img/luthsamba.webp" alt="Setup completo para Samba com pandeiro, tamborim e tantã">
-                    <p class="card-description">Setup completo</p>
-                    <p class="card-price">R$150,00</p>
-                </a>
-            </section>
+            <!-- PAGODE -->
+            <article class="luth-card">
+                <h2 class="luth-card__style-name">Pagode</h2>
+                <img class="luth-card__img"
+                     src="img/luthpagode.webp"
+                     alt="Setup de Pagode com percussão">
+                <div class="luth-card__body">
+                    <p class="luth-card__desc-label">descrição</p>
+                    <ul class="luth-card__list">
+                        <li data-qty="1">Surdo</li>
+                        <li data-qty="1">Agogô</li>
+                        <li data-qty="2">Pandeiro</li>
+                        <li data-qty="1">Tamborim</li>
+                        <li data-qty="1">Reco-reco</li>
+                    </ul>
+                    <p class="luth-card__price">Apartir de : R$45,00</p>
+                    <a href="/estilos?estilo=pagode" class="luth-card__btn">
+                        <img src="img/assinatura-icon.png" width="20px">
+                        assinar
+                    </a>
+                </div>
+            </article>
 
-            <section class="seguro-card-section">
-                <h2>Pagode</h2>
-                <a href="/estilos?estilo=pagode" class="seguro-card">
-                    <img src="img/luthpagode.webp" alt="Setup completo para Pagode com tantã, violão e cavaquinho">
-                    <p class="card-description">Setup completo</p>
-                    <p class="card-price">R$150,00</p>
-                </a>
-            </section>
+            <!-- JAZZ -->
+            <article class="luth-card">
+                <h2 class="luth-card__style-name">Jazz</h2>
+                <img class="luth-card__img"
+                     src="img/luthjazz.jpg"
+                     alt="Setup de Jazz com saxofone e violão">
+                <div class="luth-card__body">
+                    <p class="luth-card__desc-label">descrição</p>
+                    <ul class="luth-card__list">
+                        <li data-qty="1">Violino</li>
+                        <li data-qty="1">Saxofone</li>
+                        <li data-qty="1">Violão</li>
+                        <li data-qty="1">Teclado</li>
+                        <li data-qty="1">Guitarra</li>
+                    </ul>
+                    <p class="luth-card__price">Apartir de : R$45,00</p>
+                    <a href="/estilos?estilo=jazz" class="luth-card__btn">
+                            <img src="img/assinatura-icon.png" width="20px">
+                        assinar
+                    </a>
+                </div>
+            </article>
 
-            <section class="seguro-card-section">
-                <h2>Eletrônica</h2>
-                <a href="/estilos?estilo=eletronica" class="seguro-card">
-                    <img src="img/lutheletronica.webp" alt="Mesa de DJ para música eletrônica">
-                    <p class="card-description">Mesa DJ EDM</p>
-                    <p class="card-price">R$150,00</p>
-                </a>
-            </section>
+            <!-- ELETRÔNICA -->
+            <article class="luth-card">
+                <h2 class="luth-card__style-name">Eletrônica</h2>
+                <img class="luth-card__img"
+                     src="img/lutheletronica.webp"
+                     alt="Mesa DJ para música eletrônica">
+                <div class="luth-card__body">
+                    <p class="luth-card__desc-label">descrição</p>
+                    <ul class="luth-card__list">
+                        <li data-qty="1">Mesa Dj</li>
+                        <li data-qty="1">Microfone</li>
+                        <li data-qty="2">Mesa de som 12 canais</li>
+                    </ul>
+                    <p class="luth-card__price">Apartir de : R$45,00</p>
+                    <a href="/estilos?estilo=eletronica" class="luth-card__btn">
+                        <img src="img/assinatura-icon.png" width="20px">
+                        assinar
+                    </a>
+                </div>
+            </article>
 
-            <section class="seguro-card-section">
-                <h2>Jazz</h2>
-                <a href="/estilos?estilo=jazz" class="seguro-card">
-                    <img src="img/luthjazz.jpg" alt="Setup completo para Jazz com saxofone, trompete, guitarra e teclado">
-                    <p class="card-description">Setup completo</p>
-                    <p class="card-price">R$150,00</p>
-                </a>
-            </section>
-            
-        </article>
+            <!-- SAMBA — ocupa linha inteira, centralizado -->
+            <article class="luth-card">
+                <h2 class="luth-card__style-name">Samba</h2>
+                <img class="luth-card__img"
+                     src="img/luthsamba.webp"
+                     alt="Setup de Samba com pandeiro e surdo">
+                <div class="luth-card__body">
+                    <p class="luth-card__desc-label">descrição</p>
+                    <ul class="luth-card__list">
+                        <li data-qty="1">Surdo</li>
+                        <li data-qty="1">Repinique</li>
+                        <li data-qty="1">Tantã</li>
+                        <li data-qty="1">Pandeiro</li>
+                        <li data-qty="1">Banjo</li>
+                        <li data-qty="1">Cavaquinho</li>
+                    </ul>
+                    <p class="luth-card__price">Apartir de : R$45,00</p>
+                    <a href="/estilos?estilo=samba" class="luth-card__btn">
+                        <img src="img/assinatura-icon.png" width="20px">
+                        assinar
+                    </a>
+                </div>
+            </article>
+
+        </section>
     </main>
 
-     <footer class="luthbox-seguros-footer">
+    <footer class="luth-footer">
         <p>Barueri, Jandira - SÃO PAULO - SP - brasil</p>
         <p>cordassoltascontatos@gmail.com | +55 (11) 1234-5678</p>
         <p>Todos os direitos reservados 2025.</p>
     </footer>
 
-      <%- include("../partials/menu"); %>
-
+    <%- include("../partials/menu"); %>
     <script src="js/script.js"></script>
+
 </body>
 </html>

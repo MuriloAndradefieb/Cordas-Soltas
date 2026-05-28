@@ -1,174 +1,171 @@
-body {
-    background-color: #000;
-    color: #fff;
-    font-family: 'Roboto', sans-serif;
-
-    background-image: url('https://i.pinimg.com/1200x/de/d2/d7/ded2d7ac9173cb81662a4037e64df8e6.jpg'); 
-    background-repeat: repeat;
+@import url('https://fonts.googleapis.com/css2?family=Odibee+Sans&family=Roboto:wght@400;700&display=swap');
+@font-face {
+    font-family: 'Cal Sans';
+    src: url('https://cdn.jsdelivr.net/npm/cal-sans@1.0.1/fonts/CalSans-SemiBold.woff2') format('woff2');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
 }
 
+/* ── Reset & Base ─────────────────────────────────────────────── */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #0a0a0a;
+    color: #fff;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* ── Container principal ──────────────────────────────────────── */
 .luthbox-main-content {
-    background-color: transparent; 
-    padding: 1rem;
+    background-color: transparent;
+    padding: 0;
 }
 
 .luthbox-container {
-    max-width: 600px; 
+    max-width: 680px;
     margin: 0 auto;
     text-align: center;
+    padding-bottom: 3rem;
 }
 
-
+/* ── Seção 1: Título ──────────────────────────────────────────── */
 .luthbox-header {
-    margin: 3rem 0 1.5rem 0;
-}
-
-.luthbox-tagline {
-    font-size: 1rem;
-    color: #fff;
-    margin: 0;
-    text-transform: uppercase;
-    font-weight: 400;
+    padding: 3rem 1rem 2rem;
 }
 
 .luthbox-header h1 {
-    font-size: 3rem;
-    color: #FFD700;
-    font-weight: 700;
-    margin: 0;
-    text-transform: uppercase;
+    font-family: 'Odibee Sans', sans-serif;
+    font-size: 5rem;
+    font-weight: 400;
+    color: #F9AF11;
+    text-transform: lowercase;
     line-height: 1;
-    text-shadow: 0 0 8px rgba(255, 215, 0, 0.7),
-                 0 0 15px rgba(255, 215, 0, 0.5);
+    text-shadow: none;
+    margin: 0;
 }
 
-
-.luthbox-hero-image img,
-.luthbox-kit-image img {
-    max-width: 100%;
-    height: auto;
-    margin: 1.5rem 0;
-    border-radius: 0; 
-    width: 100%; 
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-}
-
-
-.luthbox-text-block {
-    font-size: 0.95rem;
-    line-height: 1.6;
-    color: #e0e0e0;
-    padding: 0 1rem;
-   
-    text-align: left; 
-    margin-bottom: 3rem;
-}
-
-.luthbox-text-block strong {
-    color: #FFD700;
-    font-weight: 700;
-}
-
-
-.luthbox-buy-section {
-    margin: 3rem 0;
-    padding: 0 1rem;
-}
-
-.luthbox-buy-section h2 {
-    font-size: 1.5rem;
-    color: #fff; 
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    text-transform: uppercase;
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-}
-
-.luthbox-buy-section p {
-    color: #ccc;
-    font-size: 0.9rem;
-    margin-bottom: 2rem;
-}
-
-.button-comprar {
-    display: inline-block;
-    background-color: #FFD700; 
-    color: #000;
-    font-weight: bold;
-    text-decoration: none;
-    padding: 1.2rem 3rem;
-    border-radius: 4px;
-    text-transform: uppercase;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    font-size: 1rem;
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.6); 
-}
-
-.button-comprar:hover {
-    background-color: #e6c300;
-    box-shadow: 0 0 20px rgba(255, 215, 0, 1);
-}
-
-.luthbox-footer {
-    text-align: center;
-    padding: 2rem 1rem 1rem 1rem;
-    font-size: 0.8rem;
-    color: #888;
-    border-top: 1px solid #333;
-    line-height: 1.5;
-    position: relative; 
-}
-
-.luthbox-footer p {
-    margin: 0.2rem 0;
-}
-
-.luthbox-footer .politicas a {
-    color: #FFD700;
-    text-decoration: none;
-    font-style: italic;
-}
-
-.luthbox-footer .copyright {
-    margin-top: 0.5rem;
-}
-
-.social-icons {
-    position: absolute;
-    bottom: 20px; 
-    right: 20px;
+/* ── Layout compartilhado: bloco intro + bloco CTA ────────────── */
+/* Ambos os blocos usam o mesmo grid de duas colunas (45% | restante)
+   para que imagem de cima e imagem de baixo fiquem alinhadas.       */
+.luthbox-bloco-intro,
+.luthbox-bloco-cta {
     display: flex;
-    gap: 10px;
+    align-items: stretch;
+    width: 100%;
 }
 
-.social-icons img {
-    width: 20px;
-    height: 20px;
+/* Coluna esquerda — mesma largura nos dois blocos */
+.luthbox-bloco-intro .bloco-imagem,
+.luthbox-bloco-cta   .bloco-imagem {
+    flex: 0 0 45%;
+    max-width: 45%;
+    overflow: hidden;
 }
 
-@media (max-width: 600px) {
-    .luthbox-container {
-        max-width: 100%;
-    }
-    .luthbox-header h1 {
-        font-size: 2.5rem;
-    }
-    .social-icons {
-        position: relative;
-        justify-content: center;
-        margin-top: 1rem;
-        right: auto;
-        bottom: auto;
-        width: 100%;
-    }
+.luthbox-bloco-intro .bloco-imagem img,
+.luthbox-bloco-cta   .bloco-imagem img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
+
+/* Coluna direita — texto do bloco intro */
+.luthbox-bloco-intro .bloco-texto {
+    flex: 1;
+    background-color: transparent;
+    padding: 1.8rem 1.5rem;
+    display: flex;
+    align-items: center;
+    text-align: center;
+}
+
+.luthbox-bloco-intro .bloco-texto p {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #e0e0e0;
+    margin: 0;
+}
+
+/* Coluna direita — CTA do bloco inferior */
+.luthbox-bloco-cta .bloco-cta-conteudo {
+    flex: 1;
+    background-color: transparent;
+    padding: 2rem 1.8rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 1.2rem;
+}
+
+.luthbox-bloco-cta .bloco-cta-conteudo h2 {
+    font-family: 'Odibee Sans', sans-serif;
+    font-size: 2.6rem;
+    font-weight: 400;
+    color: #F9AF11;
+    text-transform: lowercase;
+    line-height: 1.1;
+    text-shadow: none;
+    margin: 0;
+}
+
+.luthbox-bloco-cta .bloco-cta-conteudo p {
+    font-size: 0.97rem;
+    line-height: 1.65;
+    color: #e0e0e0;
+    margin: 0;
+}
+
+/* ── Botão PLANOS ─────────────────────────────────────────────── */
+.button-planos {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    background-color: #252424;
+    color: #ffffff;
+    font-family: 'Cal Sans', 'Roboto', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 16px 40px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.25s ease, transform 0.15s ease;
+    margin-top: 0.4rem;
+}
+
+.button-planos:hover {
+    background-color: #333131;
+    transform: translateY(-2px);
+}
+
+.button-planos:active {
+    transform: translateY(0);
+}
+
+.button-planos .btn-icone {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+/* ── Mensagem de erro ─────────────────────────────────────────── */
 .error-message {
-    display: none; 
+    display: none;
     margin-top: 20px;
     padding: 15px;
-    background-color: #331f1f; 
-    color: #ff4d4d; 
-    border: 1px solid #ff4d4d; 
+    background-color: #331f1f;
+    color: #ff4d4d;
+    border: 1px solid #ff4d4d;
     border-radius: 6px;
     font-size: 1rem;
     font-weight: 400;
@@ -176,23 +173,53 @@ body {
     box-shadow: 0 0 10px rgba(255, 77, 77, 0.3);
 }
 
-
-.error-border {
-    border-color: #ff4d4d;
-    box-shadow: 0 0 15px rgba(255, 77, 77, 0.7);
-}
-
-
 .error-message strong {
-    color: #fff; 
+    color: #fff;
     font-weight: 700;
 }
 
-.seguros-footer {
+/* ── Footer ───────────────────────────────────────────────────── */
+.luthbox-footer {
     text-align: center;
     padding: 2rem 1rem;
     font-size: 0.8rem;
     color: #888;
     border-top: 1px solid #333;
     line-height: 1.5;
+}
+
+.luthbox-footer p {
+    margin: 0.2rem 0;
+}
+
+/* ── Responsivo ───────────────────────────────────────────────── */
+@media (max-width: 600px) {
+    .luthbox-container {
+        max-width: 100%;
+    }
+
+    .luthbox-header h1 {
+        font-size: 3.5rem;
+    }
+
+    .luthbox-bloco-intro,
+    .luthbox-bloco-cta {
+        flex-direction: column;
+    }
+
+    .luthbox-bloco-intro .bloco-imagem,
+    .luthbox-bloco-cta   .bloco-imagem {
+        flex: none;
+        max-width: 100%;
+        max-height: 220px;
+    }
+
+    .luthbox-bloco-cta .bloco-cta-conteudo h2 {
+        font-size: 2rem;
+    }
+
+    .button-planos {
+        font-size: 1rem;
+        padding: 14px 30px;
+    }
 }

@@ -6,7 +6,7 @@
     <title>Luthbox - Tenha Seguro no seu Show | Cordas Soltas</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/luthbox.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Odibee+Sans&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
@@ -25,28 +25,41 @@
     <main class="luthbox-main-content">
         <section class="luthbox-container">
 
+            <!-- ── 1. TÍTULO ──────────────────────────────────────── -->
             <header class="luthbox-header">
-                <p class="luthbox-tagline">tenha seguro no seu show</p>
-                <h1>Luthbox</h1>
+                <h1>luthbox</h1>
             </header>
 
-            <figure class="luthbox-hero-image">
-                <img src="https://i.pinimg.com/736x/4f/c2/5d/4fc25d6759a8fb2b65287ecf96aaced9.jpg" alt="Kit de bateria, amplificadores e guitarra em um palco escuro">
-            </figure>
+            <!-- ── 2. BLOCO: IMAGEM ESQUERDA + TEXTO DIREITA ─────── -->
+            <section class="luthbox-bloco-intro">
+                <figure class="bloco-imagem">
+                    <img
+                        src="https://i.pinimg.com/736x/4f/c2/5d/4fc25d6759a8fb2b65287ecf96aaced9.jpg"
+                        alt="Kit de bateria, amplificadores e guitarra em um palco escuro"
+                    >
+                </figure>
+                <article class="bloco-texto">
+                    <p>A Luthbox nasceu para oferecer suporte rápido e prático a músicos em situações de emergência. Problemas em instrumentos podem acontecer a qualquer momento, e nem sempre há uma equipe estruturada ou instrumentos reservas disponíveis. Por isso, disponibilizamos uma variedade de instrumentos para que o artista nunca precise cancelar ou comprometer sua apresentação.</p>
+                </article>
+            </section>
 
-            <article class="luthbox-text-block">
-                <p>A <b>Luthbox</b> nasceu para oferecer suporte rápido e prático a músicos em situações de emergência. Problemas em instrumentos podem acontecer a qualquer momento, e nem sempre há uma equipe estruturada ou instrumentos reservas disponíveis. Por isso, disponibilizamos uma variedade de instrumentos para que o artista nunca precise cancelar ou comprometer sua apresentação.</p>
-            </article>
-
-            <figure class="luthbox-kit-image">
-                <img src="https://i.pinimg.com/736x/14/c1/a7/14c1a726ea43d619282e911726e13d4d.jpg" alt="Seleção de instrumentos musicais brancos: guitarras, amplificadores e bateria">
-            </figure>
-
-            <section class="luthbox-buy-section">
-                <h2>Garanta seu seguro no show:</h2>
-                <p>Com apenas um valor adicional, você garante a tranquilidade do seu show: se algo acontecer com seu instrumento, terá um substituto à sua disposição.</p>
-                <a href="#" id="buy-luthbox-btn" class="button-comprar">Comprar Seguro</a>
-                <section id="error-message" class="error-message"></section>
+            <!-- ── 3. BLOCO INFERIOR: IMAGEM ALINHADA + CTA AO LADO ── -->
+            <section class="luthbox-bloco-cta">
+                <figure class="bloco-imagem">
+                    <img
+                        src="https://i.pinimg.com/736x/14/c1/a7/14c1a726ea43d619282e911726e13d4d.jpg"
+                        alt="Seleção de instrumentos musicais: guitarras, amplificadores e bateria"
+                    >
+                </figure>
+                <div class="bloco-cta-conteudo">
+                    <h2>faça sua assinatura</h2>
+                    <p>Com apenas um valor adicional, você garante a tranquilidade de tocar sabendo que, se algo acontecer, terá um instrumento à sua disposição, veja os planos abaixo:</p>
+                    <a href="#" id="buy-luthbox-btn" class="button-planos">
+                        <span class="btn-icone"><img src="img/assinatura-icon.png" width="40px"></span>
+                        <span>PLANOS</span>
+                    </a>
+                    <div id="error-message" class="error-message"></div>
+                </div>
             </section>
 
         </section>
@@ -62,7 +75,7 @@
 
     <!-- Dados da sessão injetados para o JS do cliente -->
     <script>
-        const usuarioLogado = <%- usuario ? 'true' : 'false' %>;
+        const usuarioLogado = '<% usuario ? true : false %>';
         const usuarioRole   = '<%- usuario ? usuario.role : "" %>';
     </script>
 

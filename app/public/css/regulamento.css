@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Odibee+Sans&display=swap');
 
 body {
     background-color: #000;
@@ -25,38 +26,37 @@ body {
     text-align: center;
 }
 
+/* Título principal: "regulamentos geral" */
 .regulamento-header h1 {
-
-    font-size: 2.5rem;
-    color: #FFD700;
-    font-weight: 700;
+    font-family: 'Odibee Sans', sans-serif;
+    font-size: 60px;
+    font-weight: 400;
+    color: #F9AF11;
     margin: 0;
-    text-transform: uppercase;
-    line-height: 1.2;
-    text-shadow: 0 0 8px rgba(255, 215, 0, 0.7), 
-                 0 0 15px rgba(255, 215, 0, 0.5), 
-                 0 0 25px rgba(255, 215, 0, 0.3);
+    text-transform: lowercase;
+    line-height: 1.1;
+    text-shadow: none;
 }
 
+/* Subtítulo: "cordas soltas" */
 .regulamento-header h2 {
-    font-size: 3rem;
-    color: #fff;
-    font-weight: 700;
-    margin: 0.2rem 0 0.5rem 0;
-    text-transform: uppercase;
-    line-height: 1.2;
-    text-shadow: 0 0 8px rgba(255, 255, 255, 0.7),
-                 0 0 15px rgba(255, 255, 255, 0.5),
-                 0 0 25px rgba(255, 255, 255, 0.3);
+    font-family: 'Odibee Sans', sans-serif;
+    font-size: 2.8rem;
+    font-weight: 400;
+    color: #F9AF11;
+    margin: 0;
+    text-transform: lowercase;
+    line-height: 1.1;
+    text-shadow: none;
 }
 
 .regulamento-header p {
     font-size: 1rem;
-    color: #FFD700;
+    color: #F9AF11;
     margin-top: 0.5rem;
     font-weight: 400;
     text-transform: uppercase;
-    text-shadow: 0 0 5px rgba(255, 215, 0, 0.6);
+    text-shadow: none;
 }
 
 .regulamento-content-block {
@@ -75,14 +75,14 @@ body {
 .regulamento-section h3 {
 
     font-size: 1.25rem; 
-    color: #FFD700; 
+    color: #F9AF11; 
     font-weight: 700;
     text-transform: uppercase;
-    border-bottom: 2px solid #FFD700;
+    border-bottom: 2px solid #F9AF11;
     padding-bottom: 0.4rem;
     margin-top: 2rem;
     margin-bottom: 1.5rem;
-    text-shadow: 0 0 5px rgba(255, 215, 0, 0.4);
+    text-shadow: none;
 }
 
 .regulamento-section ul,
@@ -102,7 +102,7 @@ body {
 
 .regulamento-section ul li::before {
     content: "\2022";
-    color: #FFD700; 
+    color: #F9AF11; 
     font-weight: bold;
     font-size: 1.2em;
     position: absolute;
@@ -117,7 +117,7 @@ body {
 .regulamento-section ol li::before {
     content: counter(item) ". ";
     counter-increment: item;
-    color: #FFD700; 
+    color: #F9AF11; 
     font-weight: bold;
     position: absolute;
     left: 0;
@@ -126,7 +126,7 @@ body {
 
 
 .regulamento-content-block strong {
-    color: #FFD700;
+    color: #F9AF11;
     font-weight: 700;
 }
 
@@ -138,7 +138,7 @@ body {
 
 .button-voltar {
     display: inline-block;
-    background-color: #FFD700; 
+    background-color: #F9AF11; 
     color: #000;
     font-weight: bold;
     text-decoration: none;
@@ -170,7 +170,7 @@ body {
         font-size: 2rem;
     }
     .regulamento-header h2 {
-        font-size: 2.5rem;
+        font-size: 2rem;
     }
     .regulamento-section h3 {
         font-size: 1.1rem;

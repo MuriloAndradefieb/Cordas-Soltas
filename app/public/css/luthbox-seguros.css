@@ -32,7 +32,7 @@ body {
 
 .seguros-header h1 {
     font-size: 3rem;
-    color: #FFD700;
+    color: #F9AF11;
     font-weight: 700;
     margin: 0;
     text-transform: uppercase;
@@ -56,7 +56,7 @@ body {
 
 .seguro-card-section h2 {
     font-size: 1.8rem;
-    color: #FFD700;
+    color: #F9AF11;
     font-weight: 700;
     text-transform: uppercase;
     margin-bottom: 1.5rem;
@@ -97,7 +97,7 @@ body {
 .card-price {
     font-size: 1.2rem;
     font-weight: 700;
-    color: #FFD700;
+    color: #F9AF11;
     margin-top: 0.2rem;
     margin-bottom: 0.5rem;
 }
