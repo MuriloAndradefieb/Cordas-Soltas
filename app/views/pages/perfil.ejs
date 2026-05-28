@@ -1,3 +1,16 @@
+<%
+    const isArtist = usuario && usuario.role === 'artista';
+    const fotoPerfil = usuario && (usuario.fotoPerfil || usuario.foto_perfil);
+    const nomeBanda = usuario && (usuario.nomeBanda || usuario.nome_banda || usuario.username);
+    const estiloMusical = usuario && (usuario.estiloMusical || usuario.estilo_musical);
+    const nomeCompleto = usuario && (usuario.nomeCompleto || usuario.nome_completo);
+    const numIntegrantes = usuario && (usuario.numIntegrantes || usuario.num_integrantes);
+    const integrantesLabel = {
+        solo: 'Solo',
+        '2a4': 'De 2 a 4 integrantes',
+        mais4: 'Mais de 4 integrantes'
+    }[numIntegrantes] || numIntegrantes || 'Nao informado';
+%>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -16,12 +29,20 @@
         
         <section class="perfil-avatar-section">
             <h1 class="perfil-main-title">
-                PERFIL <%= (usuario && usuario.role === 'artista') ? 'Artista' : '' %>
+                PERFIL <%= isArtist ? 'Artista' : 'Visitante' %>
             </h1>
 
-            <figure class="avatar-wrapper" onclick="document.getElementById('upload-foto').click()">
-                <% if (usuario && usuario.fotoPerfil) { %>
-                    <img src="<%= usuario.fotoPerfil %>" alt="Foto de perfil de <%= usuario.username %>" id="avatar-img">
+            <% if (erro) { %>
+                <p class="perfil-alerta perfil-alerta-erro"><%= erro %></p>
+            <% } %>
+
+            <% if (sucesso) { %>
+                <p class="perfil-alerta perfil-alerta-sucesso"><%= sucesso %></p>
+            <% } %>
+
+            <figure class="avatar-wrapper" id="avatar-trigger" tabindex="0" role="button" aria-label="Alterar foto de perfil">
+                <% if (fotoPerfil) { %>
+                    <img src="<%= fotoPerfil %>" alt="Foto de perfil de <%= isArtist ? nomeBanda : usuario.username %>" id="avatar-img">
                 <% } else { %>
                     <span class="avatar-placeholder" aria-hidden="true"></span>
                 <% } %>
@@ -29,7 +50,7 @@
             <p class="avatar-legenda">Toque para alterar a foto</p>
             
             <p class="tipo-conta-tag">
-                <%= (usuario && usuario.role === 'artista') ? 'Conta Artista' : 'Conta Visitante' %>
+                <%= isArtist ? 'Conta Artista' : 'Conta Visitante' %>
             </p>
 
             <input type="file" id="upload-foto" style="display: none;" accept="image/*">
@@ -47,102 +68,133 @@
                             <p class="item-valor"><%= usuario.email %></p>
                         </header>
                     </article>
-                    <button class="btn-editar-campo" aria-label="Editar Email" onclick="editarCampo('email', '<%= usuario.email %>')"><i class="fas fa-edit" aria-hidden="true"></i></button>
+                    <button type="button" class="btn-editar-campo" aria-label="Editar Email" data-editar-campo data-campo="email" data-valor="<%= usuario.email || '' %>">
+                        <i class="fas fa-edit" aria-hidden="true"></i>
+                    </button>
                 </li>
 
                 <li class="perfil-item">
                     <article class="item-dados">
                         <i class="fas fa-phone-alt item-icon" aria-hidden="true"></i>
                         <header>
-                            <span class="item-label">telefone</span>
-                            <p class="item-valor"><%= usuario.telefone || 'Não informado' %></p>
+                            <span class="item-label">Telefone</span>
+                            <p class="item-valor"><%= usuario.telefone || 'Nao informado' %></p>
                         </header>
                     </article>
-                    <button class="btn-editar-campo" aria-label="Editar Telefone" onclick="editarCampo('telefone', '<%= usuario.telefone %>')"><i class="fas fa-edit" aria-hidden="true"></i></button>
+                    <button type="button" class="btn-editar-campo" aria-label="Editar Telefone" data-editar-campo data-campo="telefone" data-valor="<%= usuario.telefone || '' %>">
+                        <i class="fas fa-edit" aria-hidden="true"></i>
+                    </button>
                 </li>
 
-                <li class="perfil-item">
-                    <article class="item-dados">
-                        <i class="fas fa-user item-icon" aria-hidden="true"></i>
-                        <header>
-                            <span class="item-label">Nome de Usuario</span>
-                            <p class="item-valor"><%= usuario.username %></p>
-                        </header>
-                    </article>
-                    <button class="btn-editar-campo" aria-label="Editar Nome de Usuário" onclick="editarCampo('username', '<%= usuario.username %>')"><i class="fas fa-edit" aria-hidden="true"></i></button>
-                </li>
-
-                <li class="perfil-item">
-                    <article class="item-dados">
-                        <i class="fas fa-id-card item-icon" aria-hidden="true"></i>
-                        <header>
-                            <span class="item-label">Nome Completo</span>
-                            <p class="item-valor"><%= usuario.nomeCompleto || 'Não informado' %></p>
-                        </header>
-                    </article>
-                    <button class="btn-editar-campo" aria-label="Editar Nome Completo" onclick="editarCampo('nome_completo', '<%= usuario.nomeCompleto %>')"><i class="fas fa-edit" aria-hidden="true"></i></button>
-                </li>
-
-                <li class="perfil-item">
-                    <article class="item-dados">
-                        <i class="fas fa-fingerprint item-icon" aria-hidden="true"></i>
-                        <header>
-                            <span class="item-label">Cpf</span>
-                            <p class="item-valor"><%= usuario.cpf || 'Não informado' %></p>
-                        </header>
-                    </article>
-                    <button class="btn-editar-campo" aria-label="Editar CPF" onclick="editarCampo('cpf', '<%= usuario.cpf %>')"><i class="fas fa-edit" aria-hidden="true"></i></button>
-                </li>
-
-                <% if (usuario && usuario.role === 'artista') { %>
+                <% if (isArtist) { %>
                     <li class="perfil-item">
                         <article class="item-dados">
                             <i class="fas fa-users item-icon" aria-hidden="true"></i>
                             <header>
                                 <span class="item-label">Nome da banda</span>
-                                <p class="item-valor"><%= usuario.nomeBanda || 'Não informado' %></p>
+                                <p class="item-valor"><%= nomeBanda || 'Nao informado' %></p>
                             </header>
                         </article>
-                        <button class="btn-editar-campo" aria-label="Editar Nome da Banda" onclick="editarCampo('nome_banda', '<%= usuario.nomeBanda %>')"><i class="fas fa-edit" aria-hidden="true"></i></button>
+                        <button type="button" class="btn-editar-campo" aria-label="Editar Nome da Banda" data-editar-campo data-campo="nome_banda" data-valor="<%= nomeBanda || '' %>">
+                            <i class="fas fa-edit" aria-hidden="true"></i>
+                        </button>
                     </li>
 
                     <li class="perfil-item">
                         <article class="item-dados">
                             <i class="fas fa-user-friends item-icon" aria-hidden="true"></i>
                             <header>
-                                <span class="item-label">Numero de Integrantes</span>
-                                <p class="item-valor"><%= usuario.numIntegrantes || 'Solo' %></p>
+                                <span class="item-label">Numero de integrantes</span>
+                                <p class="item-valor"><%= integrantesLabel %></p>
                             </header>
                         </article>
-                        <button class="btn-editar-campo" aria-label="Editar Número de Integrantes" onclick="editarCampo('num_integrantes', '<%= usuario.numIntegrantes %>')"><i class="fas fa-edit" aria-hidden="true"></i></button>
+                        <button type="button" class="btn-editar-campo" aria-label="Editar Numero de Integrantes" data-editar-campo data-campo="num_integrantes" data-valor="<%= numIntegrantes || '' %>">
+                            <i class="fas fa-edit" aria-hidden="true"></i>
+                        </button>
                     </li>
 
                     <li class="perfil-item">
                         <article class="item-dados">
                             <i class="fas fa-guitar item-icon" aria-hidden="true"></i>
                             <header>
-                                <span class="item-label">Estilo Musical</span>
-                                <p class="item-valor"><%= usuario.estiloMusical || 'Não informado' %></p>
+                                <span class="item-label">Estilo musical</span>
+                                <p class="item-valor"><%= estiloMusical || 'Nao informado' %></p>
                             </header>
                         </article>
-                        <button class="btn-editar-campo" aria-label="Editar Estilo Musical" onclick="editarCampo('estilo_musical', '<%= usuario.estiloMusical %>')"><i class="fas fa-edit" aria-hidden="true"></i></button>
+                        <button type="button" class="btn-editar-campo" aria-label="Editar Estilo Musical" data-editar-campo data-campo="estilo_musical" data-valor="<%= estiloMusical || '' %>">
+                            <i class="fas fa-edit" aria-hidden="true"></i>
+                        </button>
+                    </li>
+
+                    <li class="perfil-item">
+                        <article class="item-dados">
+                            <i class="fab fa-instagram item-icon" aria-hidden="true"></i>
+                            <header>
+                                <span class="item-label">Instagram</span>
+                                <p class="item-valor"><%= usuario.instagram || 'Nao informado' %></p>
+                            </header>
+                        </article>
+                        <button type="button" class="btn-editar-campo" aria-label="Editar Instagram" data-editar-campo data-campo="instagram" data-valor="<%= usuario.instagram || '' %>">
+                            <i class="fas fa-edit" aria-hidden="true"></i>
+                        </button>
+                    </li>
+                <% } else { %>
+                    <li class="perfil-item">
+                        <article class="item-dados">
+                            <i class="fas fa-user item-icon" aria-hidden="true"></i>
+                            <header>
+                                <span class="item-label">Nome de usuario</span>
+                                <p class="item-valor"><%= usuario.username %></p>
+                            </header>
+                        </article>
+                        <button type="button" class="btn-editar-campo" aria-label="Editar Nome de Usuario" data-editar-campo data-campo="username" data-valor="<%= usuario.username || '' %>">
+                            <i class="fas fa-edit" aria-hidden="true"></i>
+                        </button>
+                    </li>
+
+                    <li class="perfil-item">
+                        <article class="item-dados">
+                            <i class="fas fa-id-card item-icon" aria-hidden="true"></i>
+                            <header>
+                                <span class="item-label">Nome completo</span>
+                                <p class="item-valor"><%= nomeCompleto || 'Nao informado' %></p>
+                            </header>
+                        </article>
+                        <button type="button" class="btn-editar-campo" aria-label="Editar Nome Completo" data-editar-campo data-campo="nome_completo" data-valor="<%= nomeCompleto || '' %>">
+                            <i class="fas fa-edit" aria-hidden="true"></i>
+                        </button>
+                    </li>
+
+                    <li class="perfil-item">
+                        <article class="item-dados">
+                            <i class="fas fa-fingerprint item-icon" aria-hidden="true"></i>
+                            <header>
+                                <span class="item-label">CPF</span>
+                                <p class="item-valor"><%= usuario.cpf || 'Nao informado' %></p>
+                            </header>
+                        </article>
+                        <button type="button" class="btn-editar-campo" aria-label="Editar CPF" data-editar-campo data-campo="cpf" data-valor="<%= usuario.cpf || '' %>">
+                            <i class="fas fa-edit" aria-hidden="true"></i>
+                        </button>
                     </li>
                 <% } %>
             </ul>
         </section>
 
         <section class="perfil-section">
-            <h2 class="section-title">Segurança</h2>
+            <h2 class="section-title">Seguranca</h2>
             <ul class="perfil-card-lista">
                 <li class="perfil-item">
                     <article class="item-dados">
                         <i class="fas fa-lock item-icon" aria-hidden="true"></i>
                         <header>
                             <span class="item-label">Senha</span>
-                            <p class="item-valor">••••••••••••</p>
+                            <p class="item-valor">************</p>
                         </header>
                     </article>
-                    <button class="btn-editar-campo" aria-label="Alterar Senha" onclick="window.location.href='/perfil/alterar-senha'"><i class="fas fa-edit" aria-hidden="true"></i></button>
+                    <button type="button" class="btn-editar-campo" aria-label="Alterar Senha" id="btn-abrir-senha">
+                        <i class="fas fa-edit" aria-hidden="true"></i>
+                    </button>
                 </li>
             </ul>
         </section>
@@ -155,6 +207,46 @@
 
     </main>
 
+    <dialog id="modal-editar-campo" class="modal-caixa modal-edicao">
+        <form method="POST" action="/perfil/editar" class="modal-conteudo-interno">
+            <header class="modal-header">
+                <i class="fas fa-pen modal-icon modal-icon-edicao" aria-hidden="true"></i>
+                <h3 class="modal-titulo" id="modal-editar-titulo">Editar informacao</h3>
+            </header>
+
+            <input type="hidden" name="campo" id="modal-campo">
+
+            <label class="modal-label" for="modal-valor-input" id="modal-editar-label">Valor</label>
+            <input class="modal-input" type="text" name="valor" id="modal-valor-input">
+            <select class="modal-input" name="valor" id="modal-valor-select" disabled hidden></select>
+
+            <menu class="modal-botoes">
+                <button type="button" class="btn-modal-cancelar" id="btn-fechar-edicao">Cancelar</button>
+                <button type="submit" class="btn-modal-confirmar btn-modal-salvar">Salvar</button>
+            </menu>
+        </form>
+    </dialog>
+
+    <dialog id="modal-senha" class="modal-caixa modal-edicao">
+        <form method="POST" action="/perfil/senha" class="modal-conteudo-interno">
+            <header class="modal-header">
+                <i class="fas fa-lock modal-icon modal-icon-edicao" aria-hidden="true"></i>
+                <h3 class="modal-titulo">Alterar senha</h3>
+            </header>
+
+            <label class="modal-label" for="novaSenha">Nova senha</label>
+            <input class="modal-input" type="password" name="novaSenha" id="novaSenha" minlength="6" required>
+
+            <label class="modal-label" for="confirmarSenha">Confirmar senha</label>
+            <input class="modal-input" type="password" name="confirmarSenha" id="confirmarSenha" minlength="6" required>
+
+            <menu class="modal-botoes">
+                <button type="button" class="btn-modal-cancelar" id="btn-fechar-senha">Cancelar</button>
+                <button type="submit" class="btn-modal-confirmar btn-modal-salvar">Salvar</button>
+            </menu>
+        </form>
+    </dialog>
+
     <dialog id="modal-logout" class="modal-caixa">
         <div class="modal-conteudo-interno">
             <header class="modal-header">
@@ -162,7 +254,7 @@
                 <h3 class="modal-titulo">Deseja mesmo sair?</h3>
             </header>
             
-            <p class="modal-texto">Você precisará fazer login novamente para acessar seus dados.</p>
+            <p class="modal-texto">Voce precisara fazer login novamente para acessar seus dados.</p>
             
             <menu class="modal-botoes">
                 <button type="button" class="btn-modal-cancelar" onclick="fecharModalLogout()">Cancelar</button>
@@ -175,32 +267,161 @@
 
     <script src="/js/script.js"></script>
     <script>
-        function editarCampo(campo, valorAtual) {
-            console.log('Editando o campo:', campo, 'Valor atual:', valorAtual);
+        const camposPerfil = {
+            email: { rotulo: 'Email', tipo: 'email', obrigatorio: true },
+            telefone: { rotulo: 'Telefone', tipo: 'tel', obrigatorio: false },
+            username: { rotulo: 'Nome de usuario', tipo: 'text', obrigatorio: true },
+            nome_completo: { rotulo: 'Nome completo', tipo: 'text', obrigatorio: false },
+            cpf: { rotulo: 'CPF', tipo: 'text', obrigatorio: false },
+            nome_banda: { rotulo: 'Nome da banda', tipo: 'text', obrigatorio: true },
+            instagram: { rotulo: 'Instagram', tipo: 'text', obrigatorio: false },
+            num_integrantes: {
+                rotulo: 'Numero de integrantes',
+                obrigatorio: false,
+                opcoes: [
+                    { valor: '', texto: 'Nao informado' },
+                    { valor: 'solo', texto: 'Solo' },
+                    { valor: '2a4', texto: 'De 2 a 4 integrantes' },
+                    { valor: 'mais4', texto: 'Mais de 4 integrantes' }
+                ]
+            },
+            estilo_musical: {
+                rotulo: 'Estilo musical',
+                obrigatorio: true,
+                opcoes: [
+                    { valor: '', texto: 'Selecione um estilo' },
+                    { valor: 'Rock', texto: 'Rock' },
+                    { valor: 'Samba', texto: 'Samba' },
+                    { valor: 'Pagode', texto: 'Pagode' },
+                    { valor: 'Jazz', texto: 'Jazz' },
+                    { valor: 'Eletrônica', texto: 'Eletrônica' },
+                    { valor: 'Forró', texto: 'Forró' },
+                    { valor: 'Sertanejo', texto: 'Sertanejo' },
+                    { valor: 'MPB', texto: 'MPB' },
+                    { valor: 'Reggae', texto: 'Reggae' },
+                    { valor: 'Hip-Hop/Rap', texto: 'Hip-Hop / Rap' },
+                    { valor: 'Metal', texto: 'Metal' },
+                    { valor: 'Pop', texto: 'Pop' },
+                    { valor: 'Outro', texto: 'Outro' }
+                ]
+            }
+        };
+
+        const modalEdicao = document.getElementById('modal-editar-campo');
+        const modalSenha = document.getElementById('modal-senha');
+        const modalLogout = document.getElementById('modal-logout');
+        const inputCampo = document.getElementById('modal-campo');
+        const inputValor = document.getElementById('modal-valor-input');
+        const selectValor = document.getElementById('modal-valor-select');
+        const labelEdicao = document.getElementById('modal-editar-label');
+        const tituloEdicao = document.getElementById('modal-editar-titulo');
+
+        function abrirDialog(dialog) {
+            if (typeof dialog.showModal === 'function') {
+                dialog.showModal();
+            } else {
+                dialog.setAttribute('open', 'true');
+            }
         }
 
-        const modal = document.getElementById('modal-logout');
+        function fecharDialog(dialog) {
+            if (typeof dialog.close === 'function') {
+                dialog.close();
+            } else {
+                dialog.removeAttribute('open');
+            }
+        }
+
+        document.querySelectorAll('[data-editar-campo]').forEach((botao) => {
+            botao.addEventListener('click', () => {
+                const campo = botao.dataset.campo;
+                const valorAtual = botao.dataset.valor || '';
+                const config = camposPerfil[campo];
+
+                if (!config) return;
+
+                inputCampo.value = campo;
+                tituloEdicao.textContent = `Editar ${config.rotulo}`;
+                labelEdicao.textContent = config.rotulo;
+
+                if (config.opcoes) {
+                    inputValor.disabled = true;
+                    inputValor.hidden = true;
+                    inputValor.required = false;
+                    selectValor.disabled = false;
+                    selectValor.hidden = false;
+                    selectValor.required = Boolean(config.obrigatorio);
+                    selectValor.innerHTML = config.opcoes
+                        .map(opcao => `<option value="${opcao.valor}">${opcao.texto}</option>`)
+                        .join('');
+                    selectValor.value = valorAtual;
+                } else {
+                    selectValor.disabled = true;
+                    selectValor.hidden = true;
+                    selectValor.required = false;
+                    inputValor.disabled = false;
+                    inputValor.hidden = false;
+                    inputValor.type = config.tipo || 'text';
+                    inputValor.required = Boolean(config.obrigatorio);
+                    inputValor.value = valorAtual;
+                    inputValor.focus();
+                }
+
+                abrirDialog(modalEdicao);
+            });
+        });
+
+        document.getElementById('btn-fechar-edicao').addEventListener('click', () => fecharDialog(modalEdicao));
+        document.getElementById('btn-abrir-senha').addEventListener('click', () => abrirDialog(modalSenha));
+        document.getElementById('btn-fechar-senha').addEventListener('click', () => fecharDialog(modalSenha));
 
         function abrirModalLogout() {
-            if (typeof modal.showModal === "function") {
-                modal.showModal();
-            } else {
-                modal.setAttribute('open', 'true');
-            }
+            abrirDialog(modalLogout);
         }
 
         function fecharModalLogout() {
-            if (typeof modal.close === "function") {
-                modal.close();
-            } else {
-                modal.removeAttribute('open');
-            }
+            fecharDialog(modalLogout);
         }
 
-        modal.addEventListener('click', (event) => {
-            if (event.target === modal) {
-                fecharModalLogout();
+        [modalEdicao, modalSenha, modalLogout].forEach((modal) => {
+            modal.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    fecharDialog(modal);
+                }
+            });
+        });
+
+        const avatarTrigger = document.getElementById('avatar-trigger');
+        const uploadFoto = document.getElementById('upload-foto');
+
+        avatarTrigger.addEventListener('click', () => uploadFoto.click());
+        avatarTrigger.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                uploadFoto.click();
             }
+        });
+
+        uploadFoto.addEventListener('change', () => {
+            const arquivo = uploadFoto.files && uploadFoto.files[0];
+            if (!arquivo) return;
+
+            const leitor = new FileReader();
+            leitor.onload = async (event) => {
+                const resposta = await fetch('/perfil/foto', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fotoBase64: event.target.result })
+                });
+                const resultado = await resposta.json();
+
+                if (resultado.ok) {
+                    window.location.href = '/perfil?sucesso=' + encodeURIComponent('Foto atualizada com sucesso');
+                } else {
+                    alert(resultado.mensagem || 'Nao foi possivel atualizar a foto.');
+                }
+            };
+            leitor.readAsDataURL(arquivo);
         });
     </script>
 </body>

@@ -283,7 +283,7 @@
 
                             <fieldset class="grupo-input">
                                 <label for="preco">Preço</label>
-                                <input type="text" id="preco" name="preco" placeholder="R$ 0" value="<%= show ? show.preco : '' %>" oninput="formatarPrecoInteiro(this)" maxlength="14" required>
+                                <input type="text" id="preco" name="preco" placeholder="R$ 0,00" value="<%= show ? show.preco : '' %>" onblur="formatarPrecoInteiro(this)" inputmode="decimal" maxlength="14" required>
                                 <span class="icone-edicao">📝</span>
                             </fieldset>
 
@@ -368,6 +368,52 @@
 
             // 4. Devolve o valor formatado para a tela do usuário
             campo.value = "R$ " + parteInteira + parteDecimal;
+        }
+
+        function normalizarPreco(valor) {
+            valor = String(valor || "")
+                .trim()
+                .replace(/^R\$\s?/, "")
+                .replace(/\s/g, "")
+                .replace(/[^\d.,]/g, "");
+
+            if (!valor) return NaN;
+
+            const temVirgula = valor.includes(",");
+            const temPonto = valor.includes(".");
+
+            if (temVirgula) {
+                valor = valor.replace(/\./g, "").replace(",", ".");
+            } else if (temPonto) {
+                const partes = valor.split(".");
+                const ultimaParte = partes[partes.length - 1];
+                valor = partes.length === 2 && ultimaParte.length <= 2
+                    ? valor
+                    : valor.replace(/\./g, "");
+            }
+
+            return Number.parseFloat(valor);
+        }
+
+        function formatarPrecoInteiro(campo) {
+            const numero = normalizarPreco(campo.value);
+
+            if (!campo.value.trim()) {
+                campo.value = "";
+                return;
+            }
+
+            if (!Number.isFinite(numero)) {
+                campo.value = "";
+                return;
+            }
+
+            campo.value = numero.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
         }
 
         // Quando a página carregar (no modo editar), formata o valor que veio do banco

@@ -29,7 +29,7 @@
             
             <header class="sub-header">
                 <span class="title">CADASTRO</span>
-                <button class="btn-add"><span>+</span> Adicionar</button>
+                <button class="btn-add" type="button" onclick="window.location.href='/cadastro'"><span>+</span> Adicionar</button>
             </header>
 
             <section class="search-container">
@@ -54,7 +54,7 @@
                                         <td><span class="email-link"><%= visitante.email %></span></td>
                                         <td><%= visitante.username %></td>
                                         <td>
-                                            <button class="btn-action">⚙️</button>
+                                            <button class="btn-action" type="button" data-edit-url="/adm/usuarios/editar/<%= visitante.id %>">⚙️</button>
                                         </td>
                                     </tr>
                                 <% }); %>
@@ -77,7 +77,7 @@
                         <thead>
                             <tr>
                                 <th style="width: 45%;">E-MAIL</th>
-                                <th style="width: 35%;">USUÁRIOS</th>
+                                <th style="width: 35%;">BANDA</th>
                                 <th style="width: 20%;">AÇÕES</th>
                             </tr>
                         </thead>
@@ -86,9 +86,9 @@
                                 <% artistas.forEach(function(artista) { %>
                                     <tr>
                                         <td><span class="email-link"><%= artista.email %></span></td>
-                                        <td><%= artista.username %></td>
+                                        <td><%= artista.nome_banda || artista.username %></td>
                                         <td>
-                                            <button class="btn-action">⚙️</button>
+                                            <button class="btn-action" type="button" data-edit-url="/adm/usuarios/editar/<%= artista.id %>">⚙️</button>
                                         </td>
                                     </tr>
                                 <% }); %>

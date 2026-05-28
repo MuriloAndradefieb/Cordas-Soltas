@@ -9,6 +9,7 @@ const multer            = require('multer');
 const db = require('../../config/pool_conexoes');
 const CarrinhoModel = require('../models/CarrinhoModel');
 const ShowImageModel = require('../models/ShowImageModel');
+const UsuariosModel = require('../models/Usuariosmodel');
 
 // =========================================================================
 // CONFIGURAÇÃO DO MULTER (UPLOAD EM MEMÓRIA PARA SALVAR NO BANCO)
@@ -36,6 +37,46 @@ function processarUploadBanner(req, res, next) {
         }
 
         return res.status(400).send(err.message || 'Erro ao enviar a imagem do banner.');
+    });
+}
+
+function normalizarPreco(preco) {
+    const valor = String(preco || '').trim().replace(/^R\$\s?/, '').replace(/\s/g, '');
+    if (!valor) return NaN;
+
+    const temVirgula = valor.includes(',');
+    const temPonto = valor.includes('.');
+    let normalizado = valor;
+
+    if (temVirgula) {
+        normalizado = valor.replace(/\./g, '').replace(',', '.');
+    } else if (temPonto) {
+        const partes = valor.split('.');
+        const ultimaParte = partes[partes.length - 1];
+        normalizado = partes.length === 2 && ultimaParte.length <= 2
+            ? valor
+            : valor.replace(/\./g, '');
+    }
+
+    return Number.parseFloat(normalizado);
+}
+
+const rolesUsuario = ['visitante', 'artista', 'admin', 'admin_geral'];
+
+function rotaRetornoUsuario(usuario) {
+    return usuario && ['admin', 'admin_geral'].includes(usuario.role)
+        ? '/adm/acesso-direto'
+        : '/adm/cadastro';
+}
+
+function montarUsuarioFormulario(usuarioAtual, dados = {}) {
+    return UsuariosModel.formatarUsuario({
+        ...usuarioAtual,
+        ...dados,
+        nome_banda: dados.nome_banda !== undefined ? dados.nome_banda : usuarioAtual.nome_banda,
+        estilo_musical: dados.estilo_musical !== undefined ? dados.estilo_musical : usuarioAtual.estilo_musical,
+        nome_completo: dados.nome_completo !== undefined ? dados.nome_completo : usuarioAtual.nome_completo,
+        num_integrantes: dados.num_integrantes !== undefined ? dados.num_integrantes : usuarioAtual.num_integrantes
     });
 }
 
@@ -320,6 +361,136 @@ router.get('/adm/cadastro', async (req, res) => {
     }
 });
 
+router.get('/adm/usuarios/editar/:id', async (req, res) => {
+    try {
+        const usuario = await UsuariosModel.buscarPorId(req.params.id);
+
+        if (!usuario) {
+            return res.status(404).send("Usuario nao encontrado.");
+        }
+
+        return res.render('pages/admin-usuario-form', {
+            usuario,
+            erro: null,
+            voltar: rotaRetornoUsuario(usuario)
+        });
+    } catch (err) {
+        console.error("Erro ao buscar usuario para edicao:", err);
+        return res.status(500).send("Erro ao carregar o usuario.");
+    }
+});
+
+router.post('/adm/usuarios/editar/:id', async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        const usuarioAtual = await UsuariosModel.buscarPorId(id);
+
+        if (!usuarioAtual) {
+            return res.status(404).send("Usuario nao encontrado.");
+        }
+
+        const {
+            username,
+            email,
+            telefone,
+            role,
+            nome_completo,
+            cpf,
+            nome_banda,
+            num_integrantes,
+            estilo_musical,
+            instagram,
+            novaSenha
+        } = req.body;
+
+        const roleNormalizado = String(role || '').toLowerCase();
+
+        if (!rolesUsuario.includes(roleNormalizado)) {
+            const usuarioFormulario = montarUsuarioFormulario(usuarioAtual, req.body);
+            return res.render('pages/admin-usuario-form', {
+                usuario: usuarioFormulario,
+                erro: 'Tipo de conta invalido.',
+                voltar: rotaRetornoUsuario(usuarioAtual)
+            });
+        }
+
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            const usuarioFormulario = montarUsuarioFormulario(usuarioAtual, req.body);
+            return res.render('pages/admin-usuario-form', {
+                usuario: usuarioFormulario,
+                erro: 'Informe um e-mail valido.',
+                voltar: rotaRetornoUsuario(usuarioAtual)
+            });
+        }
+
+        const nomeUsuario = roleNormalizado === 'artista'
+            ? String(nome_banda || '').trim()
+            : String(username || '').trim();
+
+        if (!nomeUsuario) {
+            const usuarioFormulario = montarUsuarioFormulario(usuarioAtual, req.body);
+            return res.render('pages/admin-usuario-form', {
+                usuario: usuarioFormulario,
+                erro: roleNormalizado === 'artista' ? 'Informe o nome da banda.' : 'Informe o nome de usuario.',
+                voltar: rotaRetornoUsuario(usuarioAtual)
+            });
+        }
+
+        if (roleNormalizado === 'artista' && !estilo_musical) {
+            const usuarioFormulario = montarUsuarioFormulario(usuarioAtual, req.body);
+            return res.render('pages/admin-usuario-form', {
+                usuario: usuarioFormulario,
+                erro: 'Informe o estilo musical do artista.',
+                voltar: rotaRetornoUsuario(usuarioAtual)
+            });
+        }
+
+        if (novaSenha && novaSenha.length < 6) {
+            const usuarioFormulario = montarUsuarioFormulario(usuarioAtual, req.body);
+            return res.render('pages/admin-usuario-form', {
+                usuario: usuarioFormulario,
+                erro: 'A nova senha deve ter pelo menos 6 caracteres.',
+                voltar: rotaRetornoUsuario(usuarioAtual)
+            });
+        }
+
+        await UsuariosModel.atualizar(id, {
+            username: nomeUsuario,
+            email,
+            telefone,
+            role: roleNormalizado,
+            nome_completo,
+            cpf,
+            nome_banda: roleNormalizado === 'artista' ? nome_banda : null,
+            num_integrantes: roleNormalizado === 'artista' ? num_integrantes : null,
+            estilo_musical: roleNormalizado === 'artista' ? estilo_musical : null,
+            instagram: roleNormalizado === 'artista' ? instagram : null
+        });
+
+        if (novaSenha) {
+            const senhaHash = await bcrypt.hash(novaSenha, 10);
+            await UsuariosModel.atualizarSenha(id, senhaHash);
+        }
+
+        return res.redirect(rotaRetornoUsuario({ role: roleNormalizado }));
+    } catch (err) {
+        console.error("Erro ao atualizar usuario pelo admin:", err);
+
+        const usuarioAtual = await UsuariosModel.buscarPorId(id).catch(() => null);
+        if (usuarioAtual) {
+            const usuarioFormulario = montarUsuarioFormulario(usuarioAtual, req.body);
+            return res.render('pages/admin-usuario-form', {
+                usuario: usuarioFormulario,
+                erro: err && err.code === 'ER_DUP_ENTRY' ? 'Este e-mail ja esta em uso.' : 'Erro ao salvar o usuario.',
+                voltar: rotaRetornoUsuario(usuarioAtual)
+            });
+        }
+
+        return res.status(500).send("Erro ao salvar o usuario.");
+    }
+});
+
 // =========================================================================
 // GERENCIAMENTO DE INGRESSOS (PAINEL DO ADM)
 // =========================================================================
@@ -347,12 +518,23 @@ router.get('/adm/ingressos/adicionar', (req, res) => {
 router.post('/adm/ingressos/adicionar', processarUploadBanner, async (req, res) => {
     try {
         const { titulo, estilo, data_show, local, preco, quantidade } = req.body;
+        const precoNormalizado = normalizarPreco(preco);
+        const quantidadeNormalizada = Number.parseInt(quantidade, 10);
+
+        if (!Number.isFinite(precoNormalizado) || precoNormalizado < 0) {
+            return res.status(400).send("Preco invalido.");
+        }
+
+        if (!Number.isInteger(quantidadeNormalizada) || quantidadeNormalizada < 1) {
+            return res.status(400).send("Quantidade invalida.");
+        }
+
         await ShowImageModel.garantirColunaImagem();
 
         const imagem_url = ShowImageModel.uploadParaDataUrl(req.file) || ShowImageModel.DEFAULT_SHOW_IMAGE;
 
         const queryInsert = "INSERT INTO shows (titulo, estilo, imagem_url, data_show, local, preco, quantidade) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        await db.query(queryInsert, [titulo.trim(), estilo, imagem_url, data_show, local.trim(), parseFloat(preco), parseInt(quantidade)]);
+        await db.query(queryInsert, [titulo.trim(), estilo, imagem_url, data_show, local.trim(), precoNormalizado, quantidadeNormalizada]);
 
         return res.redirect('/adm/ingressos');
     } catch (err) {
@@ -391,15 +573,26 @@ router.post('/adm/ingressos/editar/:id', processarUploadBanner, async (req, res)
     try {
         const showId = req.params.id;
         const { titulo, estilo, data_show, local, preco, quantidade } = req.body;
+        const precoNormalizado = normalizarPreco(preco);
+        const quantidadeNormalizada = Number.parseInt(quantidade, 10);
+
+        if (!Number.isFinite(precoNormalizado) || precoNormalizado < 0) {
+            return res.status(400).send("Preco invalido.");
+        }
+
+        if (!Number.isInteger(quantidadeNormalizada) || quantidadeNormalizada < 1) {
+            return res.status(400).send("Quantidade invalida.");
+        }
+
         await ShowImageModel.garantirColunaImagem();
 
         let queryUpdate = "UPDATE shows SET titulo = ?, estilo = ?, data_show = ?, local = ?, preco = ?, quantidade = ? WHERE id = ?";
-        let params = [titulo.trim(), estilo, data_show, local.trim(), parseFloat(preco), parseInt(quantidade), showId];
+        let params = [titulo.trim(), estilo, data_show, local.trim(), precoNormalizado, quantidadeNormalizada, showId];
 
         if (req.file) {
             const imagem_url = ShowImageModel.uploadParaDataUrl(req.file);
             queryUpdate = "UPDATE shows SET titulo = ?, estilo = ?, data_show = ?, local = ?, preco = ?, quantidade = ?, imagem_url = ? WHERE id = ?";
-            params = [titulo.trim(), estilo, data_show, local.trim(), parseFloat(preco), parseInt(quantidade), imagem_url, showId];
+            params = [titulo.trim(), estilo, data_show, local.trim(), precoNormalizado, quantidadeNormalizada, imagem_url, showId];
         }
 
         await db.query(queryUpdate, params);

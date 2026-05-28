@@ -1,0 +1,183 @@
+<%
+    const roleAtual = usuario.role || 'visitante';
+    const isAdminRole = roleAtual === 'admin' || roleAtual === 'admin_geral';
+    const rotaVoltar = typeof voltar !== 'undefined' ? voltar : (isAdminRole ? '/adm/acesso-direto' : '/adm/cadastro');
+    const nomeBanda = usuario.nomeBanda || usuario.nome_banda || '';
+    const estiloMusical = usuario.estiloMusical || usuario.estilo_musical || '';
+    const nomeCompleto = usuario.nomeCompleto || usuario.nome_completo || '';
+    const numIntegrantes = usuario.numIntegrantes || usuario.num_integrantes || '';
+%>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar usuario - Cordas Soltas</title>
+    <link rel="stylesheet" href="/css/admin-add.css">
+    <style>
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 20px;
+            border: 1px solid #333;
+            background-color: #333333;
+            color: #ffffff;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .role-hidden {
+            display: none;
+        }
+
+        .form-help {
+            color: #cfcfcf;
+            font-size: 13px;
+            margin-top: 6px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-line"></div>
+
+    <header class="main-header">
+        <div class="logo-container">
+            <h2 style="color: white; font-style: italic; letter-spacing: 1px;">CORDAS SOLTAS</h2>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <aside class="sidebar">
+            <ul>
+                <li class="<%= isAdminRole ? 'active' : '' %>" onclick="window.location.href='/adm/acesso-direto'">Administradores</li>
+                <li class="<%= !isAdminRole ? 'active' : '' %>" onclick="window.location.href='/adm/cadastro'">Cadastro</li>
+                <li onclick="window.location.href='/adm/ingressos'">Ingressos</li>
+                <li>Luthbox</li>
+            </ul>
+        </aside>
+
+        <main class="content-area">
+            <div class="sub-header">
+                <div class="breadcrumb"><%= isAdminRole ? 'Administradores' : 'Cadastro' %> &gt; Editar</div>
+                <div class="title">EDITAR USUARIO</div>
+            </div>
+
+            <% if (erro) { %>
+                <div class="alert alert-error"><%= erro %></div>
+            <% } %>
+
+            <form action="/adm/usuarios/editar/<%= usuario.id %>" method="POST" id="form-editar-usuario">
+                <div class="action-bar">
+                    <button type="button" id="btn-cancel" class="btn-cancel">Cancelar</button>
+                    <button type="submit" class="btn-save">Salvar</button>
+                </div>
+
+                <div class="form-card">
+                    <div class="form-group">
+                        <label for="role">Tipo de conta</label>
+                        <select id="role" name="role" required>
+                            <option value="visitante" <%= roleAtual === 'visitante' ? 'selected' : '' %>>Visitante</option>
+                            <option value="artista" <%= roleAtual === 'artista' ? 'selected' : '' %>>Artista</option>
+                            <option value="admin" <%= roleAtual === 'admin' ? 'selected' : '' %>>Administrador</option>
+                            <option value="admin_geral" <%= roleAtual === 'admin_geral' ? 'selected' : '' %>>Administrador geral</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" data-role-group="user">
+                        <label for="username">Nome de usuario</label>
+                        <input type="text" id="username" name="username" value="<%= usuario.username || '' %>">
+                    </div>
+
+                    <div class="form-group" data-role-group="artist">
+                        <label for="nome_banda">Nome da banda</label>
+                        <input type="text" id="nome_banda" name="nome_banda" value="<%= nomeBanda %>">
+                        <p class="form-help">Para artistas, este nome tambem sera usado na listagem do sistema.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">E-mail</label>
+                        <input type="email" id="email" name="email" value="<%= usuario.email || '' %>" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="telefone">Telefone</label>
+                        <input type="text" id="telefone" name="telefone" value="<%= usuario.telefone || '' %>">
+                    </div>
+
+                    <div class="form-group" data-role-group="visitor">
+                        <label for="nome_completo">Nome completo</label>
+                        <input type="text" id="nome_completo" name="nome_completo" value="<%= nomeCompleto %>">
+                    </div>
+
+                    <div class="form-group" data-role-group="visitor">
+                        <label for="cpf">CPF</label>
+                        <input type="text" id="cpf" name="cpf" value="<%= usuario.cpf || '' %>">
+                    </div>
+
+                    <div class="form-group" data-role-group="artist">
+                        <label for="num_integrantes">Quantidade de integrantes</label>
+                        <select id="num_integrantes" name="num_integrantes">
+                            <option value="" <%= !numIntegrantes ? 'selected' : '' %>>Nao informado</option>
+                            <option value="solo" <%= numIntegrantes === 'solo' ? 'selected' : '' %>>Solo</option>
+                            <option value="2a4" <%= numIntegrantes === '2a4' ? 'selected' : '' %>>De 2 a 4 integrantes</option>
+                            <option value="mais4" <%= numIntegrantes === 'mais4' ? 'selected' : '' %>>Mais de 4 integrantes</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" data-role-group="artist">
+                        <label for="estilo_musical">Estilo musical</label>
+                        <select id="estilo_musical" name="estilo_musical">
+                            <% ['Rock', 'Samba', 'Pagode', 'Jazz', 'Eletrônica', 'Forró', 'Sertanejo', 'MPB', 'Reggae', 'Hip-Hop/Rap', 'Metal', 'Pop', 'Outro'].forEach(function(estilo) { %>
+                                <option value="<%= estilo %>" <%= estiloMusical === estilo ? 'selected' : '' %>><%= estilo %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+
+                    <div class="form-group" data-role-group="artist">
+                        <label for="instagram">Instagram</label>
+                        <input type="text" id="instagram" name="instagram" value="<%= usuario.instagram || '' %>">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="novaSenha">Nova senha</label>
+                        <input type="password" id="novaSenha" name="novaSenha" placeholder="Deixe em branco para manter a senha atual">
+                    </div>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <script>
+        const roleSelect = document.getElementById('role');
+        const btnCancel = document.getElementById('btn-cancel');
+        const rotaVoltar = '<%= rotaVoltar %>';
+
+        function atualizarCamposPorRole() {
+            const role = roleSelect.value;
+
+            document.querySelectorAll('[data-role-group]').forEach((grupo) => {
+                const grupoRole = grupo.dataset.roleGroup;
+                const deveMostrar =
+                    grupoRole === 'user' ? role !== 'artista' :
+                    grupoRole === 'artist' ? role === 'artista' :
+                    grupoRole === 'visitor' ? role === 'visitante' :
+                    true;
+
+                grupo.classList.toggle('role-hidden', !deveMostrar);
+            });
+
+            document.getElementById('username').required = role !== 'artista';
+            document.getElementById('nome_banda').required = role === 'artista';
+            document.getElementById('estilo_musical').required = role === 'artista';
+        }
+
+        roleSelect.addEventListener('change', atualizarCamposPorRole);
+        btnCancel.addEventListener('click', () => {
+            window.location.href = rotaVoltar;
+        });
+
+        atualizarCamposPorRole();
+    </script>
+</body>
+</html>

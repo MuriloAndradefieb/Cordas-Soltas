@@ -1,6 +1,20 @@
 const UsuariosModel = require('../models/Usuariosmodel');
 const bcrypt       = require('bcryptjs');
 
+const camposPermitidosPorRole = {
+    visitante: ['username', 'email', 'telefone', 'nome_completo', 'cpf'],
+    artista: ['email', 'telefone', 'nome_banda', 'num_integrantes', 'estilo_musical', 'instagram']
+};
+
+const camposObrigatorios = {
+    visitante: ['username', 'email'],
+    artista: ['email', 'nome_banda', 'estilo_musical']
+};
+
+function redirecionarPerfil(res, tipo, mensagem) {
+    return res.redirect(`/perfil?${tipo}=${encodeURIComponent(mensagem)}`);
+}
+
 const PerfilController = {
 
     // ─── EXIBIR PERFIL (BUSCA DADOS ATUALIZADOS DO BANCO) ──────────────────────
@@ -46,20 +60,63 @@ const PerfilController = {
     // ─── EDITAR DADOS DO PERFIL ───────────────────────────────────────────────
     async editar(req, res) {
         try {
-            const { username, email, telefone } = req.body;
             const id = req.session.usuario.id;
+            const usuarioAtual = await UsuariosModel.buscarPorId(id);
 
-            if (!username || !email) {
-                return res.redirect('/perfil?erro=Preencha+nome+e+email');
+            if (!usuarioAtual) {
+                return redirecionarPerfil(res, 'erro', 'Usuario nao encontrado');
             }
 
-            await UsuariosModel.atualizar(id, { username, email, telefone });
+            const role = usuarioAtual.role === 'artista' ? 'artista' : 'visitante';
+            const camposPermitidos = camposPermitidosPorRole[role];
 
-            return res.redirect('/perfil?sucesso=Perfil+atualizado+com+sucesso');
+            if (req.body.campo) {
+                const campo = req.body.campo;
+                const valor = typeof req.body.valor === 'string' ? req.body.valor.trim() : req.body.valor;
+
+                if (!camposPermitidos.includes(campo)) {
+                    return redirecionarPerfil(res, 'erro', 'Campo invalido para este perfil');
+                }
+
+                if (camposObrigatorios[role].includes(campo) && !valor) {
+                    return redirecionarPerfil(res, 'erro', 'Preencha o campo obrigatorio');
+                }
+
+                if (campo === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valor)) {
+                    return redirecionarPerfil(res, 'erro', 'Informe um e-mail valido');
+                }
+
+                if (campo === 'num_integrantes' && valor && !['solo', '2a4', 'mais4'].includes(valor)) {
+                    return redirecionarPerfil(res, 'erro', 'Quantidade de integrantes invalida');
+                }
+
+                const dadosAtualizados = { [campo]: valor };
+
+                if (role === 'artista' && campo === 'nome_banda') {
+                    dadosAtualizados.username = valor;
+                }
+
+                await UsuariosModel.atualizar(id, dadosAtualizados);
+            } else {
+                const { username, email, telefone } = req.body;
+
+                if (!username || !email) {
+                    return redirecionarPerfil(res, 'erro', 'Preencha nome e e-mail');
+                }
+
+                await UsuariosModel.atualizar(id, { username, email, telefone });
+            }
+
+            return redirecionarPerfil(res, 'sucesso', 'Perfil atualizado com sucesso');
 
         } catch (error) {
             console.error('Erro ao editar perfil:', error);
-            return res.redirect('/perfil?erro=Erro+ao+salvar+alteracoes');
+
+            if (error && error.code === 'ER_DUP_ENTRY') {
+                return redirecionarPerfil(res, 'erro', 'Este e-mail ja esta em uso');
+            }
+
+            return redirecionarPerfil(res, 'erro', 'Erro ao salvar alteracoes');
         }
     },
 

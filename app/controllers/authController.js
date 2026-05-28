@@ -6,7 +6,7 @@ const AuthController = {
 
     // ─── CADASTRO ─────────────────────────────────────────────────────────────
     async cadastro(req, res) {
-        const { username, email, password, role, bandName, musicalStyle, instagram } = req.body;
+        const { username, email, password, role, bandName, musicalStyle, instagram, numIntegrantes } = req.body;
 
         if (!email || !password || !role) {
             return res.render('pages/cadastro', {
@@ -29,11 +29,11 @@ const AuthController = {
                 });
             }
         } else if (role.toLowerCase() === 'artista') {
-            if (!bandName || !musicalStyle) {
+            if (!bandName || !musicalStyle || !numIntegrantes) {
                 return res.render('pages/cadastro', {
                     titulo:  'Cadastro',
                     usuario: null,
-                    erro:    'O nome da banda e o estilo musical são obrigatórios.',
+                    erro:    'O nome da banda, a quantidade de integrantes e o estilo musical são obrigatórios.',
                     sucesso: null,
                     role:    'artista'
                 });
@@ -71,6 +71,7 @@ const AuthController = {
                 role:          role.toLowerCase(),
                 nomeBanda:     role.toLowerCase() === 'artista' ? bandName : null,
                 estiloMusical: role.toLowerCase() === 'artista' ? musicalStyle : null,
+                numIntegrantes: role.toLowerCase() === 'artista' ? numIntegrantes : null,
                 instagram:     instagram || null
             };
 
@@ -133,11 +134,14 @@ const AuthController = {
                 username:      usuario.username,
                 email:         usuario.email,
                 role:          usuario.role,
-                nomeBanda:     usuario.nome_banda,
-                estiloMusical: usuario.estilo_musical,
+                nomeBanda:     usuario.nomeBanda,
+                estiloMusical: usuario.estiloMusical,
                 instagram:     usuario.instagram,
                 telefone:      usuario.telefone,
-                fotoPerfil:    usuario.foto_perfil
+                fotoPerfil:    usuario.fotoPerfil,
+                nomeCompleto:  usuario.nomeCompleto,
+                cpf:           usuario.cpf,
+                numIntegrantes: usuario.numIntegrantes
             };
 
             if (Array.isArray(req.session.carrinho) && req.session.carrinho.length > 0) {

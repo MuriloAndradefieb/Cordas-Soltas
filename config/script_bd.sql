@@ -69,6 +69,9 @@ CREATE TABLE IF NOT EXISTS usuarios (
     estilo_musical VARCHAR(100),
     instagram      VARCHAR(100),
     telefone       VARCHAR(20),
+    nome_completo  VARCHAR(150),
+    cpf            VARCHAR(20),
+    num_integrantes VARCHAR(20),
     foto_perfil    MEDIUMTEXT,
     criado_em      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
