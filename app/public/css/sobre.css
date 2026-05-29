@@ -8,14 +8,14 @@
 }
 
 body {
-    background-color: #0a0a0a;
+    background-color: #000;
     color: #fff;
     font-family: 'Roboto', sans-serif;
 }
 
 /* ── Container principal ──────────────────────────────────────── */
 .sobre-main-content {
-    background-color: #0a0a0a;
+    background-color: #121212;
     padding: 0;
 }
 

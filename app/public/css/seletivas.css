@@ -237,9 +237,12 @@ body {
     padding: 2rem 1rem;
     font-size: 0.8rem;
     color: #888;
-    border-top: 1px solid #333;
+    border-top: 1px solid #222;
     line-height: 1.5;
-    background-color: #000;
+}
+
+.seletivas-rodape p {
+    margin: 0.2rem 0;
 }
 
 /* ================================================================

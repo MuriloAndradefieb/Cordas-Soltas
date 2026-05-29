@@ -15,14 +15,14 @@
 }
 
 body {
-    background-color: #0a0a0a;
+    background-color: #000;
     color: #fff;
     font-family: 'Roboto', sans-serif;
 }
 
 /* ── Container principal ──────────────────────────────────────── */
 .luthbox-main-content {
-    background-color: transparent;
+    background-color: #121212;
     padding: 0;
 }
 
@@ -184,7 +184,7 @@ body {
     padding: 2rem 1rem;
     font-size: 0.8rem;
     color: #888;
-    border-top: 1px solid #333;
+    border-top: 1px solid #222;
     line-height: 1.5;
 }
 
