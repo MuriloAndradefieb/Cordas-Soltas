@@ -20,10 +20,9 @@
         
         <aside class="sidebar">
             <ul>
-                <li class="active"><img src="img/adm-icon.png" width="15px"> Administradores</li>
-                <li onclick="window.location.href='/adm/cadastro'"><img src="img/perfil-icon.png" width="15px"> Cadastro</li>
-                <li onclick="window.location.href='/adm/ingressos'"><img src="img/ingressos-icon.png" width="15px"> Ingressos</li>
-                <li onclick="window.location.href='/adm/luthbox'"><img src="img/luthbox-icon.png" width="15px"> Luthbox</li>
+                <li onclick="window.location.href='/adm/cadastro'"><img src="/img/perfil-icon.png" width="10px"> Cadastro</li>
+                <li onclick="window.location.href='/adm/ingressos'"><img src="/img/ingressos-icon.png" width="10px"> Ingressos</li>
+                <li onclick="window.location.href='/adm/luthbox'"><img src="/img/luthbox-icon.png" width="10px"> Luthbox</li>
             </ul>
         </aside>
 
@@ -56,7 +55,7 @@
                                     <td><span class="email-link"><%= adm.email %></span></td>
                                     <td><%= adm.username %></td>
                                     <td>
-                                        <button class="btn-action" type="button" data-edit-url="/adm/usuarios/editar/<%= adm.id %>">⚙️</button>
+                                        <button class="btn-action" type="button" data-edit-url="/adm/usuarios/editar/<%= adm.id %>"><img src="/img/confg.png" width="10px"></button>
                                     </td>
                                 </tr>
                             <% }); %>

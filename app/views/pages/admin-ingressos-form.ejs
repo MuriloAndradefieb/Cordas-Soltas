@@ -5,225 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= show ? 'Ingressos > Editar' : 'Ingressos > Adicionar' %> - Cordas Soltas</title>
     <link rel="stylesheet" href="/css/admin-dashboard.css">
-    <style>
-        .painel-cadastro {
-            background-color: #333333;
-            border-radius: 4px;
-            padding: 40px;
-            width: 100%;
-            max-width: 950px;
-            margin: 0 auto;
-            display: block;
-        }
-
-        .grid-formulario {
-            display: flex;
-            gap: 40px;
-            align-items: stretch;
-        }
-
-        .coluna-banner-lateral {
-            flex: 1.1;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .coluna-campos-laterais {
-            flex: 1.2;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            justify-content: space-between;
-        }
-
-        .grupo-input {
-            border: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            position: relative;
-        }
-
-        .grupo-input label {
-            color: #ffb800;
-            font-size: 16px;
-            font-weight: 600;
-            font-family: sans-serif;
-        }
-
-        .grupo-input input,
-        .grupo-input select {
-            background-color: #404040;
-            border: none;
-            color: #ffffff;
-            padding: 12px 15px;
-            border-radius: 10px;
-            font-size: 15px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .grupo-input select {
-            height: 45px;
-            cursor: pointer;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            background-image: url("data:image/svg+xml;utf8,<svg fill='%23ffb800' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
-            background-repeat: no-repeat;
-            background-position: right 12px top 50%;
-        }
-
-        .icone-edicao {
-            position: absolute;
-            right: 15px;
-            bottom: 12px;
-            color: #ffb800;
-            font-size: 14px;
-            pointer-events: none;
-        }
-
-        .container-upload-poster {
-            width: 100%;
-            flex: 1;
-            min-height: 380px;
-            background-color: #404040;
-            border-radius: 8px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            border: 2px dashed #555555;
-            transition: border-color 0.3s;
-        }
-
-        .container-upload-poster:hover {
-            border-color: #ffb800;
-        }
-
-        .botao-adicionar-banner {
-            background-color: #4c4c4c;
-            border: 1px solid #666;
-            color: #a6a6a6;
-            padding: 12px 20px;
-            border-radius: 10px;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            pointer-events: none;
-            z-index: 2;
-        }
-
-        .botao-adicionar-banner svg {
-            fill: #a6a6a6;
-            width: 18px;
-            height: 18px;
-        }
-
-        .img-preview-render {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            position: absolute;
-            top: 0;
-            left: 0;
-            display: none;
-            z-index: 1;
-        }
-
-        .container-botoes-topo {
-            display: flex;
-            justify-content: flex-end;
-            gap: 20px;
-            margin-bottom: 20px;
-            width: 100%;
-            max-width: 950px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .btn-topo-cancela {
-            background: transparent;
-            border: 1px solid #ffb800;
-            color: #ffffff;
-            padding: 8px 20px;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 15px;
-        }
-
-        .btn-topo-salvar {
-            background-color: #ffb800;
-            border: none;
-            color: #1a1a1a;
-            padding: 8px 25px;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 15px;
-        }
-
-        .btn-topo-salvar:hover {
-            background-color: #e6a600;
-        }
-
-        input[type="date"]::-webkit-calendar-picker-indicator {
-            filter: invert(77%) sepia(85%) saturate(1243%) hue-rotate(359deg) brightness(102%) contrast(106%);
-            cursor: pointer;
-        }
-
-        #modal_exclusao {
-            position: fixed !important;
-            top: 50% !important;
-            left: 50% !important;
-            transform: translate(-50%, -50%) !important;
-            margin: 0 !important;
-            background-color: #1e1e1e !important;
-            border: 1px solid #ffb800 !important;
-            border-radius: 8px !important;
-            padding: 30px !important;
-            max-width: 450px !important;
-            width: 90% !important;
-            text-align: center !important;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8) !important;
-            z-index: 100000 !important;
-        }
-
-        #modal_exclusao::backdrop {
-            background-color: rgba(0, 0, 0, 0.6) !important;
-            backdrop-filter: blur(3px) !important;
-        }
-    </style>
 </head>
-<body>
+<body class="admin-ingressos-form-page">
 
     <hr class="top-line">
 
     <header class="main-header">
-        <h2>CORDAS SOLTAS</h2>
+        <img src="/img/LOGO ALTERNATIVA CORDAS SOLTAS SITE.png" width="50px" alt="Logo Cordas Soltas" class="logo">
     </header>
 
     <section class="app-container">
         
         <nav class="sidebar-nav">
             <ul>
-                <li onclick="window.location.href='/adm/acesso-direto'"><img src="img/adm-icon.png" width="15px"> Administradores</li>
-                <li onclick="window.location.href='/adm/cadastro'"><img src="img/perfil-icon.png" width="15px"> Cadastro</li>
-                <li class="active" onclick="window.location.href='/adm/ingressos'"><img src="img/ingressos-icon.png" width="15px"> Ingressos</li>
-                <li><img src="img/luthbox-icon.png" width="15px"> Luthbox</li>
+                <li onclick="window.location.href='/adm/cadastro'"><img src="/img/perfil-icon.png" width="10px"> Cadastro</li>
+                <li class="active" onclick="window.location.href='/adm/ingressos'"><img src="/img/ingressos-icon.png" width="10px"> Ingressos</li>
+                <li><img src="/img/luthbox-icon.png" width="10px"> Luthbox</li>
             </ul>
         </nav>
 
@@ -231,18 +28,18 @@
             
             <form action="<%= show ? '/adm/ingressos/editar/' + show.id : '/adm/ingressos/adicionar' %>" method="POST" enctype="multipart/form-data">
 
-                <header class="sub-header" style="background: transparent; padding: 0; margin-bottom: 5px;">
-                    <span class="title" style="font-size: 14px; color: #b3b3b3; font-weight: normal;">
+                <header class="sub-header">
+                    <span class="title">
                         Ingressos &gt; <%= show ? 'Editar' : 'Adicionar' %>
                     </span>
                 </header>
 
                 <section class="container-botoes-topo">
                     <button type="button" class="btn-topo-cancela" onclick="window.location.href='/adm/ingressos'">
-                        <span style="color: #ff4a4a; font-weight: bold;">✕</span> Cancelar
+                        <span class="btn-cancel-icon"><img src="/img/x-icon.png" width="20px"></span> Cancelar
                     </button>
                     <button type="submit" class="btn-topo-salvar">
-                        <img src="img/salvar-icon.png" width="15px"> Salvar
+                        <img src="/img/salvar-icon.png" width="20px"> Salvar
                     </button>
                 </section>
 
@@ -250,16 +47,16 @@
                     <section class="grid-formulario">
                         
                         <aside class="coluna-banner-lateral">
-                            <div class="grupo-input" style="height: 100%;">
+                            <div class="grupo-input grupo-upload">
                                 <label>Banner do Pôster</label>
-                                <label for="file_upload" class="container-upload-poster" style="<%= (show && show.imagem_url) ? 'border: none;' : '' %>">
+                                <label for="file_upload" class="container-upload-poster <%= (show && show.imagem_url) ? 'has-preview' : '' %>">
                                     
-                                    <section class="botao-adicionar-banner" id="wrapper_botao_upload" style="<%= (show && show.imagem_url) ? 'display: none;' : '' %>">
+                                    <section class="botao-adicionar-banner <%= (show && show.imagem_url) ? 'is-hidden' : '' %>" id="wrapper_botao_upload">
                                         <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
                                         Adicionar banner
                                     </section>
                                     
-                                    <img src="<%= show ? (show.imagem_url || '/img/pexels-wendywei-1190297.jpg') : '' %>" id="render_preview" class="img-preview-render" alt="Preview do Banner" style="<%= (show && show.imagem_url) ? 'display: block;' : '' %>" onerror="this.onerror=null;this.src='/img/pexels-wendywei-1190297.jpg';">
+                                    <img src="<%= show ? (show.imagem_url || '/img/pexels-wendywei-1190297.jpg') : '' %>" id="render_preview" class="img-preview-render <%= (show && show.imagem_url) ? 'is-visible' : '' %>" alt="Preview do Banner" onerror="this.onerror=null;this.src='/img/pexels-wendywei-1190297.jpg';">
                                 </label>
                                 <input type="file" id="file_upload" name="image_file" accept="image/*" style="display: none;" <%= show ? '' : 'required' %>>
                             </div>
@@ -284,7 +81,7 @@
                             <fieldset class="grupo-input">
                                 <label for="preco">Preço</label>
                                 <input type="text" id="preco" name="preco" placeholder="R$ 0,00" value="<%= show ? show.preco : '' %>" onblur="formatarPrecoInteiro(this)" inputmode="decimal" maxlength="14" required>
-                                <span class="icone-edicao">📝</span>
+                                <span class="icone-edicao"><img src="/img/confg.png" width="20px"></span>
                             </fieldset>
 
                             <fieldset class="grupo-input">
@@ -300,7 +97,7 @@
                             <fieldset class="grupo-input">
                                 <label for="local">Local</label>
                                 <input type="text" id="local" name="local" placeholder="Ex: Praças das Artes-SP" value="<%= show ? show.local : '' %>" required>
-                                <span class="icone-edicao">📝</span>
+                                <span class="icone-edicao"><img src="/img/confg.png" width="20px"></span>
                             </fieldset>
 
                         </aside>
@@ -325,9 +122,9 @@
                 const leitor = new FileReader();
                 leitor.onload = function(event) {
                     imagemRender.src = event.target.result;
-                    imagemRender.style.display = 'block';
-                    botaoUpload.style.display = 'none';
-                    containerUpload.style.border = 'none';
+                    imagemRender.classList.add('is-visible');
+                    botaoUpload.classList.add('is-hidden');
+                    containerUpload.classList.add('has-preview');
                 }
                 leitor.readAsDataURL(arquivo);
             }

@@ -5,79 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel de Ingressos - Cordas Soltas</title>
     <link rel="stylesheet" href="/css/admin-dashboard.css">
-    <style>
-        /* CSS base para a estrutura */
-        .genre-section {
-            margin-bottom: 40px;
-        }
-
-        /* CENTRALIZAÇÃO PERFEITA DO MODAL CUSTOMIZADO */
-        #modal_exclusao {
-            position: fixed !important;
-            top: 50% !important;
-            left: 50% !important;
-            transform: translate(-50%, -50%) !important;
-            margin: 0 !important; 
-            background-color: #333333 !important;
-            border: 1px solid #ffb800 !important;
-            border-radius: 8px !important;
-            padding: 30px !important;
-            max-width: 450px !important;
-            width: 90% !important;
-            text-align: center !important;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8) !important;
-            z-index: 100000 !important; 
-        }
-
-        /* Fundo escurecido e borrado atrás do modal */
-        #modal_exclusao::backdrop {
-            background-color: rgba(0, 0, 0, 0.75) !important;
-            backdrop-filter: blur(3px) !important;
-        }
-    </style>
 </head>
-<body>
+<body class="admin-ingressos-page">
 
     <hr class="top-line">
 
     <header class="main-header">
-        <h2>CORDAS SOLTAS</h2>
+        <img src="/img/LOGO ALTERNATIVA CORDAS SOLTAS SITE.png" width="50px" alt="Logo Cordas Soltas" class="logo">
     </header>
 
     <section class="app-container">
         
         <nav class="sidebar-nav">
             <ul>
-                <li onclick="window.location.href='/adm/acesso-direto'"><img src="img/adm-icon.png" width="15px"> Administradores</li>
-                <li onclick="window.location.href='/adm/cadastro'"><img src="img/perfil-icon.png" width="15px"> Cadastro</li>
-                <li class="active" onclick="window.location.href='/adm/ingressos'"><img src="img/ingressos-icon.png" width="15px"> Ingressos</li>
-                <li><img src="img/luthbox-icon.png" width="15px"> Luthbox</li>
+                <li onclick="window.location.href='/adm/cadastro'"><img src="/img/perfil-icon.png" width="10px"> Cadastro</li>
+                <li class="active" onclick="window.location.href='/adm/ingressos'"><img src="/img/ingressos-icon.png" width="10px"> Ingressos</li>
+                <li><img src="/img/luthbox-icon.png" width="10px"> Luthbox</li>
             </ul>
         </nav>
 
         <main class="content-area">
-            <header class="sub-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <header class="sub-header">
                 <span class="title">Gerenciamento de Ingressos</span>
-                <button class="btn-topo-salvar" style="background-color: #ffb800; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer;" onclick="window.location.href='/adm/ingressos/adicionar'">
-                    ➕ Novo Ingresso
+                <button class="btn-add ticket-add-button" type="button" onclick="window.location.href='/adm/ingressos/adicionar'">
+                    <span>+</span> Novo Ingresso
                 </button>
             </header>
 
             <% Object.keys(showsPorEstilo).forEach(function(estilo) { %>
-                <h3 style="color: #ffb800; margin-top: 30px; font-family: sans-serif;"><%= estilo %></h3>
+                <h3 class="category-title ticket-genre-title"><%= estilo %></h3>
                 
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 10px;">
+                <div class="tickets-grid">
                     <% showsPorEstilo[estilo].forEach(function(show) { %>
-                        <div style="background-color: #333333; border-radius: 6px; padding: 15px; position: relative; border: 1px solid #444;">
-                            <img src="<%= show.imagem_url || '/img/pexels-wendywei-1190297.jpg' %>" style="width: 100%; height: 180px; object-fit: cover; border-radius: 4px; margin-bottom: 10px;" alt="Banner" onerror="this.onerror=null;this.src='/img/pexels-wendywei-1190297.jpg';">
-                            <h4 style="color: #fff; margin: 5px 0;"><%= show.titulo %></h4>
-                            <p style="color: #b3b3b3; font-size: 13px; margin: 5px 0;">📍 <%= show.local %></p>
-                            <p style="color: #ffb800; font-weight: bold; margin: 5px 0;">R$ <%= show.preco %></p>
+                        <div class="ticket-card">
+                            <img class="ticket-card-image" src="<%= show.imagem_url || '/img/pexels-wendywei-1190297.jpg' %>" alt="Banner" onerror="this.onerror=null;this.src='/img/pexels-wendywei-1190297.jpg';">
+                            <h4 class="ticket-card-title"><%= show.titulo %></h4>
+                            <p class="ticket-card-location"><%= show.local %></p>
+                            <p class="ticket-card-price">R$ <%= show.preco %></p>
                             
-                            <div style="display: flex; gap: 10px; margin-top: 15px;">
-                                <button style="flex: 1; padding: 8px; background-color: #444; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;" onclick="window.location.href='/adm/ingressos/editar/<%= show.id %>'">✏️ Editar</button>
+                            <div class="ticket-card-actions">
+                                <button class="btn-action ticket-edit-button" type="button" onclick="window.location.href='/adm/ingressos/editar/<%= show.id %>'"><img src="/img/confg.png" width="15px"> Editar</button>
                                 
-                                <button style="padding: 8px; background-color: #ff4a4a; color: #fff; border: none; border-radius: 4px; cursor: pointer;" onclick="abrirModalExclusao('<%= show.id %>')">🗑️ Excluir</button>
+                                <button class="btn-action ticket-delete-button" type="button" onclick="abrirModalExclusao('<%= show.id %>')"><img src="/img/x-icon.png" width="15px"> Excluir</button>
                             </div>
                         </div>
                     <% }); %>
@@ -87,13 +56,13 @@
         </main>
     </section>
 
-    <dialog id="modal_exclusao" style="font-family: sans-serif;">
-        <h3 style="color: #ffb800; font-size: 20px; margin-top: 0; margin-bottom: 15px;">Atenção!</h3>
-        <p style="color: #ffffff; font-size: 15px; margin-bottom: 25px; line-height: 1.4;">Tem certeza que deseja excluir este ingresso do sistema? Esta ação não poderá ser desfeita.</p>
+    <dialog id="modal_exclusao">
+        <h3>Atenção!</h3>
+        <p>Tem certeza que deseja excluir este ingresso do sistema? Esta ação não poderá ser desfeita.</p>
         
-        <section style="display: flex; justify-content: center; gap: 15px;">
-            <button id="btn_fechar_modal" style="background: transparent; border: 1px solid #ffb800; color: #ffffff; padding: 10px 25px; border-radius: 6px; font-weight: bold; cursor: pointer;">Voltar</button>
-            <button id="btn_confirmar_exclusao" style="background-color: #ff4a4a; border: none; color: #ffffff; padding: 10px 25px; border-radius: 6px; font-weight: bold; cursor: pointer;">Sim, Excluir</button>
+        <section class="modal-botoes">
+            <button id="btn_fechar_modal" class="btn-modal btn-modal-cancelar" type="button">Voltar</button>
+            <button id="btn_confirmar_exclusao" class="btn-modal btn-modal-excluir" type="button">Sim, Excluir</button>
         </section>
     </dialog>
 
