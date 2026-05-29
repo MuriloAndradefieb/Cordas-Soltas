@@ -64,9 +64,7 @@ function normalizarPreco(preco) {
 const rolesUsuario = ['visitante', 'artista', 'admin', 'admin_geral'];
 
 function rotaRetornoUsuario(usuario) {
-    return usuario && ['admin', 'admin_geral'].includes(usuario.role)
-        ? '/adm/acesso-direto'
-        : '/adm/cadastro';
+    return '/adm/cadastro';
 }
 
 function montarUsuarioFormulario(usuarioAtual, dados = {}) {
@@ -78,6 +76,12 @@ function montarUsuarioFormulario(usuarioAtual, dados = {}) {
         nome_completo: dados.nome_completo !== undefined ? dados.nome_completo : usuarioAtual.nome_completo,
         num_integrantes: dados.num_integrantes !== undefined ? dados.num_integrantes : usuarioAtual.num_integrantes
     });
+}
+
+function somarDiasDataIso(dias) {
+    const data = new Date();
+    data.setDate(data.getDate() + dias);
+    return data.toISOString().split('T')[0];
 }
 
 // =========================================================================
@@ -300,29 +304,8 @@ router.post('/carrinho/remover/:id', async (req, res) => {
 // ROTAS DO ADMINISTRADOR (ACESSO E GERENCIAMENTO)
 // =========================================================================
 
-router.get('/adm/acesso-direto', async (req, res) => {
-    const emailAdmin = "rm97111@estudante.fieb.edu.br";
-    const senhaAdmin = "1234567";
-
-    try {
-        const queryVerifica = 'SELECT * FROM usuarios WHERE email = ?';
-        const [results] = await db.query(queryVerifica, [emailAdmin]);
-
-        if (results.length > 0) {
-            const usuarioEncontrado = results[0];
-            const senhaCorreta = await bcrypt.compare(senhaAdmin, usuarioEncontrado.senha);
-
-            if (senhaCorreta) {
-                const queryLista = "SELECT * FROM usuarios WHERE role IN ('admin', 'admin_geral')";
-                const [listaAdms] = await db.query(queryLista);
-                return res.render('pages/admin-dashboard', { administradores: listaAdms });
-            }
-            return res.status(401).send('A senha informada no código está incorreta.');
-        }
-        return res.status(401).send('Conta de administrador não encontrada.');
-    } catch (err) {
-        return res.status(500).send(`Erro interno: ${err.message}`);
-    }
+router.get('/adm/acesso-direto', (req, res) => {
+    return res.redirect('/adm/cadastro');
 });
 
 router.get('/adm/administradores/adicionar', (req, res) => {
@@ -361,12 +344,226 @@ router.get('/adm/cadastro', async (req, res) => {
     }
 });
 
+router.get('/adm/visitantes/editar/:id', async (req, res) => {
+    try {
+        const visitante = await UsuariosModel.buscarPorId(req.params.id);
+
+        if (!visitante || visitante.role !== 'visitante') {
+            return res.status(404).send("Visitante nao encontrado.");
+        }
+
+        let historicoCompra = [];
+
+        try {
+            historicoCompra = await CarrinhoModel.listarPorUsuario(visitante.id);
+        } catch (err) {
+            console.error("Erro ao buscar historico do visitante:", err.message);
+        }
+
+        return res.render('pages/admin-visitante-config', {
+            visitante,
+            historicoCompra,
+            erro: req.query.erro || null,
+            sucesso: req.query.sucesso || null
+        });
+    } catch (err) {
+        console.error("Erro ao carregar visitante:", err);
+        return res.status(500).send("Erro ao carregar visitante.");
+    }
+});
+
+router.post('/adm/visitantes/editar/:id', async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        const visitante = await UsuariosModel.buscarPorId(id);
+
+        if (!visitante || visitante.role !== 'visitante') {
+            return res.status(404).send("Visitante nao encontrado.");
+        }
+
+        const {
+            username,
+            email,
+            telefone,
+            nome_completo,
+            cpf,
+            novaSenha,
+            excluir_conta,
+            confirmacao_exclusao,
+            suspender_conta,
+            dias_suspensao
+        } = req.body;
+
+        if (excluir_conta === 'sim') {
+            if (confirmacao_exclusao !== 'excluirconta') {
+                return res.redirect(`/adm/visitantes/editar/${id}?erro=${encodeURIComponent('você precisa confirmar a ação')}`);
+            }
+
+            const excluido = await UsuariosModel.excluir(id);
+            if (!excluido) {
+                return res.redirect(`/adm/visitantes/editar/${id}?erro=${encodeURIComponent('Conta nao encontrada para exclusao.')}`);
+            }
+
+            return res.redirect('/adm/cadastro');
+        }
+
+        if (!username || !email) {
+            return res.redirect(`/adm/visitantes/editar/${id}?erro=${encodeURIComponent('Preencha usuario e e-mail.')}`);
+        }
+
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            return res.redirect(`/adm/visitantes/editar/${id}?erro=${encodeURIComponent('Informe um e-mail valido.')}`);
+        }
+
+        if (novaSenha && novaSenha.length < 6) {
+            return res.redirect(`/adm/visitantes/editar/${id}?erro=${encodeURIComponent('A nova senha deve ter pelo menos 6 caracteres.')}`);
+        }
+
+        const diasSuspensao = Math.max(1, Number.parseInt(dias_suspensao, 10) || 10);
+        const estaSuspenso = suspender_conta === 'sim';
+
+        await UsuariosModel.atualizar(id, {
+            username,
+            email,
+            telefone,
+            nome_completo,
+            cpf,
+            role: 'visitante',
+            status_conta: estaSuspenso ? 'suspenso' : 'ativo',
+            suspenso_ate: estaSuspenso ? somarDiasDataIso(diasSuspensao) : null
+        });
+
+        if (novaSenha) {
+            const senhaHash = await bcrypt.hash(novaSenha, 10);
+            await UsuariosModel.atualizarSenha(id, senhaHash);
+        }
+
+        return res.redirect(`/adm/visitantes/editar/${id}?sucesso=${encodeURIComponent('Visitante atualizado com sucesso.')}`);
+    } catch (err) {
+        console.error("Erro ao atualizar visitante:", err);
+        const mensagem = err && err.code === 'ER_DUP_ENTRY'
+            ? 'Este e-mail ja esta em uso.'
+            : 'Erro ao salvar visitante.';
+
+        return res.redirect(`/adm/visitantes/editar/${id}?erro=${encodeURIComponent(mensagem)}`);
+    }
+});
+
+router.get('/adm/artistas/editar/:id', async (req, res) => {
+    try {
+        const artista = await UsuariosModel.buscarPorId(req.params.id);
+
+        if (!artista || artista.role !== 'artista') {
+            return res.status(404).send("Artista nao encontrado.");
+        }
+
+        return res.render('pages/admin-artista-config', {
+            artista,
+            erro: req.query.erro || null,
+            sucesso: req.query.sucesso || null
+        });
+    } catch (err) {
+        console.error("Erro ao carregar artista:", err);
+        return res.status(500).send("Erro ao carregar artista.");
+    }
+});
+
+router.post('/adm/artistas/editar/:id', async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        const artista = await UsuariosModel.buscarPorId(id);
+
+        if (!artista || artista.role !== 'artista') {
+            return res.status(404).send("Artista nao encontrado.");
+        }
+
+        const {
+            nome_banda,
+            email,
+            telefone,
+            num_integrantes,
+            estilo_musical,
+            instagram,
+            novaSenha,
+            excluir_conta,
+            confirmacao_exclusao,
+            suspender_conta,
+            dias_suspensao
+        } = req.body;
+
+        if (excluir_conta === 'sim') {
+            if (confirmacao_exclusao !== 'excluirconta') {
+                return res.redirect(`/adm/artistas/editar/${id}?erro=${encodeURIComponent('você precisa confirmar a ação')}`);
+            }
+
+            const excluido = await UsuariosModel.excluir(id);
+            if (!excluido) {
+                return res.redirect(`/adm/artistas/editar/${id}?erro=${encodeURIComponent('Conta nao encontrada para exclusao.')}`);
+            }
+
+            return res.redirect('/adm/cadastro');
+        }
+
+        if (!nome_banda || !email || !estilo_musical) {
+            return res.redirect(`/adm/artistas/editar/${id}?erro=${encodeURIComponent('Preencha nome da banda, e-mail e estilo musical.')}`);
+        }
+
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            return res.redirect(`/adm/artistas/editar/${id}?erro=${encodeURIComponent('Informe um e-mail valido.')}`);
+        }
+
+        if (novaSenha && novaSenha.length < 6) {
+            return res.redirect(`/adm/artistas/editar/${id}?erro=${encodeURIComponent('A nova senha deve ter pelo menos 6 caracteres.')}`);
+        }
+
+        const diasSuspensao = Math.max(1, Number.parseInt(dias_suspensao, 10) || 10);
+        const estaSuspenso = suspender_conta === 'sim';
+
+        await UsuariosModel.atualizar(id, {
+            username: nome_banda,
+            email,
+            telefone,
+            role: 'artista',
+            nome_banda,
+            num_integrantes,
+            estilo_musical,
+            instagram,
+            status_conta: estaSuspenso ? 'suspenso' : 'ativo',
+            suspenso_ate: estaSuspenso ? somarDiasDataIso(diasSuspensao) : null
+        });
+
+        if (novaSenha) {
+            const senhaHash = await bcrypt.hash(novaSenha, 10);
+            await UsuariosModel.atualizarSenha(id, senhaHash);
+        }
+
+        return res.redirect(`/adm/artistas/editar/${id}?sucesso=${encodeURIComponent('Artista atualizado com sucesso.')}`);
+    } catch (err) {
+        console.error("Erro ao atualizar artista:", err);
+        const mensagem = err && err.code === 'ER_DUP_ENTRY'
+            ? 'Este e-mail ja esta em uso.'
+            : 'Erro ao salvar artista.';
+
+        return res.redirect(`/adm/artistas/editar/${id}?erro=${encodeURIComponent(mensagem)}`);
+    }
+});
+
 router.get('/adm/usuarios/editar/:id', async (req, res) => {
     try {
         const usuario = await UsuariosModel.buscarPorId(req.params.id);
 
         if (!usuario) {
             return res.status(404).send("Usuario nao encontrado.");
+        }
+
+        if (usuario.role === 'visitante') {
+            return res.redirect(`/adm/visitantes/editar/${usuario.id}`);
+        }
+
+        if (usuario.role === 'artista') {
+            return res.redirect(`/adm/artistas/editar/${usuario.id}`);
         }
 
         return res.render('pages/admin-usuario-form', {

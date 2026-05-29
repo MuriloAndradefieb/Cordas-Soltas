@@ -72,6 +72,8 @@ CREATE TABLE IF NOT EXISTS usuarios (
     nome_completo  VARCHAR(150),
     cpf            VARCHAR(20),
     num_integrantes VARCHAR(20),
+    status_conta   VARCHAR(20) DEFAULT 'ativo',
+    suspenso_ate   DATE,
     foto_perfil    MEDIUMTEXT,
     criado_em      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

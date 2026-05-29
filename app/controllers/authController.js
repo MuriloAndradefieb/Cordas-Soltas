@@ -129,6 +129,24 @@ const AuthController = {
                 });
             }
 
+            if (usuario.statusConta === 'suspenso') {
+                const suspensoAte = usuario.suspensoAte ? new Date(usuario.suspensoAte) : null;
+                const hoje = new Date();
+                hoje.setHours(0, 0, 0, 0);
+
+                if (!suspensoAte || suspensoAte >= hoje) {
+                    const dataLiberacao = suspensoAte
+                        ? suspensoAte.toLocaleDateString('pt-BR')
+                        : 'em breve';
+
+                    return res.render('pages/login', {
+                        titulo:  'Login',
+                        usuario: null,
+                        erro:    `Sua conta esta suspensa ate ${dataLiberacao}.`
+                    });
+                }
+            }
+
             req.session.usuario = {
                 id:            usuario.id,
                 username:      usuario.username,
@@ -141,7 +159,9 @@ const AuthController = {
                 fotoPerfil:    usuario.fotoPerfil,
                 nomeCompleto:  usuario.nomeCompleto,
                 cpf:           usuario.cpf,
-                numIntegrantes: usuario.numIntegrantes
+                numIntegrantes: usuario.numIntegrantes,
+                statusConta:   usuario.statusConta,
+                suspensoAte:   usuario.suspensoAte
             };
 
             if (Array.isArray(req.session.carrinho) && req.session.carrinho.length > 0) {

@@ -54,7 +54,7 @@
                                         <td><span class="email-link"><%= visitante.email %></span></td>
                                         <td><%= visitante.username %></td>
                                         <td>
-                                            <button class="btn-action" type="button" data-edit-url="/adm/usuarios/editar/<%= visitante.id %>">⚙️</button>
+                                            <button class="btn-action" type="button" data-edit-url="/adm/visitantes/editar/<%= visitante.id %>">⚙️</button>
                                         </td>
                                     </tr>
                                 <% }); %>
@@ -88,7 +88,7 @@
                                         <td><span class="email-link"><%= artista.email %></span></td>
                                         <td><%= artista.nome_banda || artista.username %></td>
                                         <td>
-                                            <button class="btn-action" type="button" data-edit-url="/adm/usuarios/editar/<%= artista.id %>">⚙️</button>
+                                            <button class="btn-action" type="button" data-edit-url="/adm/artistas/editar/<%= artista.id %>">⚙️</button>
                                         </td>
                                     </tr>
                                 <% }); %>

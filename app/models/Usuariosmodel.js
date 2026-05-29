@@ -5,7 +5,9 @@ let colunasPerfilGarantidas = false;
 const colunasPerfil = [
     { nome: 'nome_completo', sql: 'ALTER TABLE usuarios ADD COLUMN nome_completo VARCHAR(150)' },
     { nome: 'cpf', sql: 'ALTER TABLE usuarios ADD COLUMN cpf VARCHAR(20)' },
-    { nome: 'num_integrantes', sql: 'ALTER TABLE usuarios ADD COLUMN num_integrantes VARCHAR(20)' }
+    { nome: 'num_integrantes', sql: 'ALTER TABLE usuarios ADD COLUMN num_integrantes VARCHAR(20)' },
+    { nome: 'status_conta', sql: "ALTER TABLE usuarios ADD COLUMN status_conta VARCHAR(20) DEFAULT 'ativo'" },
+    { nome: 'suspenso_ate', sql: 'ALTER TABLE usuarios ADD COLUMN suspenso_ate DATE' }
 ];
 
 function limparValor(valor) {
@@ -26,7 +28,9 @@ function formatarUsuario(usuario) {
         estiloMusical: usuario.estilo_musical,
         fotoPerfil: usuario.foto_perfil,
         nomeCompleto: usuario.nome_completo,
-        numIntegrantes: usuario.num_integrantes
+        numIntegrantes: usuario.num_integrantes,
+        statusConta: usuario.status_conta,
+        suspensoAte: usuario.suspenso_ate
     };
 }
 
@@ -45,6 +49,10 @@ function normalizarDadosAtualizacao(dados) {
         instagram: 'instagram',
         numIntegrantes: 'num_integrantes',
         num_integrantes: 'num_integrantes',
+        statusConta: 'status_conta',
+        status_conta: 'status_conta',
+        suspensoAte: 'suspenso_ate',
+        suspenso_ate: 'suspenso_ate',
         role: 'role'
     };
 
@@ -163,6 +171,27 @@ const UsuarioModel = {
             'UPDATE usuarios SET foto_perfil = ? WHERE id = ?',
             [fotoBase64, id]
         );
+    },
+
+    async excluir(id) {
+        const conexao = await pool.getConnection();
+
+        try {
+            await conexao.beginTransaction();
+            await conexao.query('DELETE FROM carrinho WHERE usuario_id = ?', [id]);
+            const [resultado] = await conexao.query(
+                'DELETE FROM usuarios WHERE id = ?',
+                [id]
+            );
+
+            await conexao.commit();
+            return resultado.affectedRows > 0;
+        } catch (erro) {
+            await conexao.rollback();
+            throw erro;
+        } finally {
+            conexao.release();
+        }
     }
 };
 

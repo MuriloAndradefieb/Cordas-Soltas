@@ -1,0 +1,290 @@
+<%
+    const statusConta = artista.statusConta || artista.status_conta || 'ativo';
+    const suspensoAte = artista.suspensoAte || artista.suspenso_ate || null;
+    const estaSuspenso = statusConta === 'suspenso';
+    const nomeBanda = artista.nomeBanda || artista.nome_banda || artista.username || '';
+    const estiloMusical = artista.estiloMusical || artista.estilo_musical || '';
+    const numIntegrantes = artista.numIntegrantes || artista.num_integrantes || '';
+
+    const parseDataLocal = (valor) => {
+        if (!valor) return null;
+        if (valor instanceof Date) return valor;
+
+        const texto = String(valor).slice(0, 10);
+        const partes = texto.split('-').map(Number);
+
+        if (partes.length === 3 && partes.every(Number.isFinite)) {
+            return new Date(partes[0], partes[1] - 1, partes[2]);
+        }
+
+        const data = new Date(valor);
+        return Number.isNaN(data.getTime()) ? null : data;
+    };
+
+    const dataSuspensao = parseDataLocal(suspensoAte);
+    const dataSuspensaoTexto = dataSuspensao
+        ? dataSuspensao.toLocaleDateString('pt-BR')
+        : '';
+
+    const estilos = ['Rock', 'Samba', 'Pagode', 'Jazz', 'Eletrônica', 'Forró', 'Sertanejo', 'MPB', 'Reggae', 'Hip-Hop/Rap', 'Metal', 'Pop', 'Outro'];
+%>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro &gt; Artista Configura&ccedil;&atilde;o - Cordas Soltas</title>
+    <link rel="stylesheet" href="/css/admin-dashboard.css">
+    <link rel="stylesheet" href="/css/admin-visitante-config.css">
+</head>
+<body>
+    <div class="top-line"></div>
+
+    <header class="main-header">
+        <div class="logo-container">
+            <h2>CORDAS SOLTAS</h2>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <aside class="sidebar">
+            <ul>
+                <li onclick="window.location.href='/adm/acesso-direto'">⚙️ Administradores</li>
+                <li class="active" onclick="window.location.href='/adm/cadastro'">👤 Cadastro</li>
+                <li onclick="window.location.href='/adm/ingressos'">🎫 Ingressos</li>
+                <li onclick="window.location.href='/adm/luthbox'">🧰 Luthbox</li>
+            </ul>
+        </aside>
+
+        <main class="content-area">
+            <div class="vc-page-wrap">
+                <header class="sub-header">
+                    <span class="title">CADASTRO &gt; ARTISTA CONFIGURA&Ccedil;&Atilde;O</span>
+                    <div class="vc-header-actions">
+                        <a href="/adm/cadastro" class="vc-btn vc-btn-secondary">Cancelar</a>
+                        <button type="submit" form="form-artista-config" class="vc-btn vc-btn-primary">Salvar</button>
+                    </div>
+                </header>
+
+                <section class="search-container vc-search-row">
+                    <button class="btn-search" type="button" aria-label="Buscar">🔍</button>
+                </section>
+
+                <% if (erro) { %>
+                    <p class="vc-alert vc-alert-error"><%= erro %></p>
+                <% } %>
+
+                <% if (sucesso) { %>
+                    <p class="vc-alert vc-alert-success"><%= sucesso %></p>
+                <% } %>
+
+                <form class="vc-form" method="POST" action="/adm/artistas/editar/<%= artista.id %>" id="form-artista-config">
+                    <section class="vc-section">
+                        <h2 class="category-title">Dados do artista</h2>
+                        <div class="vc-panel vc-data-grid">
+                            <div class="vc-field">
+                                <label for="nome_banda">Nome da banda</label>
+                                <input id="nome_banda" name="nome_banda" type="text" value="<%= nomeBanda %>" required>
+                            </div>
+
+                            <div class="vc-field">
+                                <label for="email">E-mail</label>
+                                <input id="email" name="email" type="email" value="<%= artista.email || '' %>" required>
+                            </div>
+
+                            <div class="vc-field">
+                                <label for="telefone">Telefone</label>
+                                <input id="telefone" name="telefone" type="text" value="<%= artista.telefone || '' %>">
+                            </div>
+
+                            <div class="vc-field">
+                                <label for="num_integrantes">Integrantes</label>
+                                <select id="num_integrantes" name="num_integrantes">
+                                    <option value="" <%= !numIntegrantes ? 'selected' : '' %>>Nao informado</option>
+                                    <option value="solo" <%= numIntegrantes === 'solo' ? 'selected' : '' %>>Solo</option>
+                                    <option value="2a4" <%= numIntegrantes === '2a4' ? 'selected' : '' %>>De 2 a 4 integrantes</option>
+                                    <option value="mais4" <%= numIntegrantes === 'mais4' ? 'selected' : '' %>>Mais de 4 integrantes</option>
+                                </select>
+                            </div>
+
+                            <div class="vc-field">
+                                <label for="estilo_musical">Estilo musical</label>
+                                <select id="estilo_musical" name="estilo_musical" required>
+                                    <% estilos.forEach(function(estilo) { %>
+                                        <option value="<%= estilo %>" <%= estiloMusical === estilo ? 'selected' : '' %>><%= estilo %></option>
+                                    <% }); %>
+                                </select>
+                            </div>
+
+                            <div class="vc-field">
+                                <label for="instagram">Instagram</label>
+                                <input id="instagram" name="instagram" type="text" value="<%= artista.instagram || '' %>">
+                            </div>
+
+                            <div class="vc-field">
+                                <label for="novaSenha">Nova senha</label>
+                                <input id="novaSenha" name="novaSenha" type="password" placeholder="Manter senha atual">
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="vc-section">
+                        <h2 class="category-title">Modera&ccedil;&atilde;o</h2>
+                        <input type="hidden" name="suspender_conta" id="suspender_conta" value="<%= estaSuspenso ? 'sim' : 'nao' %>">
+
+                        <div class="vc-moderation-grid">
+                            <article class="vc-moderation-card">
+                                <button class="vc-moderation-toggle" type="button" aria-expanded="<%= estaSuspenso ? 'true' : 'false' %>" aria-controls="painel-suspensao" data-moderation-toggle>
+                                    <span>Suspender conta</span>
+                                    <span class="vc-toggle-icon" aria-hidden="true">+</span>
+                                </button>
+
+                                <div class="vc-moderation-panel <%= estaSuspenso ? 'is-open' : '' %>" id="painel-suspensao" <%= estaSuspenso ? '' : 'hidden' %>>
+                                    <div class="vc-option-buttons">
+                                        <button type="button" class="vc-option-btn <%= estaSuspenso ? 'is-selected' : '' %>" data-suspension-option="sim">
+                                            Aplicar suspens&atilde;o
+                                        </button>
+                                        <button type="button" class="vc-option-btn <%= estaSuspenso ? '' : 'is-selected' %>" data-suspension-option="nao">
+                                            Manter ativa
+                                        </button>
+                                    </div>
+
+                                    <div class="vc-field vc-suspension-days" id="campo-dias-suspensao" <%= estaSuspenso ? '' : 'hidden' %>>
+                                        <label for="dias_suspensao">Dias de suspens&atilde;o</label>
+                                        <select id="dias_suspensao" name="dias_suspensao">
+                                            <option value="10">10 dias</option>
+                                            <option value="15">15 dias</option>
+                                            <option value="30">30 dias</option>
+                                            <option value="60">60 dias</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </article>
+
+                            <article class="vc-moderation-card">
+                                <button class="vc-moderation-toggle vc-moderation-danger" type="button" id="abrir-modal-excluir">
+                                    <span>Excluir conta</span>
+                                    <span class="vc-toggle-icon" aria-hidden="true">!</span>
+                                </button>
+                            </article>
+
+                            <aside class="vc-status-pill">
+                                <span>Status atual</span>
+                                <strong><%= estaSuspenso ? 'Suspenso' : 'Ativo' %></strong>
+                                <% if (estaSuspenso && dataSuspensaoTexto) { %>
+                                    <small>at&eacute; <%= dataSuspensaoTexto %></small>
+                                <% } %>
+                            </aside>
+                        </div>
+                    </section>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <dialog id="modal-excluir-conta" class="vc-dialog">
+        <form method="POST" action="/adm/artistas/editar/<%= artista.id %>" id="form-excluir-conta" class="vc-dialog-box">
+            <input type="hidden" name="excluir_conta" value="sim">
+            <input type="hidden" name="confirmacao_exclusao" id="confirmacao_exclusao">
+
+            <h3>Deseja excluir essa conta?</h3>
+            <p>Essa a&ccedil;&atilde;o remove o artista permanentemente.</p>
+
+            <label for="confirmacao-exclusao-texto">Digite <strong>excluirconta</strong> para confirmar</label>
+            <input type="text" id="confirmacao-exclusao-texto" autocomplete="off">
+            <p class="vc-dialog-error" id="erro-confirmacao-exclusao" hidden>voc&ecirc; precisa confirmar a a&ccedil;&atilde;o</p>
+
+            <menu class="vc-dialog-actions">
+                <button type="button" class="vc-btn vc-btn-secondary" id="cancelar-exclusao">Cancelar</button>
+                <button type="button" class="vc-btn vc-btn-danger" id="confirmar-exclusao">Confirmar</button>
+            </menu>
+        </form>
+    </dialog>
+
+    <script>
+        const campoSuspensao = document.getElementById('suspender_conta');
+        const campoDiasSuspensao = document.getElementById('campo-dias-suspensao');
+        const botoesSuspensao = document.querySelectorAll('[data-suspension-option]');
+
+        document.querySelectorAll('[data-moderation-toggle]').forEach((botao) => {
+            const painel = document.getElementById(botao.getAttribute('aria-controls'));
+
+            botao.addEventListener('click', () => {
+                const abrir = painel.hidden;
+                painel.hidden = !abrir;
+                painel.classList.toggle('is-open', abrir);
+                botao.setAttribute('aria-expanded', String(abrir));
+            });
+        });
+
+        function selecionarSuspensao(valor) {
+            campoSuspensao.value = valor;
+            campoDiasSuspensao.hidden = valor !== 'sim';
+
+            botoesSuspensao.forEach((botao) => {
+                botao.classList.toggle('is-selected', botao.dataset.suspensionOption === valor);
+            });
+        }
+
+        botoesSuspensao.forEach((botao) => {
+            botao.addEventListener('click', () => selecionarSuspensao(botao.dataset.suspensionOption));
+        });
+
+        selecionarSuspensao(campoSuspensao.value);
+
+        const modalExcluir = document.getElementById('modal-excluir-conta');
+        const botaoAbrirExclusao = document.getElementById('abrir-modal-excluir');
+        const botaoCancelarExclusao = document.getElementById('cancelar-exclusao');
+        const botaoConfirmarExclusao = document.getElementById('confirmar-exclusao');
+        const formExcluirConta = document.getElementById('form-excluir-conta');
+        const textoConfirmacaoExclusao = document.getElementById('confirmacao-exclusao-texto');
+        const campoConfirmacaoExclusao = document.getElementById('confirmacao_exclusao');
+        const erroConfirmacaoExclusao = document.getElementById('erro-confirmacao-exclusao');
+
+        function abrirDialog(dialog) {
+            if (typeof dialog.showModal === 'function') {
+                dialog.showModal();
+            } else {
+                dialog.setAttribute('open', 'true');
+            }
+        }
+
+        function fecharDialog(dialog) {
+            if (typeof dialog.close === 'function') {
+                dialog.close();
+            } else {
+                dialog.removeAttribute('open');
+            }
+        }
+
+        botaoAbrirExclusao.addEventListener('click', () => {
+            textoConfirmacaoExclusao.value = '';
+            campoConfirmacaoExclusao.value = '';
+            erroConfirmacaoExclusao.hidden = true;
+            abrirDialog(modalExcluir);
+            textoConfirmacaoExclusao.focus();
+        });
+
+        botaoCancelarExclusao.addEventListener('click', () => fecharDialog(modalExcluir));
+
+        botaoConfirmarExclusao.addEventListener('click', () => {
+            const comando = textoConfirmacaoExclusao.value.trim();
+
+            if (comando !== 'excluirconta') {
+                erroConfirmacaoExclusao.hidden = false;
+                textoConfirmacaoExclusao.focus();
+                return;
+            }
+
+            campoConfirmacaoExclusao.value = comando;
+            formExcluirConta.submit();
+        });
+
+        modalExcluir.addEventListener('click', (event) => {
+            if (event.target === modalExcluir) {
+                fecharDialog(modalExcluir);
+            }
+        });
+    </script>
+</body>
+</html>

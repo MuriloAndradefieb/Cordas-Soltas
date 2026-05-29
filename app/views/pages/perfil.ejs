@@ -5,6 +5,28 @@
     const estiloMusical = usuario && (usuario.estiloMusical || usuario.estilo_musical);
     const nomeCompleto = usuario && (usuario.nomeCompleto || usuario.nome_completo);
     const numIntegrantes = usuario && (usuario.numIntegrantes || usuario.num_integrantes);
+    const statusConta = usuario && (usuario.statusConta || usuario.status_conta);
+    const suspensoAte = usuario && (usuario.suspensoAte || usuario.suspenso_ate);
+    const parseDataLocal = (valor) => {
+        if (!valor) return null;
+        if (valor instanceof Date) return valor;
+
+        const texto = String(valor).slice(0, 10);
+        const partes = texto.split('-').map(Number);
+
+        if (partes.length === 3 && partes.every(Number.isFinite)) {
+            return new Date(partes[0], partes[1] - 1, partes[2]);
+        }
+
+        const data = new Date(valor);
+        return Number.isNaN(data.getTime()) ? null : data;
+    };
+    const dataSuspensao = parseDataLocal(suspensoAte);
+    const hojeSuspensao = new Date();
+    hojeSuspensao.setHours(0, 0, 0, 0);
+    const diasSuspensaoRestantes = statusConta === 'suspenso' && dataSuspensao && dataSuspensao >= hojeSuspensao
+        ? Math.max(1, Math.ceil((dataSuspensao - hojeSuspensao) / (1000 * 60 * 60 * 24)))
+        : null;
     const integrantesLabel = {
         solo: 'Solo',
         '2a4': 'De 2 a 4 integrantes',
@@ -38,6 +60,10 @@
 
             <% if (sucesso) { %>
                 <p class="perfil-alerta perfil-alerta-sucesso"><%= sucesso %></p>
+            <% } %>
+
+            <% if (diasSuspensaoRestantes) { %>
+                <p class="perfil-alerta perfil-alerta-suspensao">sua conta foi suspensa por: <%= diasSuspensaoRestantes %> dias</p>
             <% } %>
 
             <figure class="avatar-wrapper" id="avatar-trigger" tabindex="0" role="button" aria-label="Alterar foto de perfil">
