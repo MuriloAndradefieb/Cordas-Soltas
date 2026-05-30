@@ -27,9 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
         cvvInput: $('cvv'), 
 
         // Elementos de Confirmação (Passo 3)
-        productTitleConfirmEl: $('product-title-confirm'),
+        productTitleConfirmEl: $('product-title-confirm') || $('show-title-confirm'),
         totalConfirmEl: $('total-confirm'),
-        productTitlePixEl: $('product-title-pix'),
+        productTitlePixEl: $('product-title-pix') || $('show-title-pix'),
         totalPixEl: $('total-pix'),
     };
 
@@ -235,8 +235,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 ? [Elements.productTitlePixEl, Elements.totalPixEl] 
                 : [Elements.productTitleConfirmEl, Elements.totalConfirmEl];
 
-            titleEl.textContent = title || 'Ingresso';
-            totalEl.textContent = Utils.formatCurrency(total);
+            if (titleEl) titleEl.textContent = title || 'Ingresso';
+            if (totalEl) totalEl.textContent = Utils.formatCurrency(total);
         }
     };
 

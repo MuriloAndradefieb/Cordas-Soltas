@@ -56,6 +56,8 @@
     document.addEventListener("DOMContentLoaded", () => {
     const inputBusca = document.getElementById("input-busca");
     const selectEstilo = document.getElementById("filtro-estilo-select");
+
+    if (!inputBusca || !selectEstilo) return;
     
     // Classes do seu layout dinâmico
     const blocosEstilo = document.querySelectorAll(".bloco-estilo-musical"); 

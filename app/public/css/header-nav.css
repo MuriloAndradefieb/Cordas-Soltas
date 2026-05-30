@@ -19,6 +19,7 @@
 
     /* Barra dourada no topo e na base, igual ao protótipo */
     border-top: 3px solid #F5A623;
+    border-bottom: 2px solid #1a1a1a;
    
 }
 
@@ -88,6 +89,7 @@
     align-items: center;
     width: 36px;
     height: 36px;
+    flex-shrink: 0;
     background-color: #fff;
     color: #1e1e1e;
     border-radius: 50%;
@@ -102,6 +104,8 @@
 }
 
 .cart-icon {
+    display: flex;
+    align-items: center;
     font-size: 1.5rem;
     color: #fff;
     text-decoration: none;
@@ -118,6 +122,25 @@
 .hamburger-button,
 .menu-toggle {
     display: none !important;
+}
+
+.hamburger-button {
+    all: unset;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 26px;
+    height: 22px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.hamburger-button .bar {
+    display: block;
+    width: 100%;
+    height: 2.5px;
+    background-color: #f7f7f7;
+    border-radius: 2px;
+    transition: all 0.3s ease;
 }
 
 /* ── Responsivo: volta ao hamburguer em mobile ────────────────── */

@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pagamento - Cordas Soltas</title>
     
-    <link rel="stylesheet" href="css/style.css"> 
-    <link rel="stylesheet" href="css/pagamento.css"> 
+    <link rel="stylesheet" href="/css/style.css"> 
+    <link rel="stylesheet" href="/css/pagamento.css"> 
     
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="checkout-page">
      <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
      <div vw class="enabled">
     <div vw-access-button class="active"></div>
@@ -24,6 +24,7 @@
   </script>
 <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
  
+    <%- include("../partials/header"); %>
 
     <main class="main-content">
         <article class="checkout-container">
@@ -149,13 +150,13 @@
                     
                     <aside class="summary-box" id="confirmation-details" style="display: none;">
                         <h3>Obrigado pela sua compra!</h3>
-                        <p>Seu ingresso para <span id="show-title-confirm"></span> foi enviado para o seu email.</p>
+                        <p>Seu ingresso para <span id="product-title-confirm"></span> foi enviado para o seu email.</p>
                         <p class="summary-total">Total Pago: <span id="total-confirm">R$ 0,00</span></p>
                     </aside>
 
                     <aside class="summary-box pix-box" id="pix-payment-details" style="display: none;">
                         <h3>✅ Quase lá! Finalize o pagamento via PIX</h3>
-                        <p>Para concluir a compra de <span id="show-title-pix"></span>, escaneie o QR Code ou use o código Copia e Cola abaixo.</p>
+                        <p>Para concluir a compra de <span id="product-title-pix"></span>, escaneie o QR Code ou use o código Copia e Cola abaixo.</p>
                         
                         <section class="qr-code-section" style="text-align: center; margin: 20px 0;">
                             <img src="img/qr-code.jpg" alt="QR Code PIX" style="max-width: 100%; height: auto;">
@@ -186,6 +187,9 @@
         </article>
     </main>
 
-    <script src="js/pagamento.js"></script>
+    <%- include("../partials/menu"); %>
+
+    <script src="/js/script.js"></script>
+    <script src="/js/pagamento.js"></script>
 </body>
 </html>

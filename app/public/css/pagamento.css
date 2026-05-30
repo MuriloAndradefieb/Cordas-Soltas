@@ -1,15 +1,22 @@
-.main-content {
-    background-color: #0d0d0d;
-    min-height: 100vh;
+.checkout-page {
+    background-color: var(--preto, #000000);
+}
+
+.checkout-page .main-content {
+    background-color: var(--bg-main, #121212);
+    min-height: calc(100vh - 80px);
     display: flex;
     justify-content: center;
-    align-items: center;
-    padding: 40px 20px;
+    align-items: flex-start;
+    padding: 48px 20px 64px;
+    max-width: 1440px;
+    margin: 0 auto;
 }
 
 .checkout-container {
-    background-color: #1a1a1a;
-    border-radius: 10px;
+    background-color: var(--card-bg, #1e1e1e);
+    border: 1px solid var(--card-borda, #2a2a2a);
+    border-radius: 8px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
     padding: 30px;
     max-width: 700px;
@@ -21,14 +28,18 @@
 }
 
 .checkout-container h1 {
-    color: #ffcc00;
+    color: var(--ouro, #F9AF11);
+    font-family: 'Bebas Neue', 'Arial Black', sans-serif;
     font-size: 2.5rem;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
     text-align: center;
     margin-bottom: 10px;
 }
 
 .back-link {
-    color: #ffcc00;
+    color: var(--ouro, #F9AF11);
     text-decoration: none;
     font-size: 1rem;
     margin-bottom: 15px;
@@ -36,7 +47,7 @@
 }
 
 .back-link:hover {
-    color: #e0b300;
+    color: var(--ouro-hover, #e6c000);
 }
 
 
@@ -74,13 +85,13 @@
 }
 
 .step-item.active .step-circle {
-    background-color: #ffcc00;
+    background-color: var(--ouro, #F9AF11);
     color: #1a1a1a;
-    border-color: #ffcc00;
+    border-color: var(--ouro, #F9AF11);
 }
 
 .step-item.active p {
-    color: #ffcc00;
+    color: var(--ouro, #F9AF11);
 }
 
 
@@ -96,7 +107,7 @@
 }
 
 .step-item.active:not(:last-child)::after {
-    background-color: #ffcc00;
+    background-color: var(--ouro, #F9AF11);
 }
 
 
@@ -126,7 +137,7 @@
 }
 
 .form-address legend {
-    color: #ffcc00;
+    color: var(--ouro, #F9AF11);
     font-weight: bold;
     padding: 0 10px;
 }
@@ -148,9 +159,9 @@
 }
 
 .form-group input:focus, .form-group select:focus {
-    border-color: #ffcc00;
+    border-color: var(--ouro, #F9AF11);
     outline: none;
-    box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.3);
+    box-shadow: 0 0 0 3px rgba(249, 175, 17, 0.25);
 }
 
 
@@ -180,7 +191,7 @@
 
 
 .buy-button {
-    background-color: #ffcc00;
+    background-color: var(--ouro, #F9AF11);
     color: #1a1a1a;
     padding: 12px 25px;
     border: none;
@@ -192,7 +203,7 @@
 }
 
 .buy-button:hover:not(:disabled) {
-    background-color: #e0b300;
+    background-color: var(--ouro-hover, #e6c000);
 }
 
 .buy-button:disabled {
@@ -228,7 +239,7 @@
 }
 
 .summary-box h3 {
-    color: #ffcc00;
+    color: var(--ouro, #F9AF11);
     margin-top: 0;
     margin-bottom: 10px;
     font-size: 1.4rem;
@@ -252,13 +263,13 @@
 .pix-box img {
     max-width: 250px !important;
     height: auto;
-    border: 5px solid #ffcc00;
+    border: 5px solid var(--ouro, #F9AF11);
     border-radius: 5px;
 }
 
 
 @media (max-width: 600px) {
-    .main-content {
+    .checkout-page .main-content {
         padding: 20px 10px;
         align-items: flex-start; 
     }
@@ -287,21 +298,4 @@
     #back-to-info, #submit-payment {
         grid-column: 1 / -1; 
     }
-}
-
-.header {
-    background-color: #000000;
-    padding: 1rem 5%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 2px solid #5a5a5a;
-}
-
-.logo-link {
-    display: block;
-}
-
-.logo {
-    height: 40px; 
 }
