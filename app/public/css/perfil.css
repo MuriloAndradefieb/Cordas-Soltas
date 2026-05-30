@@ -33,6 +33,11 @@ body {
     background-repeat: repeat;
 }
 
+.perfil-page {
+    background-color: var(--bg-main);
+    background-image: none;
+}
+
 a {
     text-decoration: none;
     color: inherit;

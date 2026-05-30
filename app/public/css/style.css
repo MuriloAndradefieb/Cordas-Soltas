@@ -25,12 +25,14 @@
 
 body {
     font-family: 'Roboto', sans-serif;
-    background-color: var(--preto);
+    background-color: #000;;
     color: var(--texto);
     line-height: 1.5;
     min-height: 100vh;
-    background-image: url('/img/background-black.jpg');
-    background-repeat: repeat;
+}
+
+.index-page {
+    background-color: var(--bg-main);
 }
 
 a {

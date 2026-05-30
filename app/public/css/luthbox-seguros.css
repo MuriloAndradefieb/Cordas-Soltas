@@ -1,20 +1,13 @@
 
 body {
-    background-color: #000;
+    background-color: #121212;
     color: #fff;
     font-family: 'Roboto', sans-serif;
-    
-    
-
-    background-image: url('/img/background-black.jpg'); 
-    background-repeat: no-repeat; 
-    background-size: cover;
-    background-attachment: fixed;
-    background-position: center; 
+    background-image: none;
 }
 
 .seguros-main-content {
-    background-color: transparent; 
+    background-color: #121212; 
     padding: 1rem;
 }
 
