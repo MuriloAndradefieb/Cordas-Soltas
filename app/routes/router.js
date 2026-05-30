@@ -12,12 +12,12 @@ const ShowImageModel = require('../models/ShowImageModel');
 const UsuariosModel = require('../models/Usuariosmodel');
 
 // =========================================================================
-// CONFIGURAÇÃO DO MULTER (UPLOAD EM MEMÓRIA PARA SALVAR NO BANCO)
+// CONFIGURAÇÃO DO MULTER — BANNERS DO ADMIN (limite: 5 MB, só imagens)
 // =========================================================================
 const upload = multer({
     storage: multer.memoryStorage(),
     limits: {
-        fileSize: ShowImageModel.MAX_UPLOAD_BYTES
+        fileSize: ShowImageModel.MAX_UPLOAD_BYTES   // 5 MB
     },
     fileFilter: (req, file, cb) => {
         if (file.mimetype && file.mimetype.startsWith('image/')) {
@@ -25,6 +25,34 @@ const upload = multer({
         }
 
         return cb(new Error('Envie apenas arquivos de imagem.'));
+    }
+});
+
+// =========================================================================
+// CONFIGURAÇÃO DO MULTER — FORMULÁRIO DE SELETIVAS (limite: 200 MB, imagens e vídeos)
+// =========================================================================
+// =========================================================================
+// MULTER — SELETIVAS: 200 MB, aceita imagem e vídeo
+// ATENÇÃO: fieldSize deve ser declarado explicitamente no multer 2.x
+// pois o padrão interno do busboy é 25 MB, o que causa rejeição silenciosa.
+// =========================================================================
+const LIMITE_SELETIVAS_BYTES = 200 * 1024 * 1024; // 200 MB
+
+const uploadSeletivas = multer({
+    storage: multer.memoryStorage(),
+    limits: {
+        fileSize:    LIMITE_SELETIVAS_BYTES, // limite por arquivo
+        fieldSize:   LIMITE_SELETIVAS_BYTES, // FIX multer 2.x: padrão era 25 MB
+        files:       6,                      // 1 vídeo + até 5 fotos
+        parts:       20,
+        fields:      20,
+        headerPairs: 2000
+    },
+    fileFilter: (req, file, cb) => {
+        const tiposPermitidos = ['image/', 'video/'];
+        const permitido = tiposPermitidos.some(tipo => file.mimetype.startsWith(tipo));
+        if (permitido) return cb(null, true);
+        return cb(new Error('Envie apenas arquivos de imagem ou vídeo.'));
     }
 });
 
@@ -37,6 +65,37 @@ function processarUploadBanner(req, res, next) {
         }
 
         return res.status(400).send(err.message || 'Erro ao enviar a imagem do banner.');
+    });
+}
+
+function processarUploadSeletivas(req, res, next) {
+    // Estende o timeout desta requisição para 10 minutos (uploads grandes)
+    req.setTimeout(10 * 60 * 1000);
+    res.setTimeout(10 * 60 * 1000);
+
+    uploadSeletivas.fields([
+        { name: 'clipe_video', maxCount: 1 },
+        { name: 'fotos_banda', maxCount: 5 }
+    ])(req, res, (err) => {
+        if (!err) return next();
+
+        if (err instanceof multer.MulterError) {
+            if (err.code === 'LIMIT_FILE_SIZE') {
+                return res.status(400).send('O arquivo ultrapassa o limite de 200 MB.');
+            }
+            if (err.code === 'LIMIT_FIELD_VALUE') {
+                return res.status(400).send('Um campo do formulário ultrapassa o limite permitido.');
+            }
+            if (err.code === 'LIMIT_FILE_COUNT') {
+                return res.status(400).send('Número máximo de arquivos excedido.');
+            }
+            if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+                return res.status(400).send('Campo de arquivo inesperado: ' + err.field);
+            }
+            return res.status(400).send('Erro no upload: ' + err.message);
+        }
+
+        return res.status(400).send(err.message || 'Erro ao enviar o arquivo.');
     });
 }
 
@@ -89,11 +148,9 @@ function somarDiasDataIso(dias) {
 // =========================================================================
 router.get('/', async (req, res) => {
     try {
-        // Busca todos os shows agendados ordenados por data
         const queryShows = "SELECT * FROM shows ORDER BY data_show ASC";
         const [todosOsShows] = await db.query(queryShows);
 
-        // Agrupa os shows dinamicamente por estilo baseado no cadastro do admin
         const showsAgrupados = todosOsShows.reduce((grupos, show) => {
             const estiloChave = show.estilo ? show.estilo : 'Outro';
             if (!grupos[estiloChave]) {
@@ -103,7 +160,6 @@ router.get('/', async (req, res) => {
             return grupos;
         }, {});
 
-        // Renderiza a página index passando o objeto de grupos real do banco
         return res.render('pages/index', { 
             titulo: 'Página Inicial', 
             usuario: req.session.usuario || null,
@@ -121,33 +177,30 @@ router.get('/', async (req, res) => {
 });
 
 // =========================================================================
-// ROTA: DETALHES DO SHOW (CONECTADA AO BANCO DE DADOS REAL)
+// ROTA: DETALHES DO SHOW
 // =========================================================================
 router.get('/detalhes', async (req, res) => {
     try {
-        const showId = req.query.id; // Captura o ID da URL (?id=X)
+        const showId = req.query.id;
 
         if (!showId) {
-            return res.redirect('/'); // Se não houver ID na URL, joga para a home
+            return res.redirect('/');
         }
 
-        // Faz a busca do show específico criado pelo administrador no banco
         const queryShow = "SELECT * FROM shows WHERE id = ?";
         const [rows] = await db.query(queryShow, [showId]);
 
-        // Caso o ID digitado/enviado não exista no banco de dados
         if (rows.length === 0) {
             return res.status(404).send("Show não encontrado no sistema.");
         }
 
         const showEncontrado = rows[0];
 
-        // Renderiza a página de detalhes passando o show real encontrado
         return res.render('pages/detalhes', { 
             titulo: 'Detalhes', 
             usuario: req.session.usuario || null,
             show: showEncontrado,
-            itensCarrinho: req.session.carrinho || [] // Evita ReferenceError se a view checar o estado do carrinho
+            itensCarrinho: req.session.carrinho || []
         });
 
     } catch (err) {
@@ -157,10 +210,9 @@ router.get('/detalhes', async (req, res) => {
 });
 
 // =========================================================================
-// ROTAS DO FLUXO DO CARRINHO DE COMPRAS (SESSÃO + PERSISTÊNCIA NO BANCO)
+// ROTAS DO CARRINHO
 // =========================================================================
 
-// 1. POST – Adicionar Item ao Carrinho (Banco se logado, Sessão se deslogado)
 router.post('/carrinho/adicionar', async (req, res) => {
     try {
         const { showId, quantidadeInteira, quantidadeMeia } = req.body;
@@ -177,14 +229,12 @@ router.post('/carrinho/adicionar', async (req, res) => {
             return res.status(400).json({ sucesso: false, mensagem: "Selecione pelo menos um ingresso." });
         }
 
-        // Busca os dados do show no banco para garantir consistência
         const [rows] = await db.query("SELECT * FROM shows WHERE id = ?", [showIdNumerico]);
         if (rows.length === 0) {
             return res.status(422).json({ sucesso: false, mensagem: "Show invalido ou inexistente." });
         }
         const showItem = rows[0];
 
-        // SE O USUÁRIO ESTIVER LOGADO -> SALVA E ATUALIZA DIRETO NO BANCO DE DADOS
         if (usuarioLogado) {
             const usuarioId = Number.parseInt(usuarioLogado.id, 10);
             if (!usuarioId) {
@@ -193,16 +243,13 @@ router.post('/carrinho/adicionar', async (req, res) => {
 
             await CarrinhoModel.adicionar(usuarioId, showIdNumerico, CarrinhoModel.TIPOS_INGRESSO.INTEIRA, qtdInteira);
             await CarrinhoModel.adicionar(usuarioId, showIdNumerico, CarrinhoModel.TIPOS_INGRESSO.MEIA, qtdMeia);
-        } 
-        // SE NÃO ESTIVER LOGADO -> MANTÉM NA SESSÃO TEMPORÁRIA
-        else {
+        } else {
             if (!req.session.carrinho) {
                 req.session.carrinho = [];
             }
 
             const dataFormato = showItem.data_show instanceof Date ? showItem.data_show.toLocaleDateString('pt-BR') : showItem.data_show;
 
-            // Processar Ingresso Inteira na Sessão
             if (qtdInteira > 0) {
                 const idItemInteira = `${showIdNumerico}-inteira`;
                 const itemExistenteInteira = req.session.carrinho.find(item => item.cartId === idItemInteira);
@@ -225,7 +272,6 @@ router.post('/carrinho/adicionar', async (req, res) => {
                 }
             }
 
-            // Processar Ingresso Meia na Sessão
             if (qtdMeia > 0) {
                 const idItemMeia = `${showIdNumerico}-meia`;
                 const itemExistenteMeia = req.session.carrinho.find(item => item.cartId === idItemMeia);
@@ -256,16 +302,13 @@ router.post('/carrinho/adicionar', async (req, res) => {
     }
 });
 
-// 2. GET – Visualizar Listagem do Carrinho Dinâmico (Banco ou Sessão)
 router.get('/carrinho', async (req, res) => {
     try {
         let itens = [];
 
-        // Se o usuário estiver logado, faz a busca unificada direto na tabela do banco usando JOIN
         if (req.session.usuario) {
             itens = await CarrinhoModel.listarPorUsuario(req.session.usuario.id);
         } else {
-            // Se não houver login, puxa a listagem temporária da sessão
             itens = req.session.carrinho || [];
         }
 
@@ -280,16 +323,13 @@ router.get('/carrinho', async (req, res) => {
     }
 });
 
-// 3. POST – Remover Item do Carrinho (Trata tanto Banco quanto Sessão)
 router.post('/carrinho/remover/:id', async (req, res) => {
     try {
         const idParaRemover = req.params.id;
 
         if (req.session.usuario) {
-            // Se logado, remove a linha correspondente no Banco de Dados
             await CarrinhoModel.remover(req.session.usuario.id, idParaRemover);
         } else if (req.session.carrinho) {
-            // Se deslogado, remove filtrando o array da sessão
             req.session.carrinho = req.session.carrinho.filter(item => item.cartId !== idParaRemover && item.id !== parseInt(idParaRemover));
         }
         
@@ -301,7 +341,7 @@ router.post('/carrinho/remover/:id', async (req, res) => {
 });
 
 // =========================================================================
-// ROTAS DO ADMINISTRADOR (ACESSO E GERENCIAMENTO)
+// ROTAS DO ADMINISTRADOR
 // =========================================================================
 
 router.get('/adm/acesso-direto', (req, res) => {
@@ -825,12 +865,13 @@ router.post('/adm/ingressos/excluir/:id', async (req, res) => {
 });
 
 // =========================================================================
-// DEMAIS PÁGINAS DO ECOSSISTEMA E MIDDLEWARES
+// DEMAIS PÁGINAS E MIDDLEWARES
 // =========================================================================
 function requireAuth(req, res, next) {
     if (req.session && req.session.usuario) return next();
     return res.redirect('/login');
 }
+
 
 const u = (req) => req.session.usuario || null;
 
@@ -842,13 +883,15 @@ router.get('/regulamento', (req, res) => res.render('pages/regulamento', { titul
 router.get('/sobre', (req, res) => res.render('pages/sobre', { titulo: 'Sobre', usuario: u(req) }));
 router.get('/mensalidade', (req, res) => res.render('pages/mensalidade', { titulo: 'Mensalidade', usuario: u(req) }));
 
-// Aplicação do requireAuth para proteger a tela final de pagamento
 router.get('/pagamento', requireAuth, (req, res) => res.render('pages/pagamento', { titulo: 'Pagamento', usuario: u(req) }));
 
 router.get('/pagamento-luth', (req, res) => res.render('pages/pagamento-luth', { titulo: 'Pagamento Luth', usuario: u(req) }));
 router.get('/pagamento-mensalidade', (req, res) => res.render('pages/pagamento-mensalidade', { titulo: 'Pagamento Mensalidade', usuario: u(req) }));
+
+// Rotas do formulário de seletivas — usando multer de 200 MB
 router.get('/formulario-seletivas', FormularioController.mostrar);
-router.post('/formulario-seletivas', FormularioController.enviar);
+router.post('/formulario-seletivas', processarUploadSeletivas, FormularioController.enviar);
+
 router.get('/cadastro', (req, res) => res.render('pages/cadastro', { titulo: 'Cadastro', usuario: u(req), erro: null, sucesso: null }));
 router.post('/cadastro', AuthController.cadastro);
 router.get('/login', (req, res) => res.render('pages/login', { titulo: 'Login', usuario: null, erro: null }));

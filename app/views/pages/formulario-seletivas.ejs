@@ -173,14 +173,16 @@
                         <input type="file" name="clipe_video"
                                accept="video/*,.mp4,.mov,.avi"
                                id="upload-clipe">
-                        <div class="f-upload-placeholder">
+                        <div class="f-upload-placeholder" id="upload-clipe-placeholder">
                             <div class="f-upload-icone">&#8681;</div>
                             <span class="f-upload-txt">Adicionar arquivo de vídeo</span>
                         </div>
+                        <div class="f-video-preview-wrap" id="upload-clipe-preview" hidden></div>
+                        <div class="f-upload-acoes" id="upload-clipe-acoes" hidden>
+                            <button type="button" class="f-upload-btn-acao" id="btn-trocar-video">Trocar v&iacute;deo</button>
+                            <button type="button" class="f-upload-btn-acao remover" id="btn-remover-video">Remover</button>
+                        </div>
                     </div>
-                    <!-- input hidden para re-seleção após preview -->
-                    <input type="file" name="clipe_video" accept="video/*,.mp4,.mov,.avi"
-                           id="upload-clipe-hidden" class="f-upload-hidden">
                 </fieldset>
 
                 <!-- ── Upload: Fotos da banda ───────────────────────────── -->
@@ -198,14 +200,16 @@
                                accept="image/*"
                                multiple
                                id="upload-fotos">
-                        <div class="f-upload-placeholder">
+                        <div class="f-upload-placeholder" id="upload-fotos-placeholder">
                             <div class="f-upload-icone">&#8681;</div>
                             <span class="f-upload-txt">Adicionar fotos (até 5)</span>
                         </div>
+                        <div class="f-upload-previews" id="upload-fotos-preview" hidden></div>
+                        <div class="f-upload-acoes" id="upload-fotos-acoes" hidden>
+                            <button type="button" class="f-upload-btn-acao" id="btn-add-fotos">Adicionar mais</button>
+                            <button type="button" class="f-upload-btn-acao remover" id="btn-limpar-fotos">Remover todas</button>
+                        </div>
                     </div>
-                    <!-- input hidden para re-seleção -->
-                    <input type="file" name="fotos_banda" accept="image/*" multiple
-                           id="upload-fotos-hidden" class="f-upload-hidden">
                 </fieldset>
 
             </section>
@@ -232,6 +236,7 @@
 
     // ── VÍDEO ─────────────────────────────────────────────────────────
     (function initVideoUpload() {
+        return;
         const area        = document.getElementById('upload-clipe-area');
         const inputMain   = document.getElementById('upload-clipe');
         const inputHidden = document.getElementById('upload-clipe-hidden');
@@ -308,6 +313,7 @@
 
     // ── FOTOS ─────────────────────────────────────────────────────────
     (function initFotosUpload() {
+        return;
         const area        = document.getElementById('upload-fotos-area');
         const inputMain   = document.getElementById('upload-fotos');
         const inputHidden = document.getElementById('upload-fotos-hidden');
@@ -415,6 +421,163 @@
 
 
     // ══════════════════════════════════════════════════════════════════
+    (function initVideoUploadCorrigido() {
+        const area = document.getElementById('upload-clipe-area');
+        const input = document.getElementById('upload-clipe');
+        const placeholder = document.getElementById('upload-clipe-placeholder');
+        const preview = document.getElementById('upload-clipe-preview');
+        const actions = document.getElementById('upload-clipe-acoes');
+        const btnTrocar = document.getElementById('btn-trocar-video');
+        const btnRemover = document.getElementById('btn-remover-video');
+        let videoUrl = null;
+
+        if (!area || !input || !placeholder || !preview || !actions) return;
+
+        function limparVideoUrl() {
+            if (videoUrl) {
+                URL.revokeObjectURL(videoUrl);
+                videoUrl = null;
+            }
+        }
+
+        function resetVideo() {
+            limparVideoUrl();
+            input.value = '';
+            preview.innerHTML = '';
+            preview.hidden = true;
+            actions.hidden = true;
+            placeholder.hidden = false;
+            area.classList.remove('tem-arquivo');
+        }
+
+        function renderVideo(file) {
+            limparVideoUrl();
+            videoUrl = URL.createObjectURL(file);
+            preview.innerHTML = `
+                <video src="${videoUrl}" controls preload="metadata"></video>
+                <div class="f-video-meta">
+                    <span class="f-video-meta-icone">Video</span>
+                    <div class="f-video-meta-info">
+                        <div class="f-video-meta-nome">${file.name}</div>
+                        <div class="f-video-meta-tamanho">${fmt(file.size)}</div>
+                    </div>
+                </div>
+            `;
+            placeholder.hidden = true;
+            preview.hidden = false;
+            actions.hidden = false;
+            area.classList.add('tem-arquivo');
+        }
+
+        input.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (!file) {
+                resetVideo();
+                return;
+            }
+            renderVideo(file);
+        });
+
+        btnTrocar.addEventListener('click', () => input.click());
+        btnRemover.addEventListener('click', resetVideo);
+    })();
+
+    (function initFotosUploadCorrigido() {
+        const area = document.getElementById('upload-fotos-area');
+        const input = document.getElementById('upload-fotos');
+        const placeholder = document.getElementById('upload-fotos-placeholder');
+        const preview = document.getElementById('upload-fotos-preview');
+        const actions = document.getElementById('upload-fotos-acoes');
+        const btnAdd = document.getElementById('btn-add-fotos');
+        const btnLimpar = document.getElementById('btn-limpar-fotos');
+        const MAX_FOTOS = 5;
+        let fotosAtivas = [];
+
+        if (!area || !input || !placeholder || !preview || !actions) return;
+
+        function sincronizarInput() {
+            const transfer = new DataTransfer();
+            fotosAtivas.slice(0, MAX_FOTOS).forEach((item) => transfer.items.add(item.file));
+            input.files = transfer.files;
+        }
+
+        function limparFotoUrl(item) {
+            if (item && item.url) {
+                URL.revokeObjectURL(item.url);
+            }
+        }
+
+        function resetFotos() {
+            fotosAtivas.forEach(limparFotoUrl);
+            fotosAtivas = [];
+            input.value = '';
+            preview.innerHTML = '';
+            preview.hidden = true;
+            actions.hidden = true;
+            placeholder.hidden = false;
+            area.classList.remove('tem-arquivo');
+            sincronizarInput();
+        }
+
+        function renderFotos() {
+            sincronizarInput();
+
+            if (fotosAtivas.length === 0) {
+                resetFotos();
+                return;
+            }
+
+            const fotosHtml = fotosAtivas.map((item, idx) => `
+                <div class="f-preview-item" data-idx="${idx}">
+                    <img class="f-preview-img" src="${item.url}" alt="${item.file.name}">
+                    <div class="f-preview-overlay">
+                        <div class="f-preview-nome">${item.file.name}</div>
+                        <div class="f-preview-tamanho">${fmt(item.file.size)}</div>
+                    </div>
+                    <button type="button" class="f-preview-remover" data-idx="${idx}" title="Remover">x</button>
+                </div>
+            `).join('');
+
+            preview.innerHTML = fotosHtml;
+            preview.hidden = false;
+            actions.hidden = false;
+            placeholder.hidden = true;
+            area.classList.add('tem-arquivo');
+            btnAdd.hidden = fotosAtivas.length >= MAX_FOTOS;
+
+            preview.querySelectorAll('.f-preview-remover').forEach((button) => {
+                button.addEventListener('click', () => {
+                    const idx = Number.parseInt(button.dataset.idx, 10);
+                    limparFotoUrl(fotosAtivas[idx]);
+                    fotosAtivas.splice(idx, 1);
+                    renderFotos();
+                });
+            });
+        }
+
+        input.addEventListener('change', (event) => {
+            const novosArquivos = Array.from(event.target.files || []);
+            const vagas = MAX_FOTOS - fotosAtivas.length;
+            const selecionados = novosArquivos.slice(0, vagas);
+
+            selecionados.forEach((file) => {
+                fotosAtivas.push({
+                    file,
+                    url: URL.createObjectURL(file)
+                });
+            });
+
+            renderFotos();
+        });
+
+        btnAdd.addEventListener('click', () => {
+            input.value = '';
+            input.click();
+        });
+
+        btnLimpar.addEventListener('click', resetFotos);
+    })();
+
     //  MÁSCARAS
     // ══════════════════════════════════════════════════════════════════
 

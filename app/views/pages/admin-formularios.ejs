@@ -1,0 +1,78 @@
+<%
+    const lista = Array.isArray(formularios) ? formularios : [];
+%>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formul&aacute;rios - Cordas Soltas</title>
+    <link rel="stylesheet" href="/css/admin-dashboard.css">
+</head>
+<body class="admin-formularios-page">
+
+    <hr class="top-line">
+
+    <header class="main-header">
+        <img src="/img/LOGO ALTERNATIVA CORDAS SOLTAS SITE.png" width="50px" alt="Logo Cordas Soltas" class="logo">
+    </header>
+
+    <section class="app-container">
+        <nav class="sidebar-nav">
+            <ul>
+                <li onclick="window.location.href='/adm/cadastro'"><img src="/img/perfil-icon.png" width="10px" alt=""> Cadastro</li>
+                <li onclick="window.location.href='/adm/ingressos'"><img src="/img/ingressos-icon.png" width="10px" alt=""> Ingressos</li>
+                <li><img src="/img/luthbox-icon.png" width="10px" alt=""> Luthbox</li>
+                <li class="active" onclick="window.location.href='/adm/formularios'"><img src="/img/formulario-icon.png" width="10px" alt=""> Formul&aacute;rios</li>
+            </ul>
+        </nav>
+
+        <main class="content-area">
+            <header class="sub-header">
+                <span class="title">FORMUL&Aacute;RIOS</span>
+            </header>
+
+            <section class="search-container">
+                <button class="btn-search" type="button" aria-label="Buscar"><img src="/img/lupa.png" width="20px" alt=""></button>
+            </section>
+
+            <section class="table-container">
+                <table class="adm-table admin-form-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 45%;">E-MAIL</th>
+                            <th style="width: 35%;">BANDA</th>
+                            <th style="width: 20%;">A&Ccedil;&Otilde;ES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (lista.length > 0) { %>
+                            <% lista.forEach(function(formulario) { %>
+                                <tr>
+                                    <td><span class="email-link"><%= formulario.email_contato %></span></td>
+                                    <td><%= formulario.nome_banda %></td>
+                                    <td>
+                                        <button class="btn-action" type="button" data-edit-url="/adm/formularios/<%= formulario.id %>" aria-label="Ver formulario">
+                                            <img src="/img/confg.png" width="15px" alt="">
+                                        </button>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="3" class="admin-form-empty">Nenhum formul&aacute;rio enviado.</td>
+                            </tr>
+                        <% } %>
+
+                        <tr class="empty-row"><td></td><td></td><td></td></tr>
+                        <tr class="empty-row"><td></td><td></td><td></td></tr>
+                        <tr class="empty-row"><td></td><td></td><td></td></tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </section>
+
+    <script src="/js/admin-dashboard.js"></script>
+</body>
+</html>

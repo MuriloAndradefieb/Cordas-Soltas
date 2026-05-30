@@ -1,5 +1,27 @@
 const FormularioModel = require('../models/formularioModel');
 
+function montarMidiaFormulario(req) {
+    const clipe = req.files && req.files.clipe_video
+        ? req.files.clipe_video[0]
+        : null;
+
+    const fotos = req.files && req.files.fotos_banda
+        ? req.files.fotos_banda
+        : [];
+
+    const fotosBanda = fotos.map((foto) => ({
+        url: `/uploads/formularios/${foto.filename}`,
+        nome: foto.originalname,
+        tipo: foto.mimetype
+    }));
+
+    return {
+        clipeVideoUrl: clipe ? `/uploads/formularios/${clipe.filename}` : null,
+        clipeVideoNome: clipe ? clipe.originalname : null,
+        fotosBandaJson: fotosBanda.length ? JSON.stringify(fotosBanda) : null
+    };
+}
+
 const FormularioController = {
 
     // GET /formulario-seletivas
@@ -49,6 +71,8 @@ const FormularioController = {
         }
 
         try {
+            const midia = montarMidiaFormulario(req);
+
             await FormularioModel.salvar({
                 nomeCompleto:   nome_completo,
                 emailContato:   email_contato,
@@ -58,7 +82,8 @@ const FormularioController = {
                 estiloMusical:  estilo_musical,
                 numIntegrantes: num_integrantes,
                 publicoAlvo:    publico_alvo,
-                redesSociais:   redes_sociais
+                redesSociais:   redes_sociais,
+                ...midia
             });
 
             return res.render('pages/formulario-seletivas', {
@@ -76,6 +101,31 @@ const FormularioController = {
                 erro:    'Erro interno ao enviar inscrição. Tente novamente.',
                 sucesso: null
             });
+        }
+    },
+
+    async listarAdmin(req, res) {
+        try {
+            const formularios = await FormularioModel.listarTodos();
+            return res.render('pages/admin-formularios', { formularios });
+        } catch (error) {
+            console.error('Erro ao listar formularios:', error);
+            return res.status(500).send('Erro ao carregar formularios.');
+        }
+    },
+
+    async detalharAdmin(req, res) {
+        try {
+            const formulario = await FormularioModel.buscarPorId(req.params.id);
+
+            if (!formulario) {
+                return res.status(404).send('Formulario nao encontrado.');
+            }
+
+            return res.render('pages/admin-formulario-detalhes', { formulario });
+        } catch (error) {
+            console.error('Erro ao carregar formulario:', error);
+            return res.status(500).send('Erro ao carregar formulario.');
         }
     }
 };

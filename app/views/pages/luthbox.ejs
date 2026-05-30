@@ -7,9 +7,169 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/luthbox.css">
     <link href="https://fonts.googleapis.com/css2?family=Odibee+Sans&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        .luth-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.82);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 9000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .luth-modal-overlay.ativo {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .luth-modal-box {
+            background: #111111;
+            border: 1px solid #2a2a2a;
+            border-radius: 14px;
+            padding: 40px 36px;
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 0 60px rgba(249, 175, 17, 0.08), 0 24px 48px rgba(0,0,0,0.8);
+            transform: translateY(20px) scale(0.97);
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .luth-modal-overlay.ativo .luth-modal-box {
+            transform: translateY(0) scale(1);
+        }
+        .luth-modal-lock {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a1a1a, #222);
+            border: 2px solid #F9AF11;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 22px;
+            box-shadow: 0 0 24px rgba(249, 175, 17, 0.2);
+        }
+        .luth-modal-lock svg {
+            width: 28px;
+            height: 28px;
+            fill: #F9AF11;
+        }
+        .luth-modal-divider {
+            width: 48px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #F9AF11, transparent);
+            margin: 0 auto 20px;
+        }
+        .luth-modal-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(249, 175, 17, 0.1);
+            border: 1px solid rgba(249, 175, 17, 0.35);
+            color: #F9AF11;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 5px 14px;
+            border-radius: 100px;
+            margin-bottom: 18px;
+        }
+        .luth-modal-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #F9AF11;
+            box-shadow: 0 0 6px #F9AF11;
+        }
+        .luth-modal-titulo {
+            font-family: 'Odibee Sans', sans-serif;
+            font-size: 1.9rem;
+            font-weight: 400;
+            color: #ffffff;
+            line-height: 1.1;
+            margin-bottom: 14px;
+            text-transform: lowercase;
+        }
+        .luth-modal-texto {
+            font-size: 0.92rem;
+            color: #888;
+            line-height: 1.6;
+            margin-bottom: 28px;
+        }
+        .luth-modal-texto strong {
+            color: #F9AF11;
+            font-weight: 700;
+        }
+        .luth-modal-acoes {
+            display: flex;
+            gap: 10px;
+            flex-direction: column;
+        }
+        .luth-modal-btn-login {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            background: #F9AF11;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            padding: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.2s ease, transform 0.15s ease;
+        }
+        .luth-modal-btn-login:hover {
+            background: #e6a000;
+            transform: translateY(-1px);
+        }
+        .luth-modal-btn-fechar {
+            width: 100%;
+            background: transparent;
+            color: #666;
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.88rem;
+            font-weight: 500;
+            padding: 12px;
+            cursor: pointer;
+            transition: border-color 0.2s, color 0.2s;
+        }
+        .luth-modal-btn-fechar:hover {
+            border-color: #444;
+            color: #aaa;
+        }
+        .luth-modal-hint {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #1e1e1e;
+            font-size: 0.78rem;
+            color: #555;
+            line-height: 1.5;
+        }
+        .luth-modal-hint a {
+            color: #F9AF11;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .luth-modal-hint a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
     <div vw class="enabled">
         <div vw-access-button class="active"></div>
         <div vw-plugin-wrapper>
@@ -18,19 +178,16 @@
     </div>
     <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
     <script>new window.VLibras.Widget('https://vlibras.gov.br/app');</script>
-    <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
 
     <%- include("../partials/header"); %>
 
     <main class="luthbox-main-content">
         <section class="luthbox-container">
 
-            <!-- ── 1. TÍTULO ──────────────────────────────────────── -->
             <header class="luthbox-header">
                 <h1>luthbox</h1>
             </header>
 
-            <!-- ── 2. BLOCO: IMAGEM ESQUERDA + TEXTO DIREITA ─────── -->
             <section class="luthbox-bloco-intro">
                 <figure class="bloco-imagem">
                     <img
@@ -43,7 +200,6 @@
                 </article>
             </section>
 
-            <!-- ── 3. BLOCO INFERIOR: IMAGEM ALINHADA + CTA AO LADO ── -->
             <section class="luthbox-bloco-cta">
                 <figure class="bloco-imagem">
                     <img
@@ -58,7 +214,6 @@
                         <span class="btn-icone"><img src="img/assinatura-icon.png" width="40px"></span>
                         <span>PLANOS</span>
                     </a>
-                    <div id="error-message" class="error-message"></div>
                 </div>
             </section>
 
@@ -73,13 +228,107 @@
 
     <%- include("../partials/menu"); %>
 
-    <!-- Dados da sessão injetados para o JS do cliente -->
+    <!-- MODAL DE ACESSO BLOQUEADO -->
+    <div id="modal-acesso-luth" class="luth-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-luth-titulo">
+        <div class="luth-modal-box">
+            <div class="luth-modal-lock" aria-hidden="true">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 10h-1V7A5 5 0 0 0 7 7v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2zm-6 7a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm3-7H9V7a3 3 0 1 1 6 0v3z"/>
+                </svg>
+            </div>
+            <span class="luth-modal-badge">Acesso Restrito</span>
+            <div class="luth-modal-divider"></div>
+            <h2 class="luth-modal-titulo" id="modal-luth-titulo">conteúdo exclusivo</h2>
+            <p class="luth-modal-texto" id="modal-luth-texto">
+                Apenas contas <strong>Artistas</strong> podem acessar o conteúdo da Luthbox.
+            </p>
+            <div class="luth-modal-acoes" id="modal-luth-acoes"></div>
+            <p class="luth-modal-hint" id="modal-luth-hint">
+                Já tem conta? <a href="/login">Faça login</a> com sua conta Artista.<br>
+                Quer ser um artista? Acesse seu <a href="/perfil">perfil</a> e altere o tipo de conta.
+            </p>
+        </div>
+    </div>
+
     <script>
-        const usuarioLogado = '<% usuario ? true : false %>';
-        const usuarioRole   = '<%- usuario ? usuario.role : "" %>';
+        const usuarioLogado = <%= usuario ? 'true' : 'false' %>;
+        const usuarioRole   = '<%= usuario ? usuario.role : "" %>';
+
+        const modalOverlay = document.getElementById('modal-acesso-luth');
+        const modalAcoes   = document.getElementById('modal-luth-acoes');
+        const modalTexto   = document.getElementById('modal-luth-texto');
+        const modalHint    = document.getElementById('modal-luth-hint');
+        const btnPlanos    = document.getElementById('buy-luthbox-btn');
+
+        function abrirModalBloqueio(tipo) {
+            modalAcoes.innerHTML = '';
+
+            if (tipo === 'deslogado') {
+                modalTexto.innerHTML = 'Você precisa estar logado com uma conta <strong>Artista</strong> para acessar a Luthbox.';
+                modalHint.innerHTML  = 'Não tem conta? <a href="/cadastro">Cadastre-se</a> como Artista gratuitamente.';
+                modalAcoes.innerHTML = `
+                    <a href="/login" class="luth-modal-btn-login">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M11 7L9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5-5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8v14z"/>
+                        </svg>
+                        Fazer Login
+                    </a>
+                    <button type="button" class="luth-modal-btn-fechar" id="btn-fechar-luth">Agora não</button>
+                `;
+            } else {
+                modalTexto.innerHTML = 'Apenas contas <strong>Artistas</strong> podem acessar o conteúdo da Luthbox.<br>Crie ou altere sua conta para continuar.';
+                modalHint.innerHTML  = 'Quer ser um artista? Acesse seu <a href="/perfil">perfil</a> e altere o tipo de conta.';
+                modalAcoes.innerHTML = `
+                    <a href="/perfil" class="luth-modal-btn-login">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v2h20v-2c0-3.3-6.7-5-10-5z"/>
+                        </svg>
+                        Alterar Conta para Artista
+                    </a>
+                    <button type="button" class="luth-modal-btn-fechar" id="btn-fechar-luth">Fechar</button>
+                `;
+            }
+
+            document.getElementById('btn-fechar-luth').addEventListener('click', fecharModal);
+
+            modalOverlay.classList.add('ativo');
+            document.body.style.overflow = 'hidden';
+            modalOverlay.addEventListener('click', fecharAoClicarFora);
+            document.addEventListener('keydown', fecharComEsc);
+        }
+
+        function fecharModal() {
+            modalOverlay.classList.remove('ativo');
+            document.body.style.overflow = '';
+            modalOverlay.removeEventListener('click', fecharAoClicarFora);
+            document.removeEventListener('keydown', fecharComEsc);
+        }
+
+        function fecharAoClicarFora(e) {
+            if (e.target === modalOverlay) fecharModal();
+        }
+
+        function fecharComEsc(e) {
+            if (e.key === 'Escape') fecharModal();
+        }
+
+        btnPlanos.addEventListener('click', (e) => {
+            e.preventDefault();
+
+            if (!usuarioLogado) {
+                abrirModalBloqueio('deslogado');
+                return;
+            }
+
+            if (usuarioRole !== 'artista') {
+                abrirModalBloqueio('visitante');
+                return;
+            }
+
+            window.location.href = '/luthbox-seguros';
+        });
     </script>
 
     <script src="js/script.js"></script>
-    <script src="js/luthbox.js"></script>
 </body>
 </html>

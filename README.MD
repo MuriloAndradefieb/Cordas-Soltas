@@ -22,3 +22,5 @@ npm install bcrypt
 
 npm install multer
 
+taskkill /f /im node.exe (para fechar as conexões simultaneas do banco de dados)
+

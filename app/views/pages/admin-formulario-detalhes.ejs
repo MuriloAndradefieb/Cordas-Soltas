@@ -1,0 +1,159 @@
+<%
+    const f = formulario || {};
+    const fotos = Array.isArray(f.fotos_banda) ? f.fotos_banda : [];
+    const integrantes = {
+        solo: 'Artista solo',
+        '2a4': '2 a 4 integrantes',
+        mais4: 'Mais de 4 integrantes'
+    };
+
+    const mostrar = (valor, padrao = 'Nao informado') => {
+        if (valor === null || valor === undefined || valor === '') return padrao;
+        return valor;
+    };
+
+    const dataEnvio = f.enviado_em
+        ? new Date(f.enviado_em).toLocaleString('pt-BR')
+        : 'Nao informado';
+%>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formul&aacute;rio &gt; Detalhes - Cordas Soltas</title>
+    <link rel="stylesheet" href="/css/admin-dashboard.css">
+</head>
+<body class="admin-formulario-detalhe-page">
+
+    <hr class="top-line">
+
+    <header class="main-header">
+        <img src="/img/LOGO ALTERNATIVA CORDAS SOLTAS SITE.png" width="50px" alt="Logo Cordas Soltas" class="logo">
+    </header>
+
+    <section class="app-container">
+        <nav class="sidebar-nav">
+            <ul>
+                <li onclick="window.location.href='/adm/cadastro'"><img src="/img/perfil-icon.png" width="10px" alt=""> Cadastro</li>
+                <li onclick="window.location.href='/adm/ingressos'"><img src="/img/ingressos-icon.png" width="10px" alt=""> Ingressos</li>
+                <li><img src="/img/luthbox-icon.png" width="10px" alt=""> Luthbox</li>
+                <li class="active" onclick="window.location.href='/adm/formularios'"><img src="/img/formulario-icon.png" width="10px" alt=""> Formul&aacute;rios</li>
+            </ul>
+        </nav>
+
+        <main class="content-area">
+            <header class="sub-header">
+                <span class="title">FORMUL&Aacute;RIOS &gt; DETALHES</span>
+            </header>
+
+            <section class="form-detail-actions">
+                <button type="button" class="btn-topo-cancela" onclick="window.location.href='/adm/formularios'">
+                    <img src="/img/x-icon.png" width="18px" alt=""> Cancelar
+                </button>
+            </section>
+
+            <article class="form-detail-card">
+                <fieldset class="form-detail-section">
+                    <legend>Dados do Respons&aacute;vel</legend>
+
+                    <div class="form-detail-grid">
+                        <div class="form-readonly-field">
+                            <span>Nome completo</span>
+                            <p><%= mostrar(f.nome_completo) %></p>
+                        </div>
+
+                        <div class="form-readonly-field">
+                            <span>E-mail</span>
+                            <p><%= mostrar(f.email_contato) %></p>
+                        </div>
+
+                        <div class="form-readonly-field">
+                            <span>CPF</span>
+                            <p><%= mostrar(f.cpf) %></p>
+                        </div>
+
+                        <div class="form-readonly-field">
+                            <span>RG</span>
+                            <p><%= mostrar(f.rg) %></p>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="form-detail-section">
+                    <legend>Perfil da Banda/Artista</legend>
+
+                    <div class="form-detail-grid">
+                        <div class="form-readonly-field">
+                            <span>Banda/artista</span>
+                            <p><%= mostrar(f.nome_banda) %></p>
+                        </div>
+
+                        <div class="form-readonly-field">
+                            <span>Estilo musical</span>
+                            <p><%= mostrar(f.estilo_musical) %></p>
+                        </div>
+
+                        <div class="form-readonly-field">
+                            <span>Integrantes</span>
+                            <p><%= integrantes[f.num_integrantes] || mostrar(f.num_integrantes) %></p>
+                        </div>
+
+                        <div class="form-readonly-field">
+                            <span>Enviado em</span>
+                            <p><%= dataEnvio %></p>
+                        </div>
+
+                        <div class="form-readonly-field form-readonly-field-wide">
+                            <span>P&uacute;blico-alvo</span>
+                            <p><%= mostrar(f.publico_alvo) %></p>
+                        </div>
+
+                        <div class="form-readonly-field form-readonly-field-wide">
+                            <span>Redes sociais</span>
+                            <% if (f.redes_sociais) { %>
+                                <p><a href="<%= f.redes_sociais %>" target="_blank" rel="noopener noreferrer"><%= f.redes_sociais %></a></p>
+                            <% } else { %>
+                                <p>Nao informado</p>
+                            <% } %>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="form-detail-section">
+                    <legend>V&iacute;deos</legend>
+
+                    <% if (f.clipe_video_url) { %>
+                        <section class="form-media-block">
+                            <h3>Clipe ou lyric video</h3>
+                            <video src="<%= f.clipe_video_url %>" controls preload="metadata"></video>
+                            <a href="<%= f.clipe_video_url %>" target="_blank" rel="noopener noreferrer"><%= mostrar(f.clipe_video_nome, 'Abrir video') %></a>
+                        </section>
+                    <% } else { %>
+                        <p class="form-media-empty">Nenhum v&iacute;deo foi enviado neste formul&aacute;rio.</p>
+                    <% } %>
+                </fieldset>
+
+                <fieldset class="form-detail-section">
+                    <legend>Fotos</legend>
+
+                    <% if (fotos.length > 0) { %>
+                        <section class="form-media-block">
+                            <h3>Fotos da banda</h3>
+                            <div class="form-photo-grid">
+                                <% fotos.forEach(function(foto) { %>
+                                    <a href="<%= foto.url %>" target="_blank" rel="noopener noreferrer">
+                                        <img src="<%= foto.url %>" alt="<%= foto.nome || 'Foto enviada' %>">
+                                    </a>
+                                <% }); %>
+                            </div>
+                        </section>
+                    <% } else { %>
+                        <p class="form-media-empty">Nenhuma foto foi enviada neste formul&aacute;rio.</p>
+                    <% } %>
+                </fieldset>
+            </article>
+        </main>
+    </section>
+</body>
+</html>
