@@ -96,6 +96,9 @@ CREATE TABLE IF NOT EXISTS formulario_seletivas (
     num_integrantes  ENUM('solo','2a4','mais4') NOT NULL,
     publico_alvo     TEXT,
     redes_sociais    VARCHAR(255),
+    clipe_video_url  VARCHAR(255),
+    clipe_video_nome VARCHAR(255),
+    fotos_banda_json TEXT,
 
     -- Status e data
     status           ENUM('pendente','aprovado','reprovado') DEFAULT 'pendente',
