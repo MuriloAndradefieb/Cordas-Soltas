@@ -124,3 +124,27 @@ CREATE TABLE IF NOT EXISTS carrinho (
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
     FOREIGN KEY (show_id) REFERENCES shows(id) ON DELETE CASCADE
 );
+-- ============================================================
+--  Migração: tabela de pedidos confirmados
+--  Execute uma única vez no banco cordassoltas
+-- ============================================================
+
+
+CREATE TABLE IF NOT EXISTS pedidos (
+    id              INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id      INT          NOT NULL,
+    show_id         INT          NOT NULL,
+    tipo_ingresso   VARCHAR(50)  NOT NULL,              -- 'Pista Inteira' | 'Pista Meia-Entrada'
+    quantidade      INT          NOT NULL DEFAULT 1,
+    preco_unitario  DECIMAL(10,2) NOT NULL,
+    forma_pagamento VARCHAR(30)  DEFAULT NULL,          -- 'cartao' | 'pix' | 'boleto'
+    confirmado_em   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+
+    INDEX idx_pedidos_usuario (usuario_id),
+    INDEX idx_pedidos_show    (show_id),
+
+    CONSTRAINT fk_pedidos_usuario
+        FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    CONSTRAINT fk_pedidos_show
+        FOREIGN KEY (show_id)    REFERENCES shows(id)    ON DELETE CASCADE
+);

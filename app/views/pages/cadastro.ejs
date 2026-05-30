@@ -4,74 +4,61 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro - Cordas Soltas</title>
-    <link rel="stylesheet" href="css/perfil.css">
-    <link rel="stylesheet" href="css/login-cadastro.css">
+    <link rel="stylesheet" href="/css/perfil.css">
+    <link rel="stylesheet" href="/css/login-cadastro.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;0,700;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <div vw class="enabled">
-        <div vw-access-button class="active"></div>
-        <div vw-plugin-wrapper>
-            <div class="vw-plugin-top-wrapper"></div>
-        </div>
-    </div>
-    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
-    <script>new window.VLibras.Widget('https://vlibras.gov.br/app');</script>
 
     <a href="/" class="lc-voltar" aria-label="Voltar para a página inicial">&#8592; Voltar</a>
 
-    <div class="lc-container">
-        <div class="lc-card">
-            
-            <div class="lc-logo-container">
-                <svg class="lc-logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M9 18V5l12-2v13" />
-                    <circle cx="6" cy="18" r="3" />
-                    <circle cx="18" cy="16" r="3" />
-                </svg>
-                <span class="lc-logo-text">CORDAS<br>SOLTAS</span>
-            </div>
+    <main class="lc-container">
+        <article class="lc-card">
 
-            <div class="lc-header-intro">
+            <section class="lc-header-intro">
                 <p class="lc-sub-intro">Cadastro</p>
                 <h1 class="lc-titulo-seja">Seja bem vindo</h1>
                 <p class="lc-desc-intro">Crie sua conta pra acessar nosso site</p>
-            </div>
+            </section>
 
-            <div class="lc-tab-container">
-                <div class="lc-tab-toggle" id="tab-toggle-bg"></div>
+            <nav class="lc-tab-container" aria-label="Tipo de cadastro">
+                <span class="lc-tab-toggle" id="tab-toggle-bg"></span>
                 <button type="button" class="lc-tab-btn active" id="btn-tab-visitante">Visitante</button>
                 <button type="button" class="lc-tab-btn" id="btn-tab-artista">Artista</button>
-            </div>
+            </nav>
 
             <% if (typeof erro !== 'undefined' && erro) { %>
-                <div class="lc-aviso erro">
+                <section class="lc-aviso erro" role="alert">
                     <span class="lc-aviso-icone">⚠️</span>
                     <span><%= erro %></span>
-                </div>
+                </section>
             <% } %>
 
             <% if (typeof sucesso !== 'undefined' && sucesso) { %>
-                <div class="lc-aviso sucesso">
+                <section class="lc-aviso sucesso" role="alert">
                     <span class="lc-aviso-icone">✅</span>
                     <span><%= sucesso %> <a href="/login">Clique aqui para entrar</a></span>
-                </div>
+                </section>
             <% } %>
 
             <form id="cadastro-form" method="POST" action="/cadastro" novalidate class="lc-form">
                 
                 <input type="hidden" id="role-input" name="role" value="visitante">
 
-                <div id="dynamic-fields-container">
-                    </div>
+                <fieldset id="dynamic-fields-container" style="border: none; padding: 0; margin: 0;">
+                    </fieldset>
+
+                <p class="lc-login-link-container" style="text-align: center; margin-top: 15px; margin-bottom: 15px; font-size: 14px; color: #fff;">
+                    Já tem uma conta? <a href="/login" style="color: #ff9f43; text-decoration: none; font-weight: 500;">Faça Login</a>
+                </p>
 
                 <button type="submit" class="lc-btn-principal">Cadastrar</button>
             </form>
 
-        </div>
-    </div>
+        </article>
+    </main>
 
-    <script src="js/cadastro.js"></script>
+    <script src="/js/cadastro.js"></script>
 </body>
 </html>

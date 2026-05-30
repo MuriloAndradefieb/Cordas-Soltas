@@ -8,6 +8,7 @@ const multer            = require('multer');
 
 const db = require('../../config/pool_conexoes');
 const CarrinhoModel = require('../models/CarrinhoModel');
+const PedidosModel  = require('../models/PedidosModel');   // ← NOVO
 const ShowImageModel = require('../models/ShowImageModel');
 const UsuariosModel = require('../models/Usuariosmodel');
 
@@ -17,33 +18,27 @@ const UsuariosModel = require('../models/Usuariosmodel');
 const upload = multer({
     storage: multer.memoryStorage(),
     limits: {
-        fileSize: ShowImageModel.MAX_UPLOAD_BYTES   // 5 MB
+        fileSize: ShowImageModel.MAX_UPLOAD_BYTES
     },
     fileFilter: (req, file, cb) => {
         if (file.mimetype && file.mimetype.startsWith('image/')) {
             return cb(null, true);
         }
-
         return cb(new Error('Envie apenas arquivos de imagem.'));
     }
 });
 
 // =========================================================================
-// CONFIGURAÇÃO DO MULTER — FORMULÁRIO DE SELETIVAS (limite: 200 MB, imagens e vídeos)
+// CONFIGURAÇÃO DO MULTER — FORMULÁRIO DE SELETIVAS (limite: 200 MB)
 // =========================================================================
-// =========================================================================
-// MULTER — SELETIVAS: 200 MB, aceita imagem e vídeo
-// ATENÇÃO: fieldSize deve ser declarado explicitamente no multer 2.x
-// pois o padrão interno do busboy é 25 MB, o que causa rejeição silenciosa.
-// =========================================================================
-const LIMITE_SELETIVAS_BYTES = 200 * 1024 * 1024; // 200 MB
+const LIMITE_SELETIVAS_BYTES = 200 * 1024 * 1024;
 
 const uploadSeletivas = multer({
     storage: multer.memoryStorage(),
     limits: {
-        fileSize:    LIMITE_SELETIVAS_BYTES, // limite por arquivo
-        fieldSize:   LIMITE_SELETIVAS_BYTES, // FIX multer 2.x: padrão era 25 MB
-        files:       6,                      // 1 vídeo + até 5 fotos
+        fileSize:    LIMITE_SELETIVAS_BYTES,
+        fieldSize:   LIMITE_SELETIVAS_BYTES,
+        files:       6,
         parts:       20,
         fields:      20,
         headerPairs: 2000
@@ -59,17 +54,14 @@ const uploadSeletivas = multer({
 function processarUploadBanner(req, res, next) {
     upload.single('image_file')(req, res, (err) => {
         if (!err) return next();
-
         if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
             return res.status(400).send('A imagem do banner deve ter no maximo 5 MB.');
         }
-
         return res.status(400).send(err.message || 'Erro ao enviar a imagem do banner.');
     });
 }
 
 function processarUploadSeletivas(req, res, next) {
-    // Estende o timeout desta requisição para 10 minutos (uploads grandes)
     req.setTimeout(10 * 60 * 1000);
     res.setTimeout(10 * 60 * 1000);
 
@@ -80,21 +72,12 @@ function processarUploadSeletivas(req, res, next) {
         if (!err) return next();
 
         if (err instanceof multer.MulterError) {
-            if (err.code === 'LIMIT_FILE_SIZE') {
-                return res.status(400).send('O arquivo ultrapassa o limite de 200 MB.');
-            }
-            if (err.code === 'LIMIT_FIELD_VALUE') {
-                return res.status(400).send('Um campo do formulário ultrapassa o limite permitido.');
-            }
-            if (err.code === 'LIMIT_FILE_COUNT') {
-                return res.status(400).send('Número máximo de arquivos excedido.');
-            }
-            if (err.code === 'LIMIT_UNEXPECTED_FILE') {
-                return res.status(400).send('Campo de arquivo inesperado: ' + err.field);
-            }
+            if (err.code === 'LIMIT_FILE_SIZE')       return res.status(400).send('O arquivo ultrapassa o limite de 200 MB.');
+            if (err.code === 'LIMIT_FIELD_VALUE')     return res.status(400).send('Um campo do formulário ultrapassa o limite permitido.');
+            if (err.code === 'LIMIT_FILE_COUNT')      return res.status(400).send('Número máximo de arquivos excedido.');
+            if (err.code === 'LIMIT_UNEXPECTED_FILE') return res.status(400).send('Campo de arquivo inesperado: ' + err.field);
             return res.status(400).send('Erro no upload: ' + err.message);
         }
-
         return res.status(400).send(err.message || 'Erro ao enviar o arquivo.');
     });
 }
@@ -104,13 +87,13 @@ function normalizarPreco(preco) {
     if (!valor) return NaN;
 
     const temVirgula = valor.includes(',');
-    const temPonto = valor.includes('.');
-    let normalizado = valor;
+    const temPonto   = valor.includes('.');
+    let normalizado  = valor;
 
     if (temVirgula) {
         normalizado = valor.replace(/\./g, '').replace(',', '.');
     } else if (temPonto) {
-        const partes = valor.split('.');
+        const partes     = valor.split('.');
         const ultimaParte = partes[partes.length - 1];
         normalizado = partes.length === 2 && ultimaParte.length <= 2
             ? valor
@@ -130,9 +113,9 @@ function montarUsuarioFormulario(usuarioAtual, dados = {}) {
     return UsuariosModel.formatarUsuario({
         ...usuarioAtual,
         ...dados,
-        nome_banda: dados.nome_banda !== undefined ? dados.nome_banda : usuarioAtual.nome_banda,
-        estilo_musical: dados.estilo_musical !== undefined ? dados.estilo_musical : usuarioAtual.estilo_musical,
-        nome_completo: dados.nome_completo !== undefined ? dados.nome_completo : usuarioAtual.nome_completo,
+        nome_banda:      dados.nome_banda      !== undefined ? dados.nome_banda      : usuarioAtual.nome_banda,
+        estilo_musical:  dados.estilo_musical  !== undefined ? dados.estilo_musical  : usuarioAtual.estilo_musical,
+        nome_completo:   dados.nome_completo   !== undefined ? dados.nome_completo   : usuarioAtual.nome_completo,
         num_integrantes: dados.num_integrantes !== undefined ? dados.num_integrantes : usuarioAtual.num_integrantes
     });
 }
@@ -144,34 +127,30 @@ function somarDiasDataIso(dias) {
 }
 
 // =========================================================================
-// GET – PÁGINA INICIAL (PÚBLICA - DINÂMICA COM BANCO DE DADOS)
+// GET – PÁGINA INICIAL
 // =========================================================================
 router.get('/', async (req, res) => {
     try {
-        const queryShows = "SELECT * FROM shows ORDER BY data_show ASC";
-        const [todosOsShows] = await db.query(queryShows);
+        const [todosOsShows] = await db.query("SELECT * FROM shows ORDER BY data_show ASC");
 
         const showsAgrupados = todosOsShows.reduce((grupos, show) => {
             const estiloChave = show.estilo ? show.estilo : 'Outro';
-            if (!grupos[estiloChave]) {
-                grupos[estiloChave] = [];
-            }
+            if (!grupos[estiloChave]) grupos[estiloChave] = [];
             grupos[estiloChave].push(show);
             return grupos;
         }, {});
 
-        return res.render('pages/index', { 
-            titulo: 'Página Inicial', 
+        return res.render('pages/index', {
+            titulo: 'Página Inicial',
             usuario: req.session.usuario || null,
-            showsPorEstilo: showsAgrupados 
+            showsPorEstilo: showsAgrupados
         });
-
     } catch (err) {
         console.error("Erro ao carregar os shows na página inicial:", err.message);
-        return res.render('pages/index', { 
-            titulo: 'Página Inicial', 
-            usuario: req.session.usuario || null, 
-            showsPorEstilo: {} 
+        return res.render('pages/index', {
+            titulo: 'Página Inicial',
+            usuario: req.session.usuario || null,
+            showsPorEstilo: {}
         });
     }
 });
@@ -182,27 +161,17 @@ router.get('/', async (req, res) => {
 router.get('/detalhes', async (req, res) => {
     try {
         const showId = req.query.id;
+        if (!showId) return res.redirect('/');
 
-        if (!showId) {
-            return res.redirect('/');
-        }
+        const [rows] = await db.query("SELECT * FROM shows WHERE id = ?", [showId]);
+        if (rows.length === 0) return res.status(404).send("Show não encontrado no sistema.");
 
-        const queryShow = "SELECT * FROM shows WHERE id = ?";
-        const [rows] = await db.query(queryShow, [showId]);
-
-        if (rows.length === 0) {
-            return res.status(404).send("Show não encontrado no sistema.");
-        }
-
-        const showEncontrado = rows[0];
-
-        return res.render('pages/detalhes', { 
-            titulo: 'Detalhes', 
+        return res.render('pages/detalhes', {
+            titulo: 'Detalhes',
             usuario: req.session.usuario || null,
-            show: showEncontrado,
+            show: rows[0],
             itensCarrinho: req.session.carrinho || []
         });
-
     } catch (err) {
         console.error("Erro ao carregar detalhes do show:", err.message);
         return res.status(500).send("Erro interno ao carregar os detalhes do show.");
@@ -212,83 +181,62 @@ router.get('/detalhes', async (req, res) => {
 // =========================================================================
 // ROTAS DO CARRINHO
 // =========================================================================
-
 router.post('/carrinho/adicionar', async (req, res) => {
     try {
         const { showId, quantidadeInteira, quantidadeMeia } = req.body;
-        const usuarioLogado = req.session.usuario;
-        const showIdNumerico = Number.parseInt(showId, 10);
-        const qtdInteira = Math.max(0, Number.parseInt(quantidadeInteira, 10) || 0);
-        const qtdMeia = Math.max(0, Number.parseInt(quantidadeMeia, 10) || 0);
+        const usuarioLogado    = req.session.usuario;
+        const showIdNumerico   = Number.parseInt(showId, 10);
+        const qtdInteira       = Math.max(0, Number.parseInt(quantidadeInteira, 10) || 0);
+        const qtdMeia          = Math.max(0, Number.parseInt(quantidadeMeia,    10) || 0);
 
-        if (!showIdNumerico) {
-            return res.status(400).json({ sucesso: false, mensagem: "Show invalido." });
-        }
-
-        if (qtdInteira === 0 && qtdMeia === 0) {
-            return res.status(400).json({ sucesso: false, mensagem: "Selecione pelo menos um ingresso." });
-        }
+        if (!showIdNumerico) return res.status(400).json({ sucesso: false, mensagem: "Show invalido." });
+        if (qtdInteira === 0 && qtdMeia === 0) return res.status(400).json({ sucesso: false, mensagem: "Selecione pelo menos um ingresso." });
 
         const [rows] = await db.query("SELECT * FROM shows WHERE id = ?", [showIdNumerico]);
-        if (rows.length === 0) {
-            return res.status(422).json({ sucesso: false, mensagem: "Show invalido ou inexistente." });
-        }
+        if (rows.length === 0) return res.status(422).json({ sucesso: false, mensagem: "Show invalido ou inexistente." });
+
         const showItem = rows[0];
 
         if (usuarioLogado) {
             const usuarioId = Number.parseInt(usuarioLogado.id, 10);
-            if (!usuarioId) {
-                return res.status(401).json({ sucesso: false, mensagem: "Sessao de usuario invalida. Faca login novamente." });
-            }
+            if (!usuarioId) return res.status(401).json({ sucesso: false, mensagem: "Sessao de usuario invalida. Faca login novamente." });
 
             await CarrinhoModel.adicionar(usuarioId, showIdNumerico, CarrinhoModel.TIPOS_INGRESSO.INTEIRA, qtdInteira);
-            await CarrinhoModel.adicionar(usuarioId, showIdNumerico, CarrinhoModel.TIPOS_INGRESSO.MEIA, qtdMeia);
+            await CarrinhoModel.adicionar(usuarioId, showIdNumerico, CarrinhoModel.TIPOS_INGRESSO.MEIA,    qtdMeia);
         } else {
-            if (!req.session.carrinho) {
-                req.session.carrinho = [];
-            }
+            if (!req.session.carrinho) req.session.carrinho = [];
 
-            const dataFormato = showItem.data_show instanceof Date ? showItem.data_show.toLocaleDateString('pt-BR') : showItem.data_show;
+            const dataFormato = showItem.data_show instanceof Date
+                ? showItem.data_show.toLocaleDateString('pt-BR')
+                : showItem.data_show;
 
             if (qtdInteira > 0) {
-                const idItemInteira = `${showIdNumerico}-inteira`;
+                const idItemInteira      = `${showIdNumerico}-inteira`;
                 const itemExistenteInteira = req.session.carrinho.find(item => item.cartId === idItemInteira);
-
                 if (itemExistenteInteira) {
                     itemExistenteInteira.quantidade += qtdInteira;
                 } else {
                     req.session.carrinho.push({
-                        cartId: idItemInteira,
-                        id: showItem.id,
-                        titulo: showItem.titulo,
-                        tipo_ingresso: CarrinhoModel.TIPOS_INGRESSO.INTEIRA,
-                        local: showItem.local,
-                        data_formatada: dataFormato,
-                        estilo: showItem.estilo,
-                        preco: parseFloat(showItem.preco),
-                        imagem_url: showItem.imagem_url,
+                        cartId: idItemInteira, id: showItem.id, titulo: showItem.titulo,
+                        tipo_ingresso: CarrinhoModel.TIPOS_INGRESSO.INTEIRA, local: showItem.local,
+                        data_formatada: dataFormato, estilo: showItem.estilo,
+                        preco: parseFloat(showItem.preco), imagem_url: showItem.imagem_url,
                         quantidade: qtdInteira
                     });
                 }
             }
 
             if (qtdMeia > 0) {
-                const idItemMeia = `${showIdNumerico}-meia`;
+                const idItemMeia      = `${showIdNumerico}-meia`;
                 const itemExistenteMeia = req.session.carrinho.find(item => item.cartId === idItemMeia);
-
                 if (itemExistenteMeia) {
                     itemExistenteMeia.quantidade += qtdMeia;
                 } else {
                     req.session.carrinho.push({
-                        cartId: idItemMeia,
-                        id: showItem.id,
-                        titulo: showItem.titulo,
-                        tipo_ingresso: CarrinhoModel.TIPOS_INGRESSO.MEIA,
-                        local: showItem.local,
-                        data_formatada: dataFormato,
-                        estilo: showItem.estilo,
-                        preco: parseFloat(showItem.preco) / 2,
-                        imagem_url: showItem.imagem_url,
+                        cartId: idItemMeia, id: showItem.id, titulo: showItem.titulo,
+                        tipo_ingresso: CarrinhoModel.TIPOS_INGRESSO.MEIA, local: showItem.local,
+                        data_formatada: dataFormato, estilo: showItem.estilo,
+                        preco: parseFloat(showItem.preco) / 2, imagem_url: showItem.imagem_url,
                         quantidade: qtdMeia
                     });
                 }
@@ -305,7 +253,6 @@ router.post('/carrinho/adicionar', async (req, res) => {
 router.get('/carrinho', async (req, res) => {
     try {
         let itens = [];
-
         if (req.session.usuario) {
             itens = await CarrinhoModel.listarPorUsuario(req.session.usuario.id);
         } else {
@@ -330,9 +277,11 @@ router.post('/carrinho/remover/:id', async (req, res) => {
         if (req.session.usuario) {
             await CarrinhoModel.remover(req.session.usuario.id, idParaRemover);
         } else if (req.session.carrinho) {
-            req.session.carrinho = req.session.carrinho.filter(item => item.cartId !== idParaRemover && item.id !== parseInt(idParaRemover));
+            req.session.carrinho = req.session.carrinho.filter(
+                item => item.cartId !== idParaRemover && item.id !== parseInt(idParaRemover)
+            );
         }
-        
+
         return res.json({ sucesso: true, mensagem: "Item removido com sucesso." });
     } catch (err) {
         console.error("Erro ao remover item do carrinho:", err);
@@ -341,9 +290,40 @@ router.post('/carrinho/remover/:id', async (req, res) => {
 });
 
 // =========================================================================
+// ★ ROTA: CONFIRMAR PEDIDO (chamada após pagamento aprovado)
+// POST /pedidos/confirmar
+// Body: { itensPedido: [...], formaPagamento: 'cartao'|'pix'|'boleto' }
+// Cada item deve ter: { id, titulo, tipo_ingresso, quantidade, preco, cartId? }
+// =========================================================================
+router.post('/pedidos/confirmar', requireAuth, async (req, res) => {
+    try {
+        const { itensPedido, formaPagamento } = req.body;
+        const usuarioId = req.session.usuario.id;
+
+        if (!Array.isArray(itensPedido) || itensPedido.length === 0) {
+            return res.status(400).json({ sucesso: false, mensagem: 'Nenhum item no pedido.' });
+        }
+
+        // Grava na tabela pedidos
+        await PedidosModel.confirmar(usuarioId, itensPedido, formaPagamento);
+
+        // Remove cada item do carrinho no banco após confirmação
+        for (const item of itensPedido) {
+            if (item.cartId) {
+                await CarrinhoModel.remover(usuarioId, item.cartId);
+            }
+        }
+
+        return res.json({ sucesso: true, mensagem: 'Pedido confirmado com sucesso.' });
+    } catch (err) {
+        console.error('Erro ao confirmar pedido:', err);
+        return res.status(500).json({ sucesso: false, mensagem: 'Erro interno ao confirmar o pedido.' });
+    }
+});
+
+// =========================================================================
 // ROTAS DO ADMINISTRADOR
 // =========================================================================
-
 router.get('/adm/acesso-direto', (req, res) => {
     return res.redirect('/adm/cadastro');
 });
@@ -355,18 +335,12 @@ router.get('/adm/administradores/adicionar', (req, res) => {
 router.post('/adm/administradores/adicionar', async (req, res) => {
     const { email, usuario, senha, adm_geral } = req.body;
     try {
-        const queryChecagem = 'SELECT id FROM usuarios WHERE email = ? OR username = ?';
-        const [existe] = await db.query(queryChecagem, [email, usuario]);
-        
-        if (existe.length > 0) {
-            return res.render('pages/admin-add', { erro: 'E-mail ou Usuário já cadastrado.', sucesso: null });
-        }
+        const [existe] = await db.query('SELECT id FROM usuarios WHERE email = ? OR username = ?', [email, usuario]);
+        if (existe.length > 0) return res.render('pages/admin-add', { erro: 'E-mail ou Usuário já cadastrado.', sucesso: null });
 
         const senhaCriptografada = await bcrypt.hash(senha, 10);
         const role = (adm_geral === 'sim') ? 'admin_geral' : 'admin';
-
-        const queryInsert = 'INSERT INTO usuarios (email, username, senha, role) VALUES (?, ?, ?, ?)';
-        await db.query(queryInsert, [email, usuario, senhaCriptografada, role]);
+        await db.query('INSERT INTO usuarios (email, username, senha, role) VALUES (?, ?, ?, ?)', [email, usuario, senhaCriptografada, role]);
 
         return res.render('pages/admin-add', { erro: null, sucesso: 'Administrador cadastrado!' });
     } catch (err) {
@@ -377,25 +351,23 @@ router.post('/adm/administradores/adicionar', async (req, res) => {
 router.get('/adm/cadastro', async (req, res) => {
     try {
         const [visitantes] = await db.query("SELECT * FROM usuarios WHERE role = 'visitante'");
-        const [artistas] = await db.query("SELECT * FROM usuarios WHERE role = 'artista'");
+        const [artistas]   = await db.query("SELECT * FROM usuarios WHERE role = 'artista'");
         return res.render('pages/admin-cadastro', { visitantes, artistas });
     } catch (err) {
         return res.status(500).send("Erro ao buscar usuários.");
     }
 });
 
+// ── Visitante: editar ────────────────────────────────────────────────
 router.get('/adm/visitantes/editar/:id', async (req, res) => {
     try {
         const visitante = await UsuariosModel.buscarPorId(req.params.id);
-
-        if (!visitante || visitante.role !== 'visitante') {
-            return res.status(404).send("Visitante nao encontrado.");
-        }
+        if (!visitante || visitante.role !== 'visitante') return res.status(404).send("Visitante nao encontrado.");
 
         let historicoCompra = [];
-
         try {
-            historicoCompra = await CarrinhoModel.listarPorUsuario(visitante.id);
+            // ★ CORRIGIDO: busca pedidos confirmados, não itens do carrinho
+            historicoCompra = await PedidosModel.listarPorUsuario(visitante.id);
         } catch (err) {
             console.error("Erro ao buscar historico do visitante:", err.message);
         }
@@ -403,7 +375,7 @@ router.get('/adm/visitantes/editar/:id', async (req, res) => {
         return res.render('pages/admin-visitante-config', {
             visitante,
             historicoCompra,
-            erro: req.query.erro || null,
+            erro:    req.query.erro    || null,
             sucesso: req.query.sucesso || null
         });
     } catch (err) {
@@ -414,61 +386,34 @@ router.get('/adm/visitantes/editar/:id', async (req, res) => {
 
 router.post('/adm/visitantes/editar/:id', async (req, res) => {
     const id = req.params.id;
-
     try {
         const visitante = await UsuariosModel.buscarPorId(id);
-
-        if (!visitante || visitante.role !== 'visitante') {
-            return res.status(404).send("Visitante nao encontrado.");
-        }
+        if (!visitante || visitante.role !== 'visitante') return res.status(404).send("Visitante nao encontrado.");
 
         const {
-            username,
-            email,
-            telefone,
-            nome_completo,
-            cpf,
-            novaSenha,
-            excluir_conta,
-            confirmacao_exclusao,
-            suspender_conta,
-            dias_suspensao
+            username, email, telefone, nome_completo, cpf,
+            novaSenha, excluir_conta, confirmacao_exclusao,
+            suspender_conta, dias_suspensao
         } = req.body;
 
         if (excluir_conta === 'sim') {
             if (confirmacao_exclusao !== 'excluirconta') {
                 return res.redirect(`/adm/visitantes/editar/${id}?erro=${encodeURIComponent('você precisa confirmar a ação')}`);
             }
-
             const excluido = await UsuariosModel.excluir(id);
-            if (!excluido) {
-                return res.redirect(`/adm/visitantes/editar/${id}?erro=${encodeURIComponent('Conta nao encontrada para exclusao.')}`);
-            }
-
+            if (!excluido) return res.redirect(`/adm/visitantes/editar/${id}?erro=${encodeURIComponent('Conta nao encontrada para exclusao.')}`);
             return res.redirect('/adm/cadastro');
         }
 
-        if (!username || !email) {
-            return res.redirect(`/adm/visitantes/editar/${id}?erro=${encodeURIComponent('Preencha usuario e e-mail.')}`);
-        }
-
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            return res.redirect(`/adm/visitantes/editar/${id}?erro=${encodeURIComponent('Informe um e-mail valido.')}`);
-        }
-
-        if (novaSenha && novaSenha.length < 6) {
-            return res.redirect(`/adm/visitantes/editar/${id}?erro=${encodeURIComponent('A nova senha deve ter pelo menos 6 caracteres.')}`);
-        }
+        if (!username || !email) return res.redirect(`/adm/visitantes/editar/${id}?erro=${encodeURIComponent('Preencha usuario e e-mail.')}`);
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.redirect(`/adm/visitantes/editar/${id}?erro=${encodeURIComponent('Informe um e-mail valido.')}`);
+        if (novaSenha && novaSenha.length < 6) return res.redirect(`/adm/visitantes/editar/${id}?erro=${encodeURIComponent('A nova senha deve ter pelo menos 6 caracteres.')}`);
 
         const diasSuspensao = Math.max(1, Number.parseInt(dias_suspensao, 10) || 10);
-        const estaSuspenso = suspender_conta === 'sim';
+        const estaSuspenso  = suspender_conta === 'sim';
 
         await UsuariosModel.atualizar(id, {
-            username,
-            email,
-            telefone,
-            nome_completo,
-            cpf,
+            username, email, telefone, nome_completo, cpf,
             role: 'visitante',
             status_conta: estaSuspenso ? 'suspenso' : 'ativo',
             suspenso_ate: estaSuspenso ? somarDiasDataIso(diasSuspensao) : null
@@ -485,22 +430,19 @@ router.post('/adm/visitantes/editar/:id', async (req, res) => {
         const mensagem = err && err.code === 'ER_DUP_ENTRY'
             ? 'Este e-mail ja esta em uso.'
             : 'Erro ao salvar visitante.';
-
         return res.redirect(`/adm/visitantes/editar/${id}?erro=${encodeURIComponent(mensagem)}`);
     }
 });
 
+// ── Artista: editar ──────────────────────────────────────────────────
 router.get('/adm/artistas/editar/:id', async (req, res) => {
     try {
         const artista = await UsuariosModel.buscarPorId(req.params.id);
-
-        if (!artista || artista.role !== 'artista') {
-            return res.status(404).send("Artista nao encontrado.");
-        }
+        if (!artista || artista.role !== 'artista') return res.status(404).send("Artista nao encontrado.");
 
         return res.render('pages/admin-artista-config', {
             artista,
-            erro: req.query.erro || null,
+            erro:    req.query.erro    || null,
             sucesso: req.query.sucesso || null
         });
     } catch (err) {
@@ -511,65 +453,34 @@ router.get('/adm/artistas/editar/:id', async (req, res) => {
 
 router.post('/adm/artistas/editar/:id', async (req, res) => {
     const id = req.params.id;
-
     try {
         const artista = await UsuariosModel.buscarPorId(id);
-
-        if (!artista || artista.role !== 'artista') {
-            return res.status(404).send("Artista nao encontrado.");
-        }
+        if (!artista || artista.role !== 'artista') return res.status(404).send("Artista nao encontrado.");
 
         const {
-            nome_banda,
-            email,
-            telefone,
-            num_integrantes,
-            estilo_musical,
-            instagram,
-            novaSenha,
-            excluir_conta,
-            confirmacao_exclusao,
-            suspender_conta,
-            dias_suspensao
+            nome_banda, email, telefone, num_integrantes, estilo_musical, instagram,
+            novaSenha, excluir_conta, confirmacao_exclusao, suspender_conta, dias_suspensao
         } = req.body;
 
         if (excluir_conta === 'sim') {
             if (confirmacao_exclusao !== 'excluirconta') {
                 return res.redirect(`/adm/artistas/editar/${id}?erro=${encodeURIComponent('você precisa confirmar a ação')}`);
             }
-
             const excluido = await UsuariosModel.excluir(id);
-            if (!excluido) {
-                return res.redirect(`/adm/artistas/editar/${id}?erro=${encodeURIComponent('Conta nao encontrada para exclusao.')}`);
-            }
-
+            if (!excluido) return res.redirect(`/adm/artistas/editar/${id}?erro=${encodeURIComponent('Conta nao encontrada para exclusao.')}`);
             return res.redirect('/adm/cadastro');
         }
 
-        if (!nome_banda || !email || !estilo_musical) {
-            return res.redirect(`/adm/artistas/editar/${id}?erro=${encodeURIComponent('Preencha nome da banda, e-mail e estilo musical.')}`);
-        }
-
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            return res.redirect(`/adm/artistas/editar/${id}?erro=${encodeURIComponent('Informe um e-mail valido.')}`);
-        }
-
-        if (novaSenha && novaSenha.length < 6) {
-            return res.redirect(`/adm/artistas/editar/${id}?erro=${encodeURIComponent('A nova senha deve ter pelo menos 6 caracteres.')}`);
-        }
+        if (!nome_banda || !email || !estilo_musical) return res.redirect(`/adm/artistas/editar/${id}?erro=${encodeURIComponent('Preencha nome da banda, e-mail e estilo musical.')}`);
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.redirect(`/adm/artistas/editar/${id}?erro=${encodeURIComponent('Informe um e-mail valido.')}`);
+        if (novaSenha && novaSenha.length < 6) return res.redirect(`/adm/artistas/editar/${id}?erro=${encodeURIComponent('A nova senha deve ter pelo menos 6 caracteres.')}`);
 
         const diasSuspensao = Math.max(1, Number.parseInt(dias_suspensao, 10) || 10);
-        const estaSuspenso = suspender_conta === 'sim';
+        const estaSuspenso  = suspender_conta === 'sim';
 
         await UsuariosModel.atualizar(id, {
-            username: nome_banda,
-            email,
-            telefone,
-            role: 'artista',
-            nome_banda,
-            num_integrantes,
-            estilo_musical,
-            instagram,
+            username: nome_banda, email, telefone, role: 'artista',
+            nome_banda, num_integrantes, estilo_musical, instagram,
             status_conta: estaSuspenso ? 'suspenso' : 'ativo',
             suspenso_ate: estaSuspenso ? somarDiasDataIso(diasSuspensao) : null
         });
@@ -585,26 +496,18 @@ router.post('/adm/artistas/editar/:id', async (req, res) => {
         const mensagem = err && err.code === 'ER_DUP_ENTRY'
             ? 'Este e-mail ja esta em uso.'
             : 'Erro ao salvar artista.';
-
         return res.redirect(`/adm/artistas/editar/${id}?erro=${encodeURIComponent(mensagem)}`);
     }
 });
 
+// ── Usuário genérico: editar ─────────────────────────────────────────
 router.get('/adm/usuarios/editar/:id', async (req, res) => {
     try {
         const usuario = await UsuariosModel.buscarPorId(req.params.id);
+        if (!usuario) return res.status(404).send("Usuario nao encontrado.");
 
-        if (!usuario) {
-            return res.status(404).send("Usuario nao encontrado.");
-        }
-
-        if (usuario.role === 'visitante') {
-            return res.redirect(`/adm/visitantes/editar/${usuario.id}`);
-        }
-
-        if (usuario.role === 'artista') {
-            return res.redirect(`/adm/artistas/editar/${usuario.id}`);
-        }
+        if (usuario.role === 'visitante') return res.redirect(`/adm/visitantes/editar/${usuario.id}`);
+        if (usuario.role === 'artista')   return res.redirect(`/adm/artistas/editar/${usuario.id}`);
 
         return res.render('pages/admin-usuario-form', {
             usuario,
@@ -619,43 +522,28 @@ router.get('/adm/usuarios/editar/:id', async (req, res) => {
 
 router.post('/adm/usuarios/editar/:id', async (req, res) => {
     const id = req.params.id;
-
     try {
         const usuarioAtual = await UsuariosModel.buscarPorId(id);
-
-        if (!usuarioAtual) {
-            return res.status(404).send("Usuario nao encontrado.");
-        }
+        if (!usuarioAtual) return res.status(404).send("Usuario nao encontrado.");
 
         const {
-            username,
-            email,
-            telefone,
-            role,
-            nome_completo,
-            cpf,
-            nome_banda,
-            num_integrantes,
-            estilo_musical,
-            instagram,
-            novaSenha
+            username, email, telefone, role, nome_completo, cpf,
+            nome_banda, num_integrantes, estilo_musical, instagram, novaSenha
         } = req.body;
 
         const roleNormalizado = String(role || '').toLowerCase();
 
         if (!rolesUsuario.includes(roleNormalizado)) {
-            const usuarioFormulario = montarUsuarioFormulario(usuarioAtual, req.body);
             return res.render('pages/admin-usuario-form', {
-                usuario: usuarioFormulario,
+                usuario: montarUsuarioFormulario(usuarioAtual, req.body),
                 erro: 'Tipo de conta invalido.',
                 voltar: rotaRetornoUsuario(usuarioAtual)
             });
         }
 
         if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            const usuarioFormulario = montarUsuarioFormulario(usuarioAtual, req.body);
             return res.render('pages/admin-usuario-form', {
-                usuario: usuarioFormulario,
+                usuario: montarUsuarioFormulario(usuarioAtual, req.body),
                 erro: 'Informe um e-mail valido.',
                 voltar: rotaRetornoUsuario(usuarioAtual)
             });
@@ -663,46 +551,39 @@ router.post('/adm/usuarios/editar/:id', async (req, res) => {
 
         const nomeUsuario = roleNormalizado === 'artista'
             ? String(nome_banda || '').trim()
-            : String(username || '').trim();
+            : String(username   || '').trim();
 
         if (!nomeUsuario) {
-            const usuarioFormulario = montarUsuarioFormulario(usuarioAtual, req.body);
             return res.render('pages/admin-usuario-form', {
-                usuario: usuarioFormulario,
+                usuario: montarUsuarioFormulario(usuarioAtual, req.body),
                 erro: roleNormalizado === 'artista' ? 'Informe o nome da banda.' : 'Informe o nome de usuario.',
                 voltar: rotaRetornoUsuario(usuarioAtual)
             });
         }
 
         if (roleNormalizado === 'artista' && !estilo_musical) {
-            const usuarioFormulario = montarUsuarioFormulario(usuarioAtual, req.body);
             return res.render('pages/admin-usuario-form', {
-                usuario: usuarioFormulario,
+                usuario: montarUsuarioFormulario(usuarioAtual, req.body),
                 erro: 'Informe o estilo musical do artista.',
                 voltar: rotaRetornoUsuario(usuarioAtual)
             });
         }
 
         if (novaSenha && novaSenha.length < 6) {
-            const usuarioFormulario = montarUsuarioFormulario(usuarioAtual, req.body);
             return res.render('pages/admin-usuario-form', {
-                usuario: usuarioFormulario,
+                usuario: montarUsuarioFormulario(usuarioAtual, req.body),
                 erro: 'A nova senha deve ter pelo menos 6 caracteres.',
                 voltar: rotaRetornoUsuario(usuarioAtual)
             });
         }
 
         await UsuariosModel.atualizar(id, {
-            username: nomeUsuario,
-            email,
-            telefone,
-            role: roleNormalizado,
-            nome_completo,
-            cpf,
-            nome_banda: roleNormalizado === 'artista' ? nome_banda : null,
+            username: nomeUsuario, email, telefone, role: roleNormalizado,
+            nome_completo, cpf,
+            nome_banda:      roleNormalizado === 'artista' ? nome_banda      : null,
             num_integrantes: roleNormalizado === 'artista' ? num_integrantes : null,
-            estilo_musical: roleNormalizado === 'artista' ? estilo_musical : null,
-            instagram: roleNormalizado === 'artista' ? instagram : null
+            estilo_musical:  roleNormalizado === 'artista' ? estilo_musical  : null,
+            instagram:       roleNormalizado === 'artista' ? instagram        : null
         });
 
         if (novaSenha) {
@@ -713,17 +594,14 @@ router.post('/adm/usuarios/editar/:id', async (req, res) => {
         return res.redirect(rotaRetornoUsuario({ role: roleNormalizado }));
     } catch (err) {
         console.error("Erro ao atualizar usuario pelo admin:", err);
-
         const usuarioAtual = await UsuariosModel.buscarPorId(id).catch(() => null);
         if (usuarioAtual) {
-            const usuarioFormulario = montarUsuarioFormulario(usuarioAtual, req.body);
             return res.render('pages/admin-usuario-form', {
-                usuario: usuarioFormulario,
+                usuario: montarUsuarioFormulario(usuarioAtual, req.body),
                 erro: err && err.code === 'ER_DUP_ENTRY' ? 'Este e-mail ja esta em uso.' : 'Erro ao salvar o usuario.',
                 voltar: rotaRetornoUsuario(usuarioAtual)
             });
         }
-
         return res.status(500).send("Erro ao salvar o usuario.");
     }
 });
@@ -731,7 +609,6 @@ router.post('/adm/usuarios/editar/:id', async (req, res) => {
 // =========================================================================
 // GERENCIAMENTO DE INGRESSOS (PAINEL DO ADM)
 // =========================================================================
-
 router.get('/adm/ingressos', async (req, res) => {
     try {
         const [todosOsShows] = await db.query("SELECT * FROM shows ORDER BY data_show ASC");
@@ -748,31 +625,26 @@ router.get('/adm/ingressos', async (req, res) => {
 });
 
 router.get('/adm/ingressos/adicionar', (req, res) => {
-    const stylesOficiais = ['Rock', 'Samba', 'Pagode', 'Jazz', 'Eletrônica', 'Forró', 'Sertanejo', 'MPB', 'Reggae', 'Hip-Hop / Rap', 'Metal', 'Pop', 'Outro'];
+    const stylesOficiais = ['Rock','Samba','Pagode','Jazz','Eletrônica','Forró','Sertanejo','MPB','Reggae','Hip-Hop / Rap','Metal','Pop','Outro'];
     return res.render('pages/admin-ingressos-form', { estilos: stylesOficiais, show: null });
 });
 
 router.post('/adm/ingressos/adicionar', processarUploadBanner, async (req, res) => {
     try {
         const { titulo, estilo, data_show, local, preco, quantidade } = req.body;
-        const precoNormalizado = normalizarPreco(preco);
+        const precoNormalizado     = normalizarPreco(preco);
         const quantidadeNormalizada = Number.parseInt(quantidade, 10);
 
-        if (!Number.isFinite(precoNormalizado) || precoNormalizado < 0) {
-            return res.status(400).send("Preco invalido.");
-        }
-
-        if (!Number.isInteger(quantidadeNormalizada) || quantidadeNormalizada < 1) {
-            return res.status(400).send("Quantidade invalida.");
-        }
+        if (!Number.isFinite(precoNormalizado) || precoNormalizado < 0) return res.status(400).send("Preco invalido.");
+        if (!Number.isInteger(quantidadeNormalizada) || quantidadeNormalizada < 1) return res.status(400).send("Quantidade invalida.");
 
         await ShowImageModel.garantirColunaImagem();
-
         const imagem_url = ShowImageModel.uploadParaDataUrl(req.file) || ShowImageModel.DEFAULT_SHOW_IMAGE;
 
-        const queryInsert = "INSERT INTO shows (titulo, estilo, imagem_url, data_show, local, preco, quantidade) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        await db.query(queryInsert, [titulo.trim(), estilo, imagem_url, data_show, local.trim(), precoNormalizado, quantidadeNormalizada]);
-
+        await db.query(
+            "INSERT INTO shows (titulo, estilo, imagem_url, data_show, local, preco, quantidade) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            [titulo.trim(), estilo, imagem_url, data_show, local.trim(), precoNormalizado, quantidadeNormalizada]
+        );
         return res.redirect('/adm/ingressos');
     } catch (err) {
         return res.status(500).send("Erro ao salvar o ingresso.");
@@ -781,17 +653,11 @@ router.post('/adm/ingressos/adicionar', processarUploadBanner, async (req, res) 
 
 router.get('/adm/ingressos/editar/:id', async (req, res) => {
     try {
-        const showId = req.params.id;
-        const estilosOficiais = ['Rock', 'Samba', 'Pagode', 'Jazz', 'Eletrônica', 'Forró', 'Sertanejo', 'MPB', 'Reggae', 'Hip-Hop / Rap', 'Metal', 'Pop', 'Outro'];
-        
-        const [rows] = await db.query("SELECT * FROM shows WHERE id = ?", [showId]);
-        
-        if (rows.length === 0) {
-            return res.status(404).send("Ingresso/Show não encontrado.");
-        }
+        const estilosOficiais = ['Rock','Samba','Pagode','Jazz','Eletrônica','Forró','Sertanejo','MPB','Reggae','Hip-Hop / Rap','Metal','Pop','Outro'];
+        const [rows] = await db.query("SELECT * FROM shows WHERE id = ?", [req.params.id]);
+        if (rows.length === 0) return res.status(404).send("Ingresso/Show não encontrado.");
 
         const showEncontrado = rows[0];
-
         if (showEncontrado.data_show instanceof Date) {
             showEncontrado.data_show = showEncontrado.data_show.toISOString().split('T')[0];
         } else if (typeof showEncontrado.data_show === 'string' && showEncontrado.data_show.includes('/')) {
@@ -801,59 +667,44 @@ router.get('/adm/ingressos/editar/:id', async (req, res) => {
 
         return res.render('pages/admin-ingressos-form', { estilos: estilosOficiais, show: showEncontrado });
     } catch (err) {
-        console.error(err);
         return res.status(500).send("Erro ao buscar dados do show.");
     }
 });
 
 router.post('/adm/ingressos/editar/:id', processarUploadBanner, async (req, res) => {
     try {
-        const showId = req.params.id;
         const { titulo, estilo, data_show, local, preco, quantidade } = req.body;
-        const precoNormalizado = normalizarPreco(preco);
+        const precoNormalizado      = normalizarPreco(preco);
         const quantidadeNormalizada = Number.parseInt(quantidade, 10);
 
-        if (!Number.isFinite(precoNormalizado) || precoNormalizado < 0) {
-            return res.status(400).send("Preco invalido.");
-        }
-
-        if (!Number.isInteger(quantidadeNormalizada) || quantidadeNormalizada < 1) {
-            return res.status(400).send("Quantidade invalida.");
-        }
+        if (!Number.isFinite(precoNormalizado) || precoNormalizado < 0) return res.status(400).send("Preco invalido.");
+        if (!Number.isInteger(quantidadeNormalizada) || quantidadeNormalizada < 1) return res.status(400).send("Quantidade invalida.");
 
         await ShowImageModel.garantirColunaImagem();
 
-        let queryUpdate = "UPDATE shows SET titulo = ?, estilo = ?, data_show = ?, local = ?, preco = ?, quantidade = ? WHERE id = ?";
-        let params = [titulo.trim(), estilo, data_show, local.trim(), precoNormalizado, quantidadeNormalizada, showId];
+        let query  = "UPDATE shows SET titulo = ?, estilo = ?, data_show = ?, local = ?, preco = ?, quantidade = ? WHERE id = ?";
+        let params = [titulo.trim(), estilo, data_show, local.trim(), precoNormalizado, quantidadeNormalizada, req.params.id];
 
         if (req.file) {
-            const imagem_url = ShowImageModel.uploadParaDataUrl(req.file);
-            queryUpdate = "UPDATE shows SET titulo = ?, estilo = ?, data_show = ?, local = ?, preco = ?, quantidade = ?, imagem_url = ? WHERE id = ?";
-            params = [titulo.trim(), estilo, data_show, local.trim(), precoNormalizado, quantidadeNormalizada, imagem_url, showId];
+            query  = "UPDATE shows SET titulo = ?, estilo = ?, data_show = ?, local = ?, preco = ?, quantidade = ?, imagem_url = ? WHERE id = ?";
+            params = [titulo.trim(), estilo, data_show, local.trim(), precoNormalizado, quantidadeNormalizada, ShowImageModel.uploadParaDataUrl(req.file), req.params.id];
         }
 
-        await db.query(queryUpdate, params);
+        await db.query(query, params);
         return res.redirect('/adm/ingressos');
     } catch (err) {
-        console.error(err);
         return res.status(500).send("Erro ao atualizar o ingresso.");
     }
 });
 
 router.post('/adm/ingressos/excluir/:id', async (req, res) => {
     try {
-        const showId = req.params.id;
-        const queryDelete = "DELETE FROM shows WHERE id = ?";
-        const [result] = await db.query(queryDelete, [showId]);
-
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ sucesso: false, mensagem: "Show não encontrado." });
-        }
+        const [result] = await db.query("DELETE FROM shows WHERE id = ?", [req.params.id]);
+        if (result.affectedRows === 0) return res.status(404).json({ sucesso: false, mensagem: "Show não encontrado." });
 
         if (req.xhr || req.headers.accept.indexOf('json') > -1) {
             return res.json({ sucesso: true, message: "Ingresso excluído com sucesso!" });
         }
-
         return res.redirect('/adm/ingressos');
     } catch (err) {
         console.error("Erro ao excluir show:", err.message);
@@ -863,7 +714,8 @@ router.post('/adm/ingressos/excluir/:id', async (req, res) => {
         return res.status(500).send("Erro interno ao excluir o ingresso.");
     }
 });
-router.get('/adm/formularios', FormularioController.listarAdmin);
+
+router.get('/adm/formularios',     FormularioController.listarAdmin);
 router.get('/adm/formularios/:id', FormularioController.detalharAdmin);
 
 // =========================================================================
@@ -874,37 +726,35 @@ function requireAuth(req, res, next) {
     return res.redirect('/login');
 }
 
-
 const u = (req) => req.session.usuario || null;
 
-router.get('/estilos', (req, res) => res.render('pages/estilos', { titulo: 'Estilos', usuario: u(req) }));
-router.get('/luthbox', (req, res) => res.render('pages/luthbox', { titulo: 'Luthbox', usuario: u(req) }));
-router.get('/luthbox-seguros', (req, res) => res.render('pages/luthbox-seguros', { titulo: 'Seguros', usuario: u(req) }));
-router.get('/seletivas', (req, res) => res.render('pages/seletivas', { titulo: 'Seletivas', usuario: u(req) }));
-router.get('/regulamento', (req, res) => res.render('pages/regulamento', { titulo: 'Regulamento', usuario: u(req) }));
-router.get('/sobre', (req, res) => res.render('pages/sobre', { titulo: 'Sobre', usuario: u(req) }));
-router.get('/mensalidade', (req, res) => res.render('pages/mensalidade', { titulo: 'Mensalidade', usuario: u(req) }));
+router.get('/estilos',              (req, res) => res.render('pages/estilos',              { titulo: 'Estilos',      usuario: u(req) }));
+router.get('/luthbox',              (req, res) => res.render('pages/luthbox',              { titulo: 'Luthbox',      usuario: u(req) }));
+router.get('/luthbox-seguros',      (req, res) => res.render('pages/luthbox-seguros',      { titulo: 'Seguros',      usuario: u(req) }));
+router.get('/seletivas',            (req, res) => res.render('pages/seletivas',            { titulo: 'Seletivas',    usuario: u(req) }));
+router.get('/regulamento',          (req, res) => res.render('pages/regulamento',          { titulo: 'Regulamento',  usuario: u(req) }));
+router.get('/sobre',                (req, res) => res.render('pages/sobre',                { titulo: 'Sobre',        usuario: u(req) }));
+router.get('/mensalidade',          (req, res) => res.render('pages/mensalidade',          { titulo: 'Mensalidade',  usuario: u(req) }));
+router.get('/pagamento',            requireAuth, (req, res) => res.render('pages/pagamento', { titulo: 'Pagamento',    usuario: u(req) }));
+router.get('/pagamento-luth',       (req, res) => res.render('pages/pagamento-luth',       { titulo: 'Pagamento Luth',       usuario: u(req) }));
+router.get('/pagamento-mensalidade',(req, res) => res.render('pages/pagamento-mensalidade',{ titulo: 'Pagamento Mensalidade', usuario: u(req) }));
 
-router.get('/pagamento', requireAuth, (req, res) => res.render('pages/pagamento', { titulo: 'Pagamento', usuario: u(req) }));
-
-router.get('/pagamento-luth', (req, res) => res.render('pages/pagamento-luth', { titulo: 'Pagamento Luth', usuario: u(req) }));
-router.get('/pagamento-mensalidade', (req, res) => res.render('pages/pagamento-mensalidade', { titulo: 'Pagamento Mensalidade', usuario: u(req) }));
-
-// Rotas do formulário de seletivas — usando multer de 200 MB
-router.get('/formulario-seletivas', FormularioController.mostrar);
+router.get('/formulario-seletivas',  FormularioController.mostrar);
 router.post('/formulario-seletivas', processarUploadSeletivas, FormularioController.enviar);
 
-router.get('/cadastro', (req, res) => res.render('pages/cadastro', { titulo: 'Cadastro', usuario: u(req), erro: null, sucesso: null }));
+router.get('/cadastro',  (req, res) => res.render('pages/cadastro', { titulo: 'Cadastro', usuario: u(req), erro: null, sucesso: null }));
 router.post('/cadastro', AuthController.cadastro);
-router.get('/login', (req, res) => res.render('pages/login', { titulo: 'Login', usuario: null, erro: null }));
-router.post('/login', AuthController.login);
-router.get('/logout', AuthController.logout);
-router.post('/logout', AuthController.logout);
-router.get('/perfil', requireAuth, PerfilController.exibir);
-router.post('/perfil/editar', requireAuth, PerfilController.editar);
-router.post('/perfil/senha', requireAuth, PerfilController.alterarSenha);
-router.post('/perfil/role', requireAuth, PerfilController.alterarRole);
-router.post('/perfil/foto', requireAuth, PerfilController.atualizarFoto);
+router.get('/login',     (req, res) => res.render('pages/login',    { titulo: 'Login',    usuario: null,  erro: null }));
+router.post('/login',    AuthController.login);
+router.get('/logout',    AuthController.logout);
+router.post('/logout',   AuthController.logout);
+
+router.get('/perfil',            requireAuth, PerfilController.exibir);
+router.post('/perfil/editar',    requireAuth, PerfilController.editar);
+router.post('/perfil/senha',     requireAuth, PerfilController.alterarSenha);
+router.post('/perfil/role',      requireAuth, PerfilController.alterarRole);
+router.post('/perfil/foto',      requireAuth, PerfilController.atualizarFoto);
+
 router.get('/sair', requireAuth, (req, res) => res.render('pages/sair', { titulo: 'Sair', usuario: u(req) }));
 
 module.exports = router;

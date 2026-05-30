@@ -5,125 +5,109 @@ document.addEventListener('DOMContentLoaded', () => {
     // =========================================================================
     const $ = id => document.getElementById(id);
     const currentOrder = JSON.parse(localStorage.getItem('currentOrder'));
-    
-    // Verifica se há um pedido ativo antes de prosseguir
-    if (!currentOrder || !currentOrder.total) { 
+
+    if (!currentOrder || !currentOrder.total) {
         alert("Nenhum ingresso selecionado. Retornando à seleção.");
-        window.location.href = '/estilos';
+        window.location.href = '/';
         return;
     }
 
     const Elements = {
-        formInfo: $('info-form'),
-        paymentForm: $('payment-form'),
+        formInfo:            $('info-form'),
+        paymentForm:         $('payment-form'),
         paymentMethodSelect: $('payment-method'),
-        
-        // Inputs Principais
-        cpfInput: $('cpf'),
-        emailInput: $('email'),
+        cpfInput:            $('cpf'),
+        emailInput:          $('email'),
         cardHolderNameInput: $('card-holder-name'),
-        cardNumberInput: $('card-number'), 
-        validadeInput: $('validade'), 
-        cvvInput: $('cvv'), 
-
-        // Elementos de Confirmação (Passo 3)
+        cardNumberInput:     $('card-number'),
+        validadeInput:       $('validade'),
+        cvvInput:            $('cvv'),
         productTitleConfirmEl: $('product-title-confirm') || $('show-title-confirm'),
-        totalConfirmEl: $('total-confirm'),
-        productTitlePixEl: $('product-title-pix') || $('show-title-pix'),
-        totalPixEl: $('total-pix'),
+        totalConfirmEl:        $('total-confirm'),
+        productTitlePixEl:     $('product-title-pix')     || $('show-title-pix'),
+        totalPixEl:            $('total-pix'),
     };
 
     // =========================================================================
-    // 2. FUNÇÕES AUXILIARES E VALIDAÇÃO (Objeto Utils)
+    // 2. FUNÇÕES AUXILIARES E VALIDAÇÃO
     // =========================================================================
     const Utils = (() => {
-        
-        // --- Formatação e Feedback ---
-        const formatCurrency = (value) => {
-            return parseFloat(value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        };
-        const markAsError = (el) => el?.classList.add('input-error-border');
+        const formatCurrency = (value) =>
+            parseFloat(value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+        const markAsError   = (el) => el?.classList.add('input-error-border');
         const unmarkAsError = (el) => el?.classList.remove('input-error-border');
 
         const toggleCheckoutError = (message, step, show = true) => {
-            const errorElement = $(`error-message-step${step}`);
-            if (!errorElement) return;
-            if (show) {
-                errorElement.innerHTML = message;
-                errorElement.style.display = 'block';
-            } else {
-                errorElement.style.display = 'none';
-            }
+            const el = $(`error-message-step${step}`);
+            if (!el) return;
+            el.innerHTML = message;
+            el.style.display = show ? 'block' : 'none';
         };
-        const hideCheckoutError = (step) => toggleCheckoutError('', step, false);
-        const showCheckoutError = (message, step) => toggleCheckoutError(message, step, true);
+        const hideCheckoutError  = (step) => toggleCheckoutError('', step, false);
+        const showCheckoutError  = (msg, step) => toggleCheckoutError(msg, step, true);
 
-        // --- Validações (Lógica complexa mantida) ---
-        const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-        const isValidCardNumber = (number) => number.replace(/\s/g, '').length === 16;
-        const isValidCVV = (cvv) => cvv.length === 3 || cvv.length === 4;
+        const isValidEmail      = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        const isValidCardNumber = (num)   => num.replace(/\s/g, '').length === 16;
+        const isValidCVV        = (cvv)   => cvv.length === 3 || cvv.length === 4;
 
-        function isValidCPF(cpf) { 
+        function isValidCPF(cpf) {
             cpf = cpf.replace(/[^\d]/g, "");
             if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
-            let sum = 0; let remainder;
-            for (let i = 1; i <= 9; i++) sum = sum + parseInt(cpf.substring(i - 1, i)) * (11 - i);
+            let sum = 0, remainder;
+            for (let i = 1; i <= 9; i++) sum += parseInt(cpf[i - 1]) * (11 - i);
             remainder = (sum * 10) % 11;
-            if ((remainder === 10) || (remainder === 11)) remainder = 0;
-            if (remainder !== parseInt(cpf.substring(9, 10))) return false;
+            if (remainder === 10 || remainder === 11) remainder = 0;
+            if (remainder !== parseInt(cpf[9])) return false;
             sum = 0;
-            for (let i = 1; i <= 10; i++) sum = sum + parseInt(cpf.substring(i - 1, i)) * (12 - i);
+            for (let i = 1; i <= 10; i++) sum += parseInt(cpf[i - 1]) * (12 - i);
             remainder = (sum * 10) % 11;
-            if ((remainder === 10) || (remainder === 11)) remainder = 0;
-            if (remainder !== parseInt(cpf.substring(10, 11))) return false;
+            if (remainder === 10 || remainder === 11) remainder = 0;
+            if (remainder !== parseInt(cpf[10])) return false;
             return true;
         }
-        
+
         function isValidExpiry(expiry) {
             const parts = expiry.split('/');
             if (parts.length !== 2 || expiry.length !== 5) return false;
-            const month = parseInt(parts[0], 10);
-            const year = parseInt(parts[1], 10);
+            const month = parseInt(parts[0], 10), year = parseInt(parts[1], 10);
             if (month < 1 || month > 12) return false;
-            const currentYearFull = new Date().getFullYear();
-            const currentMonth = new Date().getMonth() + 1;
-            const inputYearFull = 2000 + year;
-            if (inputYearFull < currentYearFull) return false;
-            if (inputYearFull === currentYearFull && month < currentMonth) return false;
+            const now      = new Date();
+            const fullYear = 2000 + year;
+            if (fullYear < now.getFullYear()) return false;
+            if (fullYear === now.getFullYear() && month < now.getMonth() + 1) return false;
             return true;
         }
 
-        return { formatCurrency, markAsError, unmarkAsError, hideCheckoutError, showCheckoutError,
+        return { formatCurrency, markAsError, unmarkAsError,
+                 hideCheckoutError, showCheckoutError,
                  isValidEmail, isValidCPF, isValidCardNumber, isValidExpiry, isValidCVV };
     })();
-    
 
+    // =========================================================================
+    // 3. VALIDAÇÕES POR PASSO
+    // =========================================================================
     const validateStep1 = () => {
         Utils.hideCheckoutError(1);
-        let isValid = true;
+        let isValid = true, firstErrorElement = null;
         let errorMessage = "Preencha corretamente os campos em vermelho:<br>";
-        let firstErrorElement = null;
 
         Elements.formInfo.querySelectorAll('.input-error-border').forEach(Utils.unmarkAsError);
-        const requiredInputs = Array.from(Elements.formInfo.querySelectorAll('input[required]'));
-
-        requiredInputs.forEach(input => {
+        Array.from(Elements.formInfo.querySelectorAll('input[required]')).forEach(input => {
             let errorFound = false;
-            const value = input.value.trim();
-            const labelText = input.labels && input.labels[0] ? input.labels[0].textContent : input.id;
-            
+            const value    = input.value.trim();
+            const label    = input.labels?.[0]?.textContent || input.id;
+
             if (!value) {
                 isValid = false; errorFound = true; Utils.markAsError(input);
                 if (!firstErrorElement) firstErrorElement = input;
-                errorMessage += `• O campo **${labelText}** está vazio.<br>`;
-            } 
-            
+                errorMessage += `• O campo **${label}** está vazio.<br>`;
+            }
             if (!errorFound && input.id === 'email' && !Utils.isValidEmail(value)) {
                 isValid = false; errorFound = true; Utils.markAsError(input);
                 if (!firstErrorElement) firstErrorElement = input;
                 errorMessage += `• O **Email** não está em um formato válido.<br>`;
             }
-            
             if (!errorFound && input.id === 'cpf' && !Utils.isValidCPF(value)) {
                 isValid = false; Utils.markAsError(input);
                 if (!firstErrorElement) firstErrorElement = input;
@@ -131,29 +115,24 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        if (!isValid) {
-            Utils.showCheckoutError(errorMessage, 1);
-            firstErrorElement?.focus(); 
-            return false;
-        }
+        if (!isValid) { Utils.showCheckoutError(errorMessage, 1); firstErrorElement?.focus(); return false; }
 
-        localStorage.setItem('checkoutInfo', JSON.stringify({ 
-            nome: $('nome').value,
+        localStorage.setItem('checkoutInfo', JSON.stringify({
+            nome:  $('nome').value,
             email: Elements.emailInput.value,
-            cpf: Elements.cpfInput.value,
+            cpf:   Elements.cpfInput.value,
         }));
         return true;
     };
 
     const validateStep2 = () => {
         Utils.hideCheckoutError(2);
-        let isValid = true;
+        let isValid = true, firstErrorElement = null;
         let errorMessage = "Corrija os campos do pagamento:<br>";
-        let firstErrorElement = null;
-        
+
         Elements.paymentForm.querySelectorAll('.input-error-border').forEach(Utils.unmarkAsError);
 
-        if (Elements.paymentMethodSelect.value === "") {
+        if (!Elements.paymentMethodSelect.value) {
             Utils.markAsError(Elements.paymentMethodSelect);
             Utils.showCheckoutError("Selecione uma forma de pagamento para continuar.", 2);
             Elements.paymentMethodSelect.focus();
@@ -161,78 +140,58 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (Elements.paymentMethodSelect.value === 'cartao') {
-            const cardFields = [
-                { input: Elements.cardHolderNameInput, validate: (v) => v.trim() !== "", msg: "• Nome no Cartão é obrigatório.<br>" },
-                { input: Elements.cardNumberInput, validate: Utils.isValidCardNumber, msg: "• Número do Cartão deve ter 16 dígitos.<br>" },
-                { input: Elements.validadeInput, validate: Utils.isValidExpiry, msg: "• Validade (MM/AA) está incorreta ou expirada.<br>" },
-                { input: Elements.cvvInput, validate: Utils.isValidCVV, msg: "• CVV deve ter 3 ou 4 dígitos.<br>" },
+            const fields = [
+                { input: Elements.cardHolderNameInput, validate: v => v.trim() !== "",        msg: "• Nome no Cartão é obrigatório.<br>" },
+                { input: Elements.cardNumberInput,     validate: Utils.isValidCardNumber,      msg: "• Número do Cartão deve ter 16 dígitos.<br>" },
+                { input: Elements.validadeInput,       validate: Utils.isValidExpiry,          msg: "• Validade (MM/AA) está incorreta ou expirada.<br>" },
+                { input: Elements.cvvInput,            validate: Utils.isValidCVV,             msg: "• CVV deve ter 3 ou 4 dígitos.<br>" },
             ];
-            
-            cardFields.forEach(field => {
-                if (field.input && !field.validate(field.input.value)) {
-                    Utils.markAsError(field.input);
-                    isValid = false;
-                    errorMessage += field.msg;
-                    if (!firstErrorElement) firstErrorElement = field.input;
+            fields.forEach(f => {
+                if (f.input && !f.validate(f.input.value)) {
+                    Utils.markAsError(f.input); isValid = false; errorMessage += f.msg;
+                    if (!firstErrorElement) firstErrorElement = f.input;
                 }
             });
-            
-            if (!isValid) {
-                Utils.showCheckoutError(errorMessage, 2);
-                firstErrorElement?.focus();
-                return false;
-            }
+            if (!isValid) { Utils.showCheckoutError(errorMessage, 2); firstErrorElement?.focus(); return false; }
         }
-        
-        // Atualiza a ordem com o método de pagamento
+
         currentOrder.paymentMethod = Elements.paymentMethodSelect.value;
         localStorage.setItem('currentOrder', JSON.stringify(currentOrder));
         return true;
     };
 
-
+    // =========================================================================
+    // 4. RENDERIZAÇÃO DE PASSOS
+    // =========================================================================
     const renderStep = (step, orderData = currentOrder) => {
-        // Lógica de exibição de seções e barra de progresso
-        const steps = document.querySelectorAll('.step-item');
-        document.querySelectorAll('.step-section').forEach(section => { section.style.display = 'none'; });
+        document.querySelectorAll('.step-section').forEach(s => { s.style.display = 'none'; });
         $(`step-${step}`).style.display = 'block';
-        steps.forEach(s => s.classList.remove('active'));
-        steps.forEach(s => { 
-            if (parseInt(s.getAttribute('data-step')) <= step) s.classList.add('active');
+
+        document.querySelectorAll('.step-item').forEach(s => {
+            s.classList.toggle('active', parseInt(s.dataset.step) <= step);
         });
 
         Utils.hideCheckoutError(1);
         Utils.hideCheckoutError(2);
-        
-        // Renderização do Resumo (Passo 2)
-        if (step === 2) {
-            const productTitle = orderData.title || 'Ingresso Selecionado';
-            const totalFormatted = Utils.formatCurrency(orderData.total);
 
+        if (step === 2) {
             $('order-summary').innerHTML = `
                 <p class="summary-title">Resumo do Pedido</p>
-                <p>Ingresso: <strong>${productTitle}</strong></p>
-                <p class="summary-total">Total a Pagar: ${totalFormatted}</p>
+                <p>Ingresso: <strong>${orderData.title || 'Ingresso Selecionado'}</strong></p>
+                <p class="summary-total">Total a Pagar: ${Utils.formatCurrency(orderData.total)}</p>
             `;
         }
-        
-        // Renderização da Confirmação (Passo 3)
-        if (step === 3) {
-            const dataToUse = orderData || currentOrder; 
 
-            if (!dataToUse || !dataToUse.total) { 
-                console.error("Dados da ordem ausentes na confirmação.");
-                return; 
-            }
-            
-            const { paymentMethod, title, total } = dataToUse;
+        if (step === 3) {
+            if (!orderData?.total) return;
+            const { paymentMethod, title, total } = orderData;
             const isPix = paymentMethod === 'pix';
 
-            $('confirmation-details').style.display = isPix ? 'none' : 'block';
-            $('pix-payment-details').style.display = isPix ? 'block' : 'none';
+            $('confirmation-details').style.display  = isPix ? 'none'  : 'block';
+            $('pix-payment-details').style.display   = isPix ? 'block' : 'none';
 
-            const [titleEl, totalEl] = isPix 
-                ? [Elements.productTitlePixEl, Elements.totalPixEl] 
+            const [titleEl, totalEl] = isPix
+                ? [Elements.productTitlePixEl, Elements.totalPixEl]
                 : [Elements.productTitleConfirmEl, Elements.totalConfirmEl];
 
             if (titleEl) titleEl.textContent = title || 'Ingresso';
@@ -240,107 +199,137 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-
     // =========================================================================
-    // 4. LÓGICA DE MÁSCARAS E EVENT LISTENERS
+    // 5. CONFIRMAR PEDIDO NO SERVIDOR
+    // ★ Grava na tabela `pedidos` para aparecer no histórico do admin
     // =========================================================================
-
-    const setupMasks = () => {
-        const applyMask = (input, mask) => {
-            let value = input.value.replace(/[^\d]/g, "");
-            let maskedValue = "";
-            let k = 0;
-            for (let i = 0; i < mask.length; i++) {
-                if (k >= value.length) break;
-                maskedValue += (mask[i] === '9') ? value[k++] : mask[i];
+    async function confirmarPedidoNoServidor(itensPedido, formaPagamento) {
+        try {
+            const resposta = await fetch('/pedidos/confirmar', {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify({ itensPedido, formaPagamento })
+            });
+            const resultado = await resposta.json();
+            if (!resultado.sucesso) {
+                console.warn('Aviso ao confirmar pedido no servidor:', resultado.mensagem);
             }
-            input.value = maskedValue;
-        };
+        } catch (err) {
+            console.error('Erro de rede ao confirmar pedido:', err);
+        }
+    }
 
+    // =========================================================================
+    // 6. MÁSCARAS E EVENT LISTENERS
+    // =========================================================================
+    const setupMasks = () => {
         const masks = {
             'cpf': '999.999.999-99', 'cep': '99999-999',
             'card-number': '9999 9999 9999 9999', 'validade': '99/99', 'cvv': '9999'
         };
-
-        document.querySelectorAll('.step-section input').forEach(element => {
-            element.addEventListener('input', () => {
-                Utils.unmarkAsError(element);
-                if (masks[element.id]) {
-                    applyMask(element, masks[element.id]);
+        document.querySelectorAll('.step-section input').forEach(el => {
+            el.addEventListener('input', () => {
+                Utils.unmarkAsError(el);
+                if (masks[el.id]) {
+                    let val = el.value.replace(/[^\d]/g, ""), masked = "", k = 0;
+                    for (let i = 0; i < masks[el.id].length; i++) {
+                        if (k >= val.length) break;
+                        masked += masks[el.id][i] === '9' ? val[k++] : masks[el.id][i];
+                    }
+                    el.value = masked;
                 }
             });
         });
     };
 
     const setupEventListeners = () => {
-        // Navegação
         $('next-to-payment').addEventListener('click', (e) => {
-            e.preventDefault(); 
+            e.preventDefault();
             if (validateStep1()) renderStep(2);
         });
 
         $('back-to-info').addEventListener('click', () => renderStep(1));
 
-        // Mudança de Método de Pagamento
         Elements.paymentMethodSelect.addEventListener('change', (e) => {
-            const selectedMethod = e.target.value;
+            const method         = e.target.value;
             const paymentDetails = $('payment-details');
-            
-            // Oculta tudo e remove required
-            paymentDetails.querySelectorAll('[data-method]').forEach(detail => detail.style.display = 'none');
-            paymentDetails.querySelectorAll('input').forEach(input => {
-                input.removeAttribute('required');
-                Utils.unmarkAsError(input);
+            paymentDetails.querySelectorAll('[data-method]').forEach(d => { d.style.display = 'none'; });
+            paymentDetails.querySelectorAll('input').forEach(inp => {
+                inp.removeAttribute('required');
+                Utils.unmarkAsError(inp);
             });
-
-            const detailSection = paymentDetails.querySelector(`[data-method="${selectedMethod}"]`);
-            if (detailSection) {
-                detailSection.style.display = 'block';
-                // Adiciona required apenas para campos de cartão
-                if (selectedMethod === 'cartao') {
-                    detailSection.querySelectorAll('input').forEach(input => input.setAttribute('required', 'required'));
+            const section = paymentDetails.querySelector(`[data-method="${method}"]`);
+            if (section) {
+                section.style.display = 'block';
+                if (method === 'cartao') {
+                    section.querySelectorAll('input').forEach(inp => inp.setAttribute('required', 'required'));
                 }
             }
             Utils.hideCheckoutError(2);
         });
 
-        // Submissão do Formulário de Pagamento
-        Elements.paymentForm.addEventListener('submit', (e) => {
-            e.preventDefault(); 
-            if (validateStep2()) {
-                const submitButton = $('submit-payment');
-                submitButton.textContent = 'Processando...';
-                submitButton.disabled = true;
-                
-                // Consolida detalhes da ordem final (incluindo o método de pagamento salvo em currentOrder)
-                const finalOrderDetails = {
-                    title: currentOrder.title,
-                    total: currentOrder.total,
-                    paymentMethod: currentOrder.paymentMethod
-                };
+        Elements.paymentForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!validateStep2()) return;
 
-                setTimeout(() => {
-                    let userOrders = JSON.parse(localStorage.getItem('userOrders')) || [];
-                    userOrders.push({
-                        ...currentOrder,
-                        checkoutInfo: JSON.parse(localStorage.getItem('checkoutInfo')), 
-                        date: new Date().toISOString()
-                    }); 
-                    
-                    localStorage.setItem('userOrders', JSON.stringify(userOrders));
-                    
-                    
-                    localStorage.removeItem('checkoutInfo');
-                    
-                    renderStep(3, finalOrderDetails); 
-                    submitButton.textContent = 'Finalizar Pedido';
-                    submitButton.disabled = false;
-                }, 1000); 
-            }
+            const submitButton = $('submit-payment');
+            submitButton.textContent = 'Processando...';
+            submitButton.disabled    = true;
+
+            const finalOrderDetails = {
+                title:         currentOrder.title,
+                total:         currentOrder.total,
+                paymentMethod: currentOrder.paymentMethod
+            };
+
+            // ── Simula processamento (1 segundo) ──
+            setTimeout(async () => {
+                // ★ Registra o pedido confirmado no servidor
+                // Monta a lista de itens a partir do localStorage do carrinho
+                const itensPedido = currentOrder.tickets
+                    ? [
+                        currentOrder.tickets.full > 0 && {
+                            id:           currentOrder.showId,
+                            tipo_ingresso: 'Pista Inteira',
+                            quantidade:   currentOrder.tickets.full,
+                            preco:        currentOrder.priceFull || (currentOrder.total / (currentOrder.tickets.full + currentOrder.tickets.half))
+                        },
+                        currentOrder.tickets.half > 0 && {
+                            id:           currentOrder.showId,
+                            tipo_ingresso: 'Pista Meia-Entrada',
+                            quantidade:   currentOrder.tickets.half,
+                            preco:        currentOrder.priceHalf || (currentOrder.total / (currentOrder.tickets.full + currentOrder.tickets.half))
+                        }
+                      ].filter(Boolean)
+                    : [];
+
+                // Lê cartIds do localStorage caso existam
+                const cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
+                if (cartItems.length > 0) {
+                    await confirmarPedidoNoServidor(cartItems, currentOrder.paymentMethod);
+                } else if (itensPedido.length > 0) {
+                    await confirmarPedidoNoServidor(itensPedido, currentOrder.paymentMethod);
+                }
+
+                // Histórico local (mantido para compatibilidade)
+                let userOrders = JSON.parse(localStorage.getItem('userOrders')) || [];
+                userOrders.push({
+                    ...currentOrder,
+                    checkoutInfo: JSON.parse(localStorage.getItem('checkoutInfo')),
+                    date: new Date().toISOString()
+                });
+                localStorage.setItem('userOrders', JSON.stringify(userOrders));
+                localStorage.removeItem('checkoutInfo');
+                localStorage.removeItem('cartItems');
+
+                renderStep(3, finalOrderDetails);
+                submitButton.textContent = 'Finalizar Pedido';
+                submitButton.disabled    = false;
+            }, 1000);
         });
     };
 
     setupMasks();
     setupEventListeners();
-    renderStep(1); 
+    renderStep(1);
 });

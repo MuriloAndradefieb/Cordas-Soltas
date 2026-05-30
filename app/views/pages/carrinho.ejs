@@ -4,38 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> C | Cordas Soltas</title>
-    
     <link rel="stylesheet" href="/css/header-nav.css">
-    <link rel="stylesheet" href="/css/carrinho.css"> 
+    <link rel="stylesheet" href="/css/carrinho.css">
 </head>
 <body>
 
     <%- include("../partials/header.ejs"); %>
 
     <main class="carrinho-container">
-        
+
         <section class="lista-ingressos">
             <% if (itensCarrinho && itensCarrinho.length > 0) { %>
                 <% itensCarrinho.forEach(item => { %>
-                    <article class="item-ingresso" data-cart-id="<%= item.cartId %>" data-show-id="<%= item.id %>">
-                        
+                    <%
+                        /* garante que cartId e id estejam sempre presentes como string */
+                        const cartIdAttr = String(item.cartId || item.id || '');
+                        const showIdAttr = String(item.id || '');
+                    %>
+                    <article class="item-ingresso"
+                             data-cart-id="<%= cartIdAttr %>"
+                             data-show-id="<%= showIdAttr %>">
+
                         <label class="controle-selecao">
                             <input type="checkbox" class="checkbox-nativo item-checkbox" checked>
                             <span class="checkbox-customizado"></span>
                         </label>
 
                         <figure>
-                            <img src="<%= item.imagem_url || '/img/pexels-wendywei-1190297.jpg' %>" alt="Banner do Show" class="banner-show" onerror="this.onerror=null;this.src='/img/pexels-wendywei-1190297.jpg';">
+                            <img src="<%= item.imagem_url || '/img/pexels-wendywei-1190297.jpg' %>"
+                                 alt="Banner do Show"
+                                 class="banner-show"
+                                 onerror="this.onerror=null;this.src='/img/pexels-wendywei-1190297.jpg';">
                         </figure>
 
                         <section class="info-show">
                             <h3 class="item-nome-banco"><%= item.titulo || item.nome %></h3>
-                            
-                            <p><strong>Ingresso:</strong> <span class="item-nome-ingresso"><%= item.tipo_ingresso || (item.eh_meia ? 'Pista Meia-Entrada' : 'Pista Inteira') %></span></p>
+
+                            <p><strong>Ingresso:</strong>
+                                <span class="item-nome-ingresso"><%= item.tipo_ingresso || (item.eh_meia ? 'Pista Meia-Entrada' : 'Pista Inteira') %></span>
+                            </p>
                             <p><strong>Local:</strong> <span><%= item.local %></span></p>
-                            <p><strong>Data:</strong> <span><%= item.data_show || item.data_formatada %></span></p>
-                            <p><strong>Estilo Musical:</strong> <span class="destaque-texto"><%= item.estilo %></span></p>
-                            <p><strong>Preço:</strong> R$ <span class="item-preco-txt"><%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></span></p>
+                            <p><strong>Data:</strong>  <span><%= item.data_show || item.data_formatada %></span></p>
+                            <p><strong>Estilo Musical:</strong>
+                                <span class="destaque-texto"><%= item.estilo %></span>
+                            </p>
+                            <p><strong>Preço:</strong>
+                                R$ <span class="item-preco-txt"><%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></span>
+                            </p>
                         </section>
 
                         <section class="controles-quantidade" aria-label="Quantidade">
@@ -55,10 +70,9 @@
 
         <aside class="resumo-compra">
             <h2 class="resumo-titulo">Resumo Da Compra</h2>
-            
+
             <table class="tabela-resumo">
-                <tbody id="corpo-resumo">
-                    </tbody>
+                <tbody id="corpo-resumo"></tbody>
                 <tfoot>
                     <tr class="linha-resumo total-geral">
                         <td>Total :</td>
@@ -67,14 +81,20 @@
                 </tfoot>
             </table>
 
+            <button type="button"
+                    id="checkout-button"
+                    class="btn-comprar"
+                    data-logado="<%= usuario ? 'true' : 'false' %>">
+                Finalizar Compra
+            </button>
 
-<button type="button" id="checkout-button" class="btn-comprar" data-logado="<%= usuario ? 'true' : 'false' %>">
-    Finalizar Compra
-</button>
+            <div id="alerta-login-carrinho" class="alerta-login-obrigatorio" style="display:none;">
+                <span>🔒 Você precisa estar logado para comprar.
+                    <a href="/login" class="link-alerta-login">Fazer Login</a>
+                </span>
+            </div>
+        </aside>
 
-<div id="alerta-login-carrinho" class="alerta-login-obrigatorio" style="display: none;">
-    <span>🔒 Você precisa estar logado para comprar. <a href="/login" class="link-alerta-login">Fazer Login</a></span>
-</div>
     </main>
 
     <script src="/js/carrinho.js"></script>
