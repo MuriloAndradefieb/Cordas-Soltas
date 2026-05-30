@@ -863,6 +863,8 @@ router.post('/adm/ingressos/excluir/:id', async (req, res) => {
         return res.status(500).send("Erro interno ao excluir o ingresso.");
     }
 });
+router.get('/adm/formularios', FormularioController.listarAdmin);
+router.get('/adm/formularios/:id', FormularioController.detalharAdmin);
 
 // =========================================================================
 // DEMAIS PÁGINAS E MIDDLEWARES
