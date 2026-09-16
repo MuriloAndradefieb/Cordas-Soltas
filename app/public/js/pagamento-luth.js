@@ -211,7 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             $('order-summary').innerHTML = `
                 <p class="summary-title">Resumo do Pedido</p>
-                <p>Instrumento: <strong>${productTitle}</strong></p>
+                <p>Luthbox: <strong>${productTitle}</strong></p>
                 <p class="summary-total">Total a Pagar: ${totalFormatted}</p>
             `;
         }
@@ -235,8 +235,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 ? [Elements.productTitlePixEl, Elements.totalPixEl] 
                 : [Elements.productTitleConfirmEl, Elements.totalConfirmEl];
 
-            titleEl.textContent = title || 'Instrumento';
-            totalEl.textContent = Utils.formatCurrency(total);
+            if (titleEl) titleEl.textContent = title || 'Instrumento';
+            if (totalEl) totalEl.textContent = Utils.formatCurrency(total);
         }
     };
 

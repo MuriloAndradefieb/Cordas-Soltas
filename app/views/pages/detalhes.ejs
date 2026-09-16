@@ -45,7 +45,7 @@
         }
     </style>
 </head>
-<body>
+<body data-usuario-logado="<%= typeof usuario !== 'undefined' && usuario ? 'true' : 'false' %>">
     <section vw class="enabled">
         <section vw-access-button class="active"></section>
         <section vw-plugin-wrapper>
@@ -71,9 +71,9 @@
                 <section class="show-info-wrapper">
                     <header class="show-info">
                         <h1 id="detalhe-nome-show"><%= show.titulo %></h1>
-                        <p>🎸 Gênero: <strong><%= show.estilo %></strong></p>
-                        <p>📅 Data: <%= show.data_show %></p>
-                        <p>📍 Local: <%= show.local %></p>
+                        <p><span class="detail-meta-icon genre" aria-hidden="true"></span>Gênero: <strong><%= show.estilo %></strong></p>
+                        <p><span class="detail-meta-icon date" aria-hidden="true"></span>Data: <%= show.data_show %></p>
+                        <p><span class="detail-meta-icon place" aria-hidden="true"></span>Local: <%= show.local %></p>
                     </header>
 
                     <section class="purchase-section">
@@ -114,11 +114,11 @@
                         <button id="add-to-cart-button" class="cart-button"><img src="/img/carrinho-icon.png" width="10px"> Adicionar ao Carrinho</button>
 
                         <section id="error-message" class="aviso-validacao erro" role="alert">
-                            <span>⚠️ Selecione pelo menos um ingresso para continuar.</span>
+                            <span>Selecione pelo menos um ingresso para continuar.</span>
                         </section>
 
                         <section id="aviso-login" class="aviso-validacao aviso" role="alert">
-                            <span>🔒 Você precisa estar logado para comprar. <a href="/login">Fazer Login</a></span>
+                            <span>Você precisa estar logado para comprar. <a href="/login">Fazer Login</a></span>
                         </section>
                     </section>
                 </section>
@@ -131,7 +131,7 @@
     </main>
 
     <script>
-        const usuarioLogado = <%- typeof usuario !== 'undefined' && usuario ? 'true' : 'false' %>;
+        const usuarioLogado = document.body.dataset.usuarioLogado === 'true';
         const showRealDoBanco = {
             id: "<%= show.id %>",
             title: "<%= show.titulo %>",

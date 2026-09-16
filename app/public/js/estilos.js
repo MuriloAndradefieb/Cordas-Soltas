@@ -5,16 +5,14 @@ const estilosData = {
         imageSrc: 'img/luthrock.jpg',
         imageAlt: 'Setup completo para Rock: Bateria, Guitarras, Amplificadores e Microfones.',
         caption: 'Equipamento essencial para o som pesado do Rock.',
-        description: 'O kit de instrumentos ideal para a banda de Rock que procura o som clássico e potente:',
+        description: 'Kit de instrumentos para manter o show de Rock pronto mesmo em emergências:',
         items: [
-            '1. Bateria (Completa, acústica ou eletrônica)',
-            '2. Guitarra Elétrica (Clássica do Rock)',
-            '3. Baixo Elétrico (Para a fundação rítmica)',
-            '4. Amplificadores de Guitarra e Baixo',
-            '5. Microfones (Vocais e Bateria)',
-            '6. Cabos e Pedais de Efeito (Distortion/Overdrive)'
+            '1x Bateria',
+            '3x Guitarras',
+            '2x Microfones',
+            '2x Caixas de som'
         ],
-        price: '150.00'
+        price: '45.00'
     },
     'samba': {
         title: 'Samba - Equipamentos',
@@ -22,16 +20,16 @@ const estilosData = {
         imageSrc: 'img/luthsamba.webp',
         imageAlt: 'Setup de percussão para Samba: Pandeiro, Surdo, Agogô e Reco-reco.',
         caption: 'O kit de percussão que é a alma da Roda de Samba.',
-        description: 'Ritmo e tradição com os instrumentos que dão o toque especial ao Samba de Raiz:',
+        description: 'Kit de apoio para a roda continuar com base, harmonia e percussão:',
         items: [
-            '1. Surdo (Marcação grave do tempo)',
-            '2. Pandeiro (Instrumento símbolo do Samba)',
-            '3. Tamborim (Para os contratempos)',
-            '4. Cavaquinho (Harmonia e solado melódico)',
-            '5. Violão (Base harmônica)',
-            '6. Reco-reco e Agogô (Cores e texturas rítmicas)'
+            '1x Surdo',
+            '1x Repinique',
+            '1x Tantã',
+            '1x Pandeiro',
+            '1x Banjo',
+            '1x Cavaquinho'
         ],
-        price: '150.00' 
+        price: '45.00'
     },
     'pagode': {
         title: 'Pagode - Equipamentos',
@@ -39,16 +37,15 @@ const estilosData = {
         imageSrc: 'img/luthpagode.webp',
         imageAlt: 'Setup para Pagode com Tantan, Violão e Cavaquinho.',
         caption: 'Instrumentos de corda e percussão para o Pagode moderno.',
-        description: 'O conjunto perfeito de instrumentos que define o Pagode contemporâneo:',
+        description: 'Kit de instrumentos para sustentar a levada do Pagode sem perder o tempo:',
         items: [
-            '1. Cavaquinho (O instrumento principal, melódico e rítmico)',
-            '2. Violão de 6 ou 7 cordas (Base harmônica)',
-            '3. Tan-Tan (Marcação de tempo fundamental)',
-            '4. Rebolo (Percussão de som médio-grave)',
-            '5. Pandeiro e Tamborim (Ritmo e contratempo)',
-            '6. Banjo (Comum em subgêneros)'
+            '1x Surdo',
+            '1x Agogô',
+            '2x Pandeiro',
+            '1x Tamborim',
+            '1x Reco-reco'
         ],
-        price: '150.00'
+        price: '45.00'
     },
     'eletronica': {
         title: 'Eletrônica - Equipamentos',
@@ -56,16 +53,13 @@ const estilosData = {
         imageSrc: 'img/lutheletronica.webp',
         imageAlt: 'Setup de música eletrônica com controladora de DJ e sintetizadores.',
         caption: 'Tecnologia e inovação para criação e performance.',
-        description: 'Equipamento moderno para criar batidas, mixar e manipular sons eletrônicos:',
+        description: 'Kit de apoio para sets, mixagens e apresentações eletrônicas:',
         items: [
-            '1. Controladora MIDI / Mesa de DJ (Mixagem e scratch)',
-            '2. Sintetizadores (Para criação de texturas e timbres)',
-            '3. Sampler e Caixa de Ritmos (Sequenciamento de batidas)',
-            '4. Fones de Ouvido (Monitoramento de alta fidelidade)',
-            '5. Monitores de Estúdio (Para mixagem e masterização)',
-            '6. Controladores MIDI Adicionais (Pads, knobs, etc.)'
+            '1x Mesa Dj',
+            '1x Microfone',
+            '2x Mesa de som 12 canais'
         ],
-        price: '150.00'
+        price: '45.00'
     },
     'jazz': {
         title: 'Jazz - Equipamentos',
@@ -73,23 +67,22 @@ const estilosData = {
         imageSrc: 'img/luthjazz.jpg',
         imageAlt: 'Setup de Jazz com Saxofone, Trompete, Piano, Contrabaixo e Bateria.',
         caption: 'Instrumentos icônicos para a arte da improvisação.',
-        description: 'O conjunto de instrumentos essenciais para a harmonia e o swing do Jazz:',
+        description: 'Kit de instrumentos para preservar a harmonia e a improvisação no palco:',
         items: [
-            '1. Saxofone (Alto ou Tenor - Essencial para solos)',
-            '2. Trompete ou Trombone (Para a linha de frente)',
-            '3. Piano ou Teclado (Base harmônica e acompanhamento)',
-            '4. Contrabaixo Acústico (Para o walking bass)',
-            '5. Bateria (Minimalista, focada no ride/chimbal)',
-            '6. Guitarra (Semi-acústica, para acordes e solos limpos)'
+            '1x Violino',
+            '1x Saxofone',
+            '1x Violão',
+            '1x Teclado',
+            '1x Guitarra'
         ],
-        price: '150.00'
+        price: '45.00'
     }
 };
 
 const mainContent = document.getElementById('main-content');
 
 
-function setupBuyButtonListener() {
+function setupBuyButtonListener(data) {
     const buyButton = document.querySelector('.botao-prosseguir');
 
     if (buyButton) {
@@ -102,7 +95,10 @@ function setupBuyButtonListener() {
             const orderData = {
                 title: productTitle || 'Kit de Instrumentos',
                 total: parseFloat(productPrice) || 150.00,
-                quantity: 1 
+                quantity: 1,
+                source: 'luthbox',
+                description: data.description,
+                items: data.items
             };
             localStorage.setItem('currentOrder', JSON.stringify(orderData));
 
@@ -118,39 +114,54 @@ function renderizarEstilo(estiloKey) {
 
     const itemsHtml = data.items.map(item => `<li>${item}</li>`).join('');
     const html = `
-        <article class="equipamento-section">
-            <header>
-                <h1>${data.title}</h1>
-            </header>
-            
-            <section class="equipamento-card">
-                <h2>${data.cardTitle}</h2>
-                <figure>
-                    <img src="${data.imageSrc}" alt="${data.imageAlt}">
-                    <figcaption>${data.caption}</figcaption>
-                </figure>
-                
-                <p>${data.description}</p>
-                
-                <ul>
-                    ${itemsHtml}
-                </ul>
-                
-                <p class="preco">A partir de: R$${data.price.replace('.', ',')}</p>
-                
-                <a href="pagamento.ejs" 
-                   class="botao-prosseguir" 
-                   data-title="${data.cardTitle}" 
-                   data-price="${data.price}">
-                   PROSSEGUIR
-                </a>
-            </section>
-        </article>
+        <section class="details-and-back-container luth-details-container">
+            <a href="/luthbox-seguros" class="back-link">&larr; Voltar para Luthbox</a>
+
+            <article class="show-details-container luth-product-details">
+                <section class="show-image-wrapper">
+                    <img src="${data.imageSrc}" alt="${data.imageAlt}" class="show-image">
+                </section>
+
+                <section class="show-info-wrapper">
+                    <header class="show-info">
+                        <h1>${data.cardTitle}</h1>
+                        <p><span class="detail-meta-icon genre" aria-hidden="true"></span>Categoria: <strong>${data.title.replace(' - Equipamentos', '')}</strong></p>
+                        <p><span class="detail-meta-icon place" aria-hidden="true"></span>${data.caption}</p>
+                    </header>
+
+                    <section class="purchase-section">
+                        <section class="ticket-option luth-kit-option">
+                            <section class="ticket-name">
+                                <h3>Aluguel do kit</h3>
+                                <span class="ticket-price">R$ ${data.price.replace('.', ',')}</span>
+                            </section>
+                        </section>
+
+                        <section class="luth-kit-description">
+                            <p>${data.description}</p>
+                            <ul>${itemsHtml}</ul>
+                        </section>
+
+                        <section class="total-summary">
+                            <h3>Total:</h3>
+                            <span class="total-price">R$ ${data.price.replace('.', ',')}</span>
+                        </section>
+
+                        <a href="/pagamento-luth"
+                           class="buy-button botao-prosseguir"
+                           data-title="${data.cardTitle}"
+                           data-price="${data.price}">
+                           ALUGAR
+                        </a>
+                    </section>
+                </section>
+            </article>
+        </section>
     `;
 
     mainContent.innerHTML = html;
     document.title = `Luthbox - ${data.title.split(' ')[0]}`;
-    setupBuyButtonListener();
+    setupBuyButtonListener(data);
 }
 
 

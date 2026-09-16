@@ -35,8 +35,7 @@
             if (next) next.addEventListener('click', e => { e.preventDefault(); carousel.scrollBy({ left:  step, behavior: 'smooth' }); });
         }
 
-        ['rock-carousel','samba-carousel','pagode-carousel','jazz-carousel','popular-carousel','recent-carousel']
-            .forEach(initCarousel);
+        document.querySelectorAll('.carousel-cards[id]').forEach(carousel => initCarousel(carousel.id));
 
         // ── Banner automático ─────────────────────────────────────────────────────
         const bannerEl = document.getElementById('auto-banner-carousel');
@@ -45,9 +44,14 @@
             if (slides.length > 1) {
                 let cur = 0;
                 setInterval(() => {
+                    var previous = cur;
+                    slides[previous].classList.add('exiting');
                     slides[cur].classList.remove('active');
                     cur = (cur + 1) % slides.length;
                     slides[cur].classList.add('active');
+                    setTimeout(() => {
+                        slides[previous].classList.remove('exiting');
+                    }, 900);
                 }, 5000);
             }
         }

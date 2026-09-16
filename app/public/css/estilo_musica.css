@@ -1,120 +1,72 @@
-
-.equipamento-section {
-    max-width: 900px;
-    width: 100%;
-    margin: 0 auto;
-    text-align: center;
-    padding: 2rem;
-    background-color: 0;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+.luth-details-page .seguros-main-content {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: calc(100vh - 80px);
+    padding: 40px 4%;
 }
 
-.equipamento-section h1 {
-    font-size: 3rem;
-    color: #ffcc00;
-    margin-bottom: 2rem;
-    text-transform: uppercase;
-    letter-spacing: 2px;
+.luth-details-container {
+    width: min(100%, 850px);
+    max-width: 850px;
 }
 
-
-.equipamento-card {
-    background-color: #0d0d0d;
-    border: 2px solid 0;
-    border-radius: 8px;
-    padding: 1.5rem;
-    max-width: 400px; 
-    margin: 0 auto;
-    text-align: left;
+.luth-product-details {
+    min-height: 0;
 }
 
-.equipamento-card figure {
-    margin-bottom: 1rem;
-    border-bottom: 1px solid #333;
-    padding-bottom: 1rem;
-}
-
-.equipamento-card img {
-    width: 100%;
+.luth-product-details .show-image {
+    aspect-ratio: 4 / 5;
     height: auto;
-    border-radius: 5px;
 }
 
-.equipamento-card figcaption {
-    text-align: center;
-    font-style: italic;
-    color: #a8a8a8;
-    margin-top: 0.5rem;
+.luth-kit-option {
+    min-height: 74px;
 }
 
-.equipamento-card h2 {
-    color: #ffcc00;
-    font-size: 1.8rem;
-    margin-bottom: 1rem;
-    text-align: center;
+.luth-kit-description {
+    padding: 16px 5px 4px;
+    border-top: 1px solid #333;
 }
 
-.equipamento-card ul {
-    list-style: none;
+.luth-kit-description p {
+    margin: 0 0 12px;
+    color: #ffffff;
+    font-weight: 700;
+    line-height: 1.55;
+}
+
+.luth-kit-description ul {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin: 0;
     padding: 0;
-    margin-bottom: 1.5rem;
+    list-style: none;
 }
 
-.equipamento-card ul li {
-    padding: 0.4rem 0;
-    font-size: 1rem;
+.luth-kit-description li {
+    padding: 10px 12px;
+    border: 1px solid #333;
+    border-radius: 8px;
+    background: #252525;
     color: #f7f7f7;
-    border-bottom: 1px solid #2a2a2a;
+    font-weight: 700;
 }
 
-.equipamento-card ul li:last-child {
-    border-bottom: none;
-}
-
-.equipamento-card p.preco {
-    font-size: 1.2rem;
-    color: #a8a8a8;
-    margin-bottom: 1.5rem;
-    text-align: center;
-}
-
-.equipamento-card a.botao-prosseguir {
-    display: block;
-    background-color: #ffcc00;
-    color: #0d0d0d;
+.luth-details-page .botao-prosseguir {
     text-decoration: none;
-    padding: 0.8rem 1.5rem;
-    border-radius: 5px;
-    font-weight: bold;
-    font-size: 1.1rem;
-    transition: background-color 0.2s, color 0.2s;
     text-align: center;
-    border: none;
 }
 
-.equipamento-card a.botao-prosseguir:hover {
-    background-color: #e0b300;
-    color: #000000;
+@media (max-width: 992px) {
+    .luth-details-page .seguros-main-content {
+        padding: 24px 4%;
+    }
 }
 
-
-@media (max-width: 768px) {
-    .equipamento-section {
-        padding: 1rem;
-        width: 95%;
-    }
-
-    .equipamento-section h1 {
-        font-size: 2.2rem;
-        margin-bottom: 1rem;
-    }
-
-    .equipamento-card {
-        padding: 1rem;
-    }
-
-    .equipamento-card h2 {
-        font-size: 1.5rem;
+@media (max-width: 640px) {
+    .luth-kit-description ul {
+        grid-template-columns: 1fr;
     }
 }

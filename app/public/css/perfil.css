@@ -62,20 +62,20 @@ a {
     width: 130px;
     height: 130px;
     border-radius: 50%;
-    background-color: var(--ouro);
-    border: 3px solid var(--ouro);
+    background-color: #242428;
+    border: 0;
     cursor: pointer;
     overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+    box-shadow: none;
 }
 
 .avatar-placeholder {
     width: 100%;
     height: 100%;
-    background-color: var(--ouro);
+    background-color: #242428;
     position: relative;
     display: block;
 }
@@ -85,7 +85,7 @@ a {
     position: absolute;
     width: 45px;
     height: 45px;
-    background-color: var(--bg-main);
+    background-color: #55555d;
     border-radius: 50%;
     top: 20px;
     left: 50%;
@@ -97,7 +97,7 @@ a {
     position: absolute;
     width: 80px;
     height: 55px;
-    background-color: var(--bg-main);
+    background-color: #55555d;
     border-radius: 50% 50% 0 0;
     bottom: -10px;
     left: 50%;
@@ -429,13 +429,25 @@ dialog.modal-caixa::backdrop {
 .modal-input {
     width: 100%;
     min-height: 44px;
-    border: 1px solid #333333;
+    border: 1px solid #333333 !important;
     border-radius: 8px;
-    background-color: #222222;
-    color: #ffffff;
+    background-color: #222222 !important;
+    color: #ffffff !important;
+    color-scheme: dark;
     padding: 12px 14px;
     font-size: 15px;
     outline: none;
+}
+
+.modal-input option {
+    background-color: #222222 !important;
+    color: #ffffff !important;
+}
+
+.modal-input option:checked,
+.modal-input option:hover {
+    background-color: #333333 !important;
+    color: #ffffff !important;
 }
 
 .modal-input:focus {

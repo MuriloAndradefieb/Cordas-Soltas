@@ -7,10 +7,11 @@
     
     <link rel="stylesheet" href="css/style.css"> 
     <link rel="stylesheet" href="css/pagamento.css"> 
+    <link rel="stylesheet" href="css/public-redesign.css"> 
     
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="checkout-page">
    <!-- DIV NECESSARIA PARA FUNCIONAMENTO DO PLUGIN, NAO APAGAR!-->
      <div vw class="enabled">
     <div vw-access-button class="active"></div>
@@ -27,7 +28,7 @@
 
     <main class="main-content">
         <article class="checkout-container">
-            <a href="/mensalidade" class=back-link style="align-self: flex-start;">&larr; Voltar para a pagina Mensalidade</a>
+            <a href="/mensalidade" class="back-link" style="align-self: flex-start;">&larr; Voltar para a pagina Mensalidade</a>
             <h1>Finalizar Compra</h1>
 
             <nav class="steps" aria-label="Progresso do Pagamento">
@@ -145,7 +146,7 @@
                 </section>
                 
                 <section class="step-section" id="step-3" style="display: none;">
-    <h2>🎉 Compra Finalizada!</h2>
+    <h2>Compra Finalizada!</h2>
     
     <aside class="summary-box" id="confirmation-details" style="display: none;">
         <h3>Obrigado pela sua assinatura!</h3>
@@ -154,7 +155,7 @@
     </aside>
 
     <aside class="summary-box pix-box" id="pix-payment-details" style="display: none;">
-        <h3>✅ Quase lá! Finalize o pagamento via PIX</h3>
+        <h3>Quase lá! Finalize o pagamento via PIX</h3>
         <p>Para concluir a assinatura de **<span id="product-title-pix">Mensalidade</span>**, escaneie o QR Code ou use o código Copia e Cola abaixo.</p>
         
         <section class="qr-code-section" style="text-align: center; margin: 20px 0;">
@@ -181,6 +182,7 @@
             alert("Código PIX copiado!");
         }
                 </script>
+                </section>
             </section>
         </article>
     </main>

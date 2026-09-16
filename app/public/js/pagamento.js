@@ -175,9 +175,13 @@ document.addEventListener('DOMContentLoaded', () => {
         Utils.hideCheckoutError(2);
 
         if (step === 2) {
+            const isLuthbox = orderData.source === 'luthbox';
+            const itemLabel = isLuthbox ? 'Luthbox' : 'Ingresso';
+            const fallbackTitle = isLuthbox ? 'Kit Luthbox Selecionado' : 'Ingresso Selecionado';
+
             $('order-summary').innerHTML = `
                 <p class="summary-title">Resumo do Pedido</p>
-                <p>Ingresso: <strong>${orderData.title || 'Ingresso Selecionado'}</strong></p>
+                <p>${itemLabel}: <strong>${orderData.title || fallbackTitle}</strong></p>
                 <p class="summary-total">Total a Pagar: ${Utils.formatCurrency(orderData.total)}</p>
             `;
         }

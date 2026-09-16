@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cordas Soltas</title>
+    <meta name="description" content="Encontre shows, festivais e experiências musicais com o Cordas Soltas: ingressos, concursos e muito mais.">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/public-redesign.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body class="index-page">
@@ -13,27 +16,33 @@
 
     <main class="main-content">
 
-        <section class="banner-carousel" id="auto-banner-carousel">
-            <a class="banner-slide active">
+        <section class="hero-intro" aria-label="Boas-vindas">
+            <hgroup>
+                <small class="hero-eyebrow">Bem-vindo ao</small>
+                <h1 class="hero-title">Cordas Soltas</h1>
+            </hgroup>
+        </section>
+
+        <section class="banner-carousel" id="auto-banner-carousel" aria-label="Destaques">
+            <figure class="banner-slide active">
                 <img src="https://i.pinimg.com/1200x/55/00/2a/55002af325af0ee18bb99c57d0a09ab0.jpg" alt="Banner Roda de Samba" class="banner-image">
-            </a>
-            <a class="banner-slide">
+            </figure>
+            <figure class="banner-slide">
                 <img src="https://i.pinimg.com/736x/80/5a/6e/805a6ee351e3bebdb84b3a492037cd5c.jpg" alt="Banner Rock Promoção" class="banner-image">
-            </a>
-            <a class="banner-slide">
+            </figure>
+            <figure class="banner-slide">
                 <img src="https://i.pinimg.com/736x/38/a1/15/38a115b087af38289413aaa96c8130c6.jpg" alt="Banner Jazz Festival" class="banner-image">
-            </a>
+            </figure>
         </section>
 
         <section class="carousels-container">
 
             <% if (typeof showsPorEstilo === 'undefined' || Object.keys(showsPorEstilo).length === 0) { %>
                 
-                <article class="carousel-wrapper" style="text-align: center; padding: 40px 20px;">
-                    <header class="carousel-header">
-                        <h2 style="color: #b3b3b3;">Nenhum show disponível no momento.</h2>
-                    </header>
-                    <p style="color: #666;">Novos eventos aparecerão aqui automaticamente assim que forem cadastrados.</p>
+                <article class="empty-state">
+                    <span class="empty-icon" aria-hidden="true">&#127925;</span>
+                    <h2>Nenhum show disponível no momento</h2>
+                    <p>Novos eventos aparecerão aqui automaticamente assim que forem cadastrados.</p>
                 </article>
 
             <% } else { %>
@@ -50,22 +59,27 @@
                             
                             <ul class="carousel-cards" id="<%= estilo.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-') %>-carousel">
                                 
-                                <% showsPorEstilo[estilo].forEach(function(show) { %>
-                                    <a href="/detalhes?id=<%= show.id %>">
-                                        <li class="card">
-                                            <img src="<%= show.imagem_url || show.imagem || '/img/pexels-wendywei-1190297.jpg' %>" alt="<%= show.titulo %>" class="card-image" onerror="this.onerror=null;this.src='/img/pexels-wendywei-1190297.jpg';">
-                                            
+                                <% showsPorEstilo[estilo].forEach(function(show) {
+                                    var dataShowIso = show.data_show || show.data;
+                                    var dataShowFormatada = new Date(dataShowIso).toLocaleDateString('pt-BR', { timeZone: 'UTC', day: '2-digit', month: '2-digit' });
+                                %>
+                                    <li class="card">
+                                        <a class="card-link" href="/detalhes?id=<%= show.id %>">
+                                            <figure class="card-media">
+                                                <img src="<%= show.imagem_url || show.imagem || '/img/pexels-wendywei-1190297.jpg' %>" alt="<%= show.titulo %>" class="card-image" onerror="this.onerror=null;this.src='/img/pexels-wendywei-1190297.jpg';">
+                                            </figure>
+
                                             <section class="card-info">
                                                 <h3><%= show.titulo %></h3>
-                                                
+
                                                 <p class="card-date">
-                                                    &#128197; <%= new Date(show.data_show || show.data).toLocaleDateString('pt-BR', { timeZone: 'UTC', day: '2-digit', month: '2-digit' }) %>
+                                                    <span class="card-meta-icon date" aria-hidden="true"></span><time datetime="<%= dataShowIso %>"><%= dataShowFormatada %></time>
                                                 </p>
-                                                
-                                                <p class="card-location">&#128205; <%= show.local %></p>
+
+                                                <p class="card-location"><span class="card-meta-icon place" aria-hidden="true"></span><%= show.local %></p>
                                             </section>
-                                        </li>
-                                    </a>
+                                        </a>
+                                    </li>
                                 <% }); %>
 
                             </ul>
@@ -80,6 +94,14 @@
 
         </section>
     </main>
+
+    <footer class="footer">
+        <address>
+            <p>Barueri, Jandira — São Paulo, SP — Brasil</p>
+            <p>cordassoltascontatos@gmail.com | +55 (11) 1234-5678</p>
+        </address>
+        <p class="footer-copy">&copy; 2025 Cordas Soltas. Todos os direitos reservados.</p>
+    </footer>
 
     <%- include("../partials/menu"); %>
 
