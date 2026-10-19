@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operação Luthbox</title>
+    <link rel="stylesheet" href="/css/admin-dashboard.css">
+    <link rel="stylesheet" href="/css/luthbox-operacao.css">
+    <link rel="stylesheet" href="/css/luthbox-admin.css">
+</head>
+<body class="admin-luthbox-page">
+    <hr class="top-line">
+    <header class="main-header"><img src="/img/LOGO ALTERNATIVA CORDAS SOLTAS SITE.png" width="50" alt="Logo Cordas Soltas" class="logo"></header>
+    <div class="app-container">
+        <nav class="sidebar-nav" aria-label="Navegação administrativa">
+            <ul>
+                <li onclick="window.location.href='/adm/cadastro'"><img src="/img/perfil-icon.png" width="10" alt=""> Cadastro</li>
+                <li onclick="window.location.href='/adm/ingressos'"><img src="/img/ingressos-icon.png" width="10" alt=""> Ingressos</li>
+                <li class="active" onclick="window.location.href='/adm/luthbox'"><img src="/img/luthbox-icon.png" width="10" alt=""> Luthbox</li>
+                <li onclick="window.location.href='/adm/luthbox/solicitacoes'"><img src="/img/luthbox-icon.png" width="10" alt=""> Solicitações</li>
+                <li onclick="window.location.href='/adm/formularios'"><img src="/img/formulario-icon.png" width="10" alt=""> Formulários</li>
+            </ul>
+        </nav>
+        <main class="content-area">
+            <div class="luthbox-admin-content">
+        <header class="sub-header"><span class="title">OPERAÇÃO LUTHBOX</span><span class="luth-admin-subtitle">Catálogo e agenda de artistas</span></header>
+        <p class="luthbox-admin-intro">Gerencie os equipamentos e organize quais artistas estão vinculados a cada show.</p>
+        <% if (erro) { %><p class="luth-feedback luth-feedback-error" role="alert"><%= erro %></p><% } %>
+        <% if (sucesso) { %><p class="luth-feedback luth-feedback-success" role="status"><%= sucesso %></p><% } %>
+
+        <section class="luth-admin-section">
+            <h2>Escala de artistas nos shows</h2>
+            <p class="luth-admin-help">Vincule a banda ao show antes da solicitação. O catálogo de cada artista mostra somente os eventos associados aqui.</p>
+            <% if (artistas.length && shows.length) { %>
+                <form class="luth-scale-form" method="post" action="/adm/luthbox/escalas">
+                    <label>Artista/banda
+                        <select id="luth-artista-select" name="usuario_id" required>
+                            <option value="">Selecione ou digite para buscar...</option>
+                            <% artistas.forEach(artista => { %><option value="<%= artista.id %>"><%= artista.nome_banda || artista.username %> — <%= artista.username %></option><% }); %>
+                        </select>
+                    </label>
+                    <label>Show
+                        <select id="luth-show-select" name="show_id" required>
+                            <option value="">Selecione ou digite para buscar...</option>
+                            <% shows.forEach(show => { %><option value="<%= show.id %>"><%= show.titulo %> · <%= show.data_show %> · <%= show.local %></option><% }); %>
+                        </select>
+                    </label>
+                    <button class="luth-admin-button" type="submit">Vincular artista ao show</button>
+                </form>
+            <% } else { %><p class="luth-empty-state">Cadastre pelo menos um artista e um show para configurar a escala.</p><% } %>
+            <div class="luth-scale-list">
+                <% escalas.forEach(escala => { %>
+                    <article class="luth-scale-card">
+                        <div><strong><%= escala.nome_banda || escala.username %></strong><small>Conta: <%= escala.username %></small></div>
+                        <div><strong><%= escala.show_titulo %></strong><small><%= escala.data_show %> · <%= escala.show_local %></small></div>
+                        <form method="post" action="/adm/luthbox/escalas/<%= escala.show_id %>/<%= escala.usuario_id %>/desvincular" data-confirm-unlink>
+                            <button class="luth-admin-button luth-danger-button" type="submit">Desvincular</button>
+                        </form>
+                    </article>
+                <% }); %>
+                <% if (!escalas.length) { %><p class="luth-admin-help">Ainda não há artistas vinculados a shows.</p><% } %>
+            </div>
+        </section>
+
+        <section class="luth-admin-section">
+            <h2>Catálogo e inventário</h2>
+            <p class="luth-admin-help">Cadastre instrumentos, acessórios e peças avulsas. A classificação organiza o catálogo e a compatibilidade informa para qual instrumento o item serve. Valores iniciais são demonstrativos.</p>
+            <details class="luth-add-product">
+                <summary><span><strong>Adicionar produto ao catálogo</strong><small>Preencha as informações e inclua uma foto para os artistas visualizarem.</small></span><b aria-hidden="true">＋</b></summary>
+                <form class="luth-product-editor-form" method="post" enctype="multipart/form-data" action="/adm/luthbox/produtos">
+                    <div class="luth-product-image-editor">
+                        <label class="luth-product-image-drop" for="luthbox-upload-novo">
+                            <span id="luthbox-placeholder-novo">Clique para escolher a imagem</span>
+                            <img id="luthbox-preview-novo" alt="Prévia da imagem do novo produto" hidden>
+                        </label>
+                        <input class="luth-image-input" id="luthbox-upload-novo" type="file" name="image_file" accept="image/jpeg,image/png,image/webp,image/avif,image/gif">
+                        <small>Imagem opcional · JPG, PNG, WebP, AVIF ou GIF · até 5 MB.</small>
+                    </div>
+                    <div class="luth-product-editor-fields">
+                        <h3>Informações do item</h3>
+                        <div class="luth-product-editor-grid">
+                            <label>Nome<input name="nome" maxlength="160" required placeholder="Ex.: Correia para baixo"></label>
+                            <label>Classificação<input name="classificacao" maxlength="80" required list="luth-categorias" placeholder="Ex.: Acessórios"></label>
+                            <label>Compatibilidade<input name="compatibilidade" maxlength="160" required placeholder="Ex.: Baixo elétrico"></label>
+                            <label>Diária (R$)<input type="number" name="preco" min="0" max="100000" step="0.01" required></label>
+                            <label>Unidades disponíveis<input type="number" name="quantidade_disponivel" min="0" max="1000" required></label>
+                            <label class="luth-product-description">Descrição<textarea name="descricao" maxlength="500" rows="3" required></textarea></label>
+                        </div>
+                        <button class="luth-admin-button" type="submit">Adicionar ao catálogo</button>
+                    </div>
+                    <datalist id="luth-categorias"><option value="Instrumentos"><option value="Acessórios"><option value="Bateria avulsa"><option value="Áudio"><option value="Kits"></datalist>
+                </form>
+            </details>
+            <div class="luth-product-admin-list">
+                <% produtos.forEach(produto => { %>
+                    <article class="luth-product-admin-card <%= produto.ativo ? '' : 'is-inactive' %>">
+                        <div class="luth-product-admin-summary-row">
+                            <img src="<%= produto.imagem_url || '/img/luthrock.jpg' %>" alt="Imagem de <%= produto.nome %>" id="luthbox-current-<%= produto.id %>">
+                            <span class="luth-admin-product-summary"><strong><%= produto.nome %></strong><small><%= produto.classificacao %> · Compatível com <%= produto.compatibilidade %></small></span>
+                            <span class="luth-admin-product-metrics"><strong>R$ <%= produto.preco.toFixed(2).replace('.', ',') %> / diária</strong><small><%= produto.quantidade_disponivel %> unidades · <%= produto.ativo ? 'No catálogo' : 'Oculto' %></small></span>
+                            <div class="luth-product-summary-actions">
+                                <a class="luth-product-expand" href="/adm/luthbox/produtos/<%= produto.id %>/editar">Editar</a>
+                                <form class="luth-product-toggle" method="post" action="/adm/luthbox/produtos/<%= produto.id %>/ativo"><input type="hidden" name="ativo" value="<%= produto.ativo ? '0' : '1' %>"><button class="luth-admin-button <%= produto.ativo ? 'luth-danger-button' : '' %>" type="submit"><%= produto.ativo ? 'Remover do catálogo' : 'Reativar item' %></button></form>
+                            </div>
+                        </div>
+                    </article>
+                <% }); %>
+            </div>
+        </section>
+
+            </div>
+        </main>
+    </div>
+    <dialog class="luth-confirm-dialog" id="luth-unlink-confirm" aria-labelledby="luth-unlink-title">
+        <h2 id="luth-unlink-title">Desvincular banda do show?</h2>
+        <p>O vínculo será removido da escala. Solicitações anteriores continuarão no histórico.</p>
+        <div><button type="button" class="luth-confirm-cancel">Cancelar</button><button type="button" class="luth-admin-button luth-danger-button luth-confirm-accept">Desvincular</button></div>
+    </dialog>
+    <script src="/js/script.js"></script>
+    <script>
+        const unlinkDialog = document.getElementById('luth-unlink-confirm');
+        let unlinkForm = null;
+        document.querySelectorAll('[data-confirm-unlink]').forEach(form => form.addEventListener('submit', event => {
+            event.preventDefault();
+            unlinkForm = form;
+            unlinkDialog.showModal();
+        }));
+        document.querySelector('.luth-confirm-cancel').addEventListener('click', () => unlinkDialog.close());
+        document.querySelector('.luth-confirm-accept').addEventListener('click', () => { if (unlinkForm) unlinkForm.submit(); });
+        unlinkDialog.addEventListener('click', event => { if (event.target === unlinkDialog) unlinkDialog.close(); });
+        document.querySelectorAll('.luth-image-input').forEach(input => input.addEventListener('change', () => {
+            const arquivo = input.files && input.files[0];
+            if (!arquivo) return;
+            if (!arquivo.type.startsWith('image/') || arquivo.size > 5 * 1024 * 1024) {
+                input.value = '';
+                let aviso = input.closest('form')?.querySelector('.luth-upload-feedback');
+                if (!aviso) {
+                    aviso = document.createElement('p');
+                    aviso.className = 'luth-upload-feedback luth-feedback luth-feedback-error';
+                    aviso.setAttribute('role', 'alert');
+                    input.closest('form')?.prepend(aviso);
+                }
+                if (aviso) aviso.textContent = 'Selecione uma imagem válida de até 5 MB.';
+                return;
+            }
+            const avisoAnterior = input.closest('form')?.querySelector('.luth-upload-feedback');
+            if (avisoAnterior) avisoAnterior.hidden = true;
+            const preview = document.getElementById(input.id.replace('upload', 'preview'));
+            const placeholder = document.getElementById(input.id.replace('upload', 'placeholder'));
+            const remover = input.closest('form')?.querySelector('[name="remover_imagem"]');
+            if (remover) remover.checked = false;
+            if (preview) { preview.src = URL.createObjectURL(arquivo); preview.hidden = false; }
+            const current = document.getElementById(input.id.replace('upload', 'current'));
+            if (current) current.src = URL.createObjectURL(arquivo);
+            if (placeholder) placeholder.hidden = true;
+        }));
+    </script>
+</body>
+</html>

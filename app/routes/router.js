@@ -9,6 +9,7 @@ const multer            = require('multer');
 const db = require('../../config/pool_conexoes');
 const CarrinhoModel = require('../models/CarrinhoModel');
 const PedidosModel  = require('../models/PedidosModel');   // ← NOVO
+const LuthboxModel = require('../models/LuthboxModel');
 const ShowImageModel = require('../models/ShowImageModel');
 const UsuariosModel = require('../models/Usuariosmodel');
 
@@ -27,6 +28,31 @@ const upload = multer({
         return cb(new Error('Envie apenas arquivos de imagem.'));
     }
 });
+
+const uploadImagemLuthbox = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: ShowImageModel.MAX_UPLOAD_BYTES },
+    fileFilter: (req, file, cb) => {
+        const tiposPermitidos = ['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/gif'];
+        if (tiposPermitidos.includes(file.mimetype)) return cb(null, true);
+        return cb(new Error('Use uma imagem JPG, PNG, WebP, AVIF ou GIF.'));
+    }
+});
+
+function processarUploadImagemLuthbox(req, res, next) {
+    uploadImagemLuthbox.single('image_file')(req, res, err => {
+        if (!err) return next();
+        const mensagem = err.code === 'LIMIT_FILE_SIZE'
+            ? 'A imagem do item deve ter no máximo 5 MB.'
+            : (err.message || 'Não foi possível carregar a imagem.');
+        return res.redirect('/adm/luthbox?erro=' + encodeURIComponent(mensagem));
+    });
+}
+
+function dataUrlImagem(file) {
+    if (!file || !file.buffer || !file.mimetype) return null;
+    return `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
+}
 
 // =========================================================================
 // CONFIGURAÇÃO DO MULTER — FORMULÁRIO DE SELETIVAS (limite: 200 MB)
@@ -324,6 +350,48 @@ router.post('/pedidos/confirmar', requireAuth, async (req, res) => {
 // =========================================================================
 // ROTAS DO ADMINISTRADOR
 // =========================================================================
+const EMAIL_ADMIN_FIXO = 'adm123@gmail.com';
+const HASH_SENHA_ADMIN_FIXA = '$2b$12$MsY4yrejuLneU6kjJJ6klu1tbxfy29qi3GzAa5tHJvytWGnRig6Iy';
+
+function destinoAdminSeguro(valor) {
+    const caminho = String(valor || '');
+    if (caminho.startsWith('/adm/') && !caminho.startsWith('//') && !['/adm/entrar', '/adm/sair'].includes(caminho.split('?')[0])) return caminho;
+    return '/adm/cadastro';
+}
+
+router.get('/adm/entrar', (req, res) => {
+    if (req.session?.adminAutenticado) return res.redirect(destinoAdminSeguro(req.query.retorno));
+    return res.render('pages/admin-login', { erro: req.query.erro === '1', retorno: destinoAdminSeguro(req.query.retorno) });
+});
+
+router.post('/adm/entrar', async (req, res) => {
+    const email = String(req.body.email || '').trim().toLowerCase();
+    const senha = String(req.body.senha || '');
+    const retorno = destinoAdminSeguro(req.body.retorno);
+    try {
+        const autorizado = email === EMAIL_ADMIN_FIXO && await bcrypt.compare(senha, HASH_SENHA_ADMIN_FIXA);
+        if (!autorizado) return res.status(401).render('pages/admin-login', { erro: true, retorno });
+        await new Promise((resolve, reject) => req.session.regenerate(err => err ? reject(err) : resolve()));
+        req.session.adminAutenticado = true;
+        req.session.usuario = { id: null, username: 'Administrador', email: EMAIL_ADMIN_FIXO, role: 'admin' };
+        await new Promise((resolve, reject) => req.session.save(err => err ? reject(err) : resolve()));
+        return res.redirect(retorno);
+    } catch (err) {
+        console.error('Erro ao autenticar administrador:', err.message);
+        return res.status(500).render('pages/admin-login', { erro: true, retorno });
+    }
+});
+
+router.post('/adm/sair', (req, res) => {
+    if (!req.session) return res.redirect('/adm/entrar');
+    req.session.destroy(() => res.redirect('/adm/entrar'));
+});
+
+router.use('/adm', (req, res, next) => {
+    if (req.session?.adminAutenticado === true) return next();
+    return res.redirect(`/adm/entrar?retorno=${encodeURIComponent(req.originalUrl)}`);
+});
+
 router.get('/adm/acesso-direto', (req, res) => {
     return res.redirect('/adm/cadastro');
 });
@@ -435,11 +503,10 @@ router.post('/adm/visitantes/editar/:id', async (req, res) => {
 });
 
 // ── Artista: editar ──────────────────────────────────────────────────
-router.get('/adm/artistas/editar/:id', async (req, res) => {
+router.get('/adm/artistas/editar/:id', requireAdminLuthbox, async (req, res) => {
     try {
         const artista = await UsuariosModel.buscarPorId(req.params.id);
         if (!artista || artista.role !== 'artista') return res.status(404).send("Artista nao encontrado.");
-
         return res.render('pages/admin-artista-config', {
             artista,
             erro:    req.query.erro    || null,
@@ -451,7 +518,7 @@ router.get('/adm/artistas/editar/:id', async (req, res) => {
     }
 });
 
-router.post('/adm/artistas/editar/:id', async (req, res) => {
+router.post('/adm/artistas/editar/:id', requireAdminLuthbox, async (req, res) => {
     const id = req.params.id;
     try {
         const artista = await UsuariosModel.buscarPorId(id);
@@ -726,11 +793,251 @@ function requireAuth(req, res, next) {
     return res.redirect('/login');
 }
 
+function requireArtista(req, res, next) {
+    if (req.session && req.session.usuario && req.session.usuario.role === 'artista') return next();
+    return res.redirect('/luthbox?acesso=restrito');
+}
+
+function requireArtistaApi(req, res, next) {
+    if (req.session && req.session.usuario && req.session.usuario.role === 'artista') return next();
+    return res.status(403).json({ sucesso: false, mensagem: 'Acesse com uma conta artista para usar a Luthbox.' });
+}
+
+function requireAdminLuthbox(req, res, next) {
+    // O marcador é definido apenas pelo login administrativo. Não altere
+    // req.session.usuario aqui: essa sessão também identifica a conta do artista.
+    if (req.session?.adminAutenticado === true) return next();
+    return res.status(403).send('Acesso restrito à administração da Luthbox.');
+}
+
 const u = (req) => req.session.usuario || null;
 
-router.get('/estilos',              (req, res) => res.render('pages/estilos',              { titulo: 'Estilos',      usuario: u(req) }));
+function dataShowParaIso(valor) {
+    if (valor instanceof Date && !Number.isNaN(valor.getTime())) return valor.toISOString().slice(0, 10);
+    const texto = String(valor || '').trim();
+    let partes = texto.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+    if (partes) return `${partes[1]}-${partes[2].padStart(2, '0')}-${partes[3].padStart(2, '0')}`;
+    partes = texto.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/);
+    if (partes) return `${partes[3]}-${partes[2].padStart(2, '0')}-${partes[1].padStart(2, '0')}`;
+    partes = texto.match(/^(\d{1,2})[/-](\d{1,2})$/);
+    if (partes) {
+        const hoje = hojeBrasilISO();
+        const ano = Number(hoje.slice(0, 4));
+        const candidata = `${ano}-${partes[2].padStart(2, '0')}-${partes[1].padStart(2, '0')}`;
+        return candidata >= hoje ? candidata : `${ano + 1}-${partes[2].padStart(2, '0')}-${partes[1].padStart(2, '0')}`;
+    }
+    return '';
+}
+
+function hojeBrasilISO() {
+    const partes = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit'
+    }).formatToParts(new Date());
+    const valor = Object.fromEntries(partes.map(parte => [parte.type, parte.value]));
+    return `${valor.year}-${valor.month}-${valor.day}`;
+}
+
+async function renderizarCatalogoLuthbox(req, res, tituloPagina = 'Luthbox') {
+    try {
+        await LuthboxModel.garantirTabelas();
+        const [shows] = await db.query(
+            `SELECT s.id, s.titulo, s.data_show, s.local
+               FROM shows s JOIN luthbox_show_artistas ea ON ea.show_id = s.id
+              WHERE ea.usuario_id = ?`, [req.session.usuario.id]
+        );
+        const hojeIso = hojeBrasilISO();
+        const showsFuturos = shows
+            .map(show => ({ ...show, data_show_iso: dataShowParaIso(show.data_show) }))
+            .filter(show => show.data_show_iso && show.data_show_iso >= hojeIso)
+            .sort((a, b) => a.data_show_iso.localeCompare(b.data_show_iso));
+        return res.render('pages/estilos', { titulo: tituloPagina, usuario: u(req), showsLuthbox: showsFuturos });
+    } catch (err) {
+        console.error('Erro ao carregar shows para agendamento Luthbox:', err.message);
+        return res.render('pages/estilos', { titulo: tituloPagina, usuario: u(req), showsLuthbox: [] });
+    }
+}
+
+router.get('/estilos', requireArtista, (req, res) => renderizarCatalogoLuthbox(req, res, 'Luthbox'));
 router.get('/luthbox',              (req, res) => res.render('pages/luthbox',              { titulo: 'Luthbox',      usuario: u(req) }));
-router.get('/luthbox-seguros',      (req, res) => res.render('pages/luthbox-seguros',      { titulo: 'Seguros',      usuario: u(req) }));
+router.get('/luthbox-seguros', requireArtista, (req, res) => renderizarCatalogoLuthbox(req, res, 'Luthbox'));
+router.get('/api/luthbox/catalogo', requireArtistaApi, async (req, res) => {
+    try {
+        return res.json(await LuthboxModel.listarCatalogo());
+    } catch (err) {
+        console.error('Erro ao carregar catálogo da Luthbox:', err.message);
+        return res.status(500).json({ sucesso: false, mensagem: 'Não foi possível carregar o catálogo.' });
+    }
+});
+router.post('/api/luthbox/solicitacoes', requireArtistaApi, async (req, res) => {
+    try {
+        const itens = Array.isArray(req.body.itens)
+            ? req.body.itens.map(item => ({ codigo: item.id, quantidade: item.quantidade }))
+            : [];
+        const solicitacao = await LuthboxModel.criarSolicitacao(req.session.usuario.id, {
+            showId: req.body.showId,
+            modalidade: req.body.modalidade,
+            itens
+        });
+        return res.status(201).json({ sucesso: true, ...solicitacao });
+    } catch (err) {
+        const status = /Selecione|Adicione|Revise|quantidade máxima|show escolhido|show futuro|itens não estão|Estoque insuficiente|Solicitação imediata|vinculado à sua banda/.test(err.message) ? 400 : 500;
+        return res.status(status).json({ sucesso: false, mensagem: err.message || 'Não foi possível registrar a solicitação.' });
+    }
+});
+router.get('/luthbox/solicitacoes', requireArtista, async (req, res) => {
+    try {
+        const solicitacoes = await LuthboxModel.listarSolicitacoes(req.session.usuario.id);
+        return res.render('pages/luthbox-solicitacoes', {
+            titulo: 'Minhas solicitações Luthbox', usuario: u(req), solicitacoes,
+            possuiDivida: solicitacoes.some(item => ['informado','nao_pago'].includes(item.pagamento_status)),
+            enviada: req.query.enviada === '1',
+            pagamentoInformado: req.query.pagamentoInformado === '1',
+            limpeza: Number.parseInt(req.query.limpeza, 10), erro: req.query.erro || null
+        });
+    } catch (err) {
+        console.error('Erro ao carregar solicitações da Luthbox:', err.message);
+        return res.status(500).send('Não foi possível carregar suas solicitações.');
+    }
+});
+router.get('/luthbox/solicitacoes/:id/pagar', requireArtista, async (req, res) => {
+    try {
+        const solicitacoes = await LuthboxModel.listarSolicitacoes(req.session.usuario.id);
+        const solicitacao = solicitacoes.find(item => String(item.id) === String(req.params.id));
+        if (!solicitacao) return res.status(404).send('Solicitação não encontrada.');
+        if (!['pendente','informado','nao_pago'].includes(solicitacao.pagamento_status) || solicitacao.status === 'recusada') {
+            return res.redirect('/luthbox/solicitacoes');
+        }
+        return res.render('pages/luthbox-pagamento-solicitacao', {
+            titulo: 'Pagamento da solicitação', usuario: u(req), solicitacao
+        });
+    } catch (err) {
+        console.error('Erro ao abrir pagamento da solicitação:', err.message);
+        return res.status(500).send('Não foi possível abrir o pagamento da solicitação.');
+    }
+});
+router.post('/luthbox/solicitacoes/:id/pagamento-informado', requireArtista, async (req, res) => {
+    try {
+        await LuthboxModel.informarPagamento(req.session.usuario.id, req.params.id);
+        return res.redirect('/luthbox/solicitacoes?pagamentoInformado=1');
+    } catch (err) {
+        return res.redirect('/luthbox/solicitacoes?erro=' + encodeURIComponent(err.message));
+    }
+});
+router.post('/luthbox/solicitacoes/historico', requireArtista, async (req, res) => {
+    try {
+        const removidas = await LuthboxModel.limparHistoricoSolicitacoes(req.session.usuario.id);
+        return res.redirect('/luthbox/solicitacoes?limpeza=' + removidas);
+    } catch (err) {
+        console.error('Erro ao limpar histórico Luthbox do artista:', err.message);
+        return res.redirect('/luthbox/solicitacoes?erro=' + encodeURIComponent('Não foi possível limpar o histórico.'));
+    }
+});
+router.get('/adm/luthbox', requireAdminLuthbox, async (req, res) => {
+    try {
+        const [produtos, escalas, artistas, shows] = await Promise.all([
+            LuthboxModel.listarProdutosAdmin(),
+            LuthboxModel.listarEscalasAdmin(),
+            db.query("SELECT id, username, nome_banda FROM usuarios WHERE role = 'artista' ORDER BY username").then(([rows]) => rows),
+            db.query('SELECT id, titulo, local, data_show FROM shows ORDER BY id DESC').then(([rows]) => rows)
+        ]);
+        return res.render('pages/admin-luthbox', {
+            titulo: 'Operação Luthbox', usuario: u(req), produtos, escalas, artistas, shows,
+            erro: req.query.erro || null, sucesso: req.query.sucesso || null
+        });
+    } catch (err) {
+        console.error('Erro ao carregar painel Luthbox:', err.message);
+        return res.status(500).send('Não foi possível carregar a operação da Luthbox.');
+    }
+});
+router.get('/adm/luthbox/solicitacoes', requireAdminLuthbox, async (req, res) => {
+    try {
+        const solicitacoes = await LuthboxModel.listarSolicitacoes();
+        return res.render('pages/admin-luthbox-solicitacoes', {
+            titulo: 'Solicitações Luthbox', usuario: u(req), solicitacoes,
+            erro: req.query.erro || null, sucesso: req.query.sucesso || null,
+            hojeIso: hojeBrasilISO(), limpeza: Number.parseInt(req.query.limpeza, 10)
+        });
+    } catch (err) {
+        console.error('Erro ao carregar solicitações da Luthbox:', err.message);
+        return res.status(500).send('Não foi possível carregar as solicitações da Luthbox.');
+    }
+});
+router.post('/adm/luthbox/solicitacoes/historico', requireAdminLuthbox, async (req, res) => {
+    try {
+        const removidas = await LuthboxModel.limparHistoricoSolicitacoes();
+        return res.redirect('/adm/luthbox/solicitacoes?limpeza=' + removidas);
+    } catch (err) {
+        console.error('Erro ao limpar histórico Luthbox administrativo:', err.message);
+        return res.redirect('/adm/luthbox/solicitacoes?erro=' + encodeURIComponent('Não foi possível limpar o histórico.'));
+    }
+});
+router.post('/adm/luthbox/escalas', requireAdminLuthbox, async (req, res) => {
+    try {
+        await LuthboxModel.vincularArtistaAoShow(req.body.show_id, req.body.usuario_id, req.session.usuario?.id || null);
+        return res.redirect('/adm/luthbox?sucesso=' + encodeURIComponent('Artista vinculado ao show. O evento já aparece no catálogo da banda.'));
+    } catch (err) {
+        return res.redirect('/adm/luthbox?erro=' + encodeURIComponent(err.message));
+    }
+});
+router.post('/adm/luthbox/escalas/:showId/:usuarioId/desvincular', requireAdminLuthbox, async (req, res) => {
+    try {
+        await LuthboxModel.desvincularArtistaDoShow(req.params.showId, req.params.usuarioId);
+        return res.redirect('/adm/luthbox?sucesso=' + encodeURIComponent('Artista desvinculado do show.'));
+    } catch (err) {
+        return res.redirect('/adm/luthbox?erro=' + encodeURIComponent(err.message));
+    }
+});
+router.get('/adm/luthbox/produtos/:id/editar', requireAdminLuthbox, async (req, res) => {
+    try {
+        const produtos = await LuthboxModel.listarProdutosAdmin();
+        const produto = produtos.find(item => String(item.id) === String(req.params.id));
+        if (!produto) return res.redirect('/adm/luthbox?erro=' + encodeURIComponent('Item do catálogo não encontrado.'));
+        return res.render('pages/admin-luthbox-produto-form', { titulo: 'Editar item Luthbox', usuario: u(req), produto });
+    } catch (err) {
+        console.error('Erro ao abrir edição do item Luthbox:', err.message);
+        return res.redirect('/adm/luthbox?erro=' + encodeURIComponent('Não foi possível abrir a edição do item.'));
+    }
+});
+router.post('/adm/luthbox/produtos/:id', requireAdminLuthbox, processarUploadImagemLuthbox, async (req, res) => {
+    try {
+        await LuthboxModel.atualizarProdutoCompleto(req.params.id, req.body, dataUrlImagem(req.file), req.body.remover_imagem === 'sim');
+        return res.redirect('/adm/luthbox?sucesso=' + encodeURIComponent('Item do catálogo atualizado.'));
+    } catch (err) {
+        return res.redirect('/adm/luthbox?erro=' + encodeURIComponent(err.message));
+    }
+});
+router.post('/adm/luthbox/produtos', requireAdminLuthbox, processarUploadImagemLuthbox, async (req, res) => {
+    try {
+        await LuthboxModel.criarProduto(req.body, dataUrlImagem(req.file));
+        return res.redirect('/adm/luthbox?sucesso=' + encodeURIComponent('Item adicionado ao catálogo.'));
+    } catch (err) {
+        return res.redirect('/adm/luthbox?erro=' + encodeURIComponent(err.message));
+    }
+});
+router.post('/adm/luthbox/produtos/:id/ativo', requireAdminLuthbox, async (req, res) => {
+    try {
+        await LuthboxModel.alterarAtivoProduto(req.params.id, req.body.ativo === '1');
+        return res.redirect('/adm/luthbox?sucesso=' + encodeURIComponent(req.body.ativo === '1' ? 'Item reativado no catálogo.' : 'Item removido do catálogo; o histórico foi preservado.'));
+    } catch (err) {
+        return res.redirect('/adm/luthbox?erro=' + encodeURIComponent(err.message));
+    }
+});
+router.post('/adm/luthbox/solicitacoes/:id/aprovar', requireAdminLuthbox, async (req, res) => {
+    try {
+        await LuthboxModel.aprovarSolicitacao(req.params.id, req.session.usuario?.id || null);
+        return res.redirect('/adm/luthbox/solicitacoes?sucesso=' + encodeURIComponent('Solicitação aprovada. O código já está disponível para o artista em Minhas solicitações.'));
+    } catch (err) {
+        return res.redirect('/adm/luthbox/solicitacoes?erro=' + encodeURIComponent(err.message));
+    }
+});
+router.post('/adm/luthbox/solicitacoes/:id/acao', requireAdminLuthbox, async (req, res) => {
+    try {
+        await LuthboxModel.atualizarStatus(req.params.id, req.body.acao, req.body.codigo_retirada, req.session.usuario?.id || null);
+        return res.redirect('/adm/luthbox/solicitacoes?sucesso=' + encodeURIComponent('Status da solicitação atualizado.'));
+    } catch (err) {
+        return res.redirect('/adm/luthbox/solicitacoes?erro=' + encodeURIComponent(err.message));
+    }
+});
 router.get('/seletivas',            (req, res) => res.render('pages/seletivas',            { titulo: 'Seletivas',    usuario: u(req) }));
 router.get('/regulamento',          (req, res) => res.render('pages/regulamento',          { titulo: 'Regulamento',  usuario: u(req) }));
 router.get('/sobre',                (req, res) => res.render('pages/sobre',                { titulo: 'Sobre',        usuario: u(req) }));

@@ -207,6 +207,24 @@
             </ul>
         </section>
 
+        <% if (isArtist) { %>
+            <section class="perfil-section">
+                <h2 class="section-title">Agenda da banda</h2>
+                <% if (agendaArtista.length) { %>
+                    <div class="artist-agenda-list">
+                        <% agendaArtista.forEach(show => { %>
+                            <article class="artist-agenda-card">
+                                <span class="artist-agenda-date"><strong><%= new Date(`${show.data_show_iso}T12:00:00`).toLocaleDateString('pt-BR', { day:'2-digit' }) %></strong><small><%= new Date(`${show.data_show_iso}T12:00:00`).toLocaleDateString('pt-BR', { month:'short' }).replace('.', '') %></small></span>
+                                <span class="artist-agenda-info"><strong><%= show.titulo %></strong><small><%= show.local %> · <%= new Date(`${show.data_show_iso}T12:00:00`).toLocaleDateString('pt-BR', { weekday:'long', year:'numeric' }) %></small></span>
+                            </article>
+                        <% }); %>
+                    </div>
+                <% } else { %>
+                    <div class="artist-agenda-empty">Nenhum show futuro vinculado à sua banda pela administração.</div>
+                <% } %>
+            </section>
+        <% } %>
+
         <section class="perfil-section">
             <h2 class="section-title">Seguranca</h2>
             <ul class="perfil-card-lista">

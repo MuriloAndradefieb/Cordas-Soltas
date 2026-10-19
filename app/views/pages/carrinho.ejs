@@ -6,12 +6,31 @@
     <title> C | Cordas Soltas</title>
     <link rel="stylesheet" href="/css/header-nav.css">
     <link rel="stylesheet" href="/css/carrinho.css">
+    <link rel="stylesheet" href="/css/luthbox-cart.css">
 </head>
 <body>
 
     <%- include("../partials/header.ejs"); %>
 
     <main class="carrinho-container">
+
+        <section id="luthbox-cart-section" class="luthbox-cart-section" hidden aria-labelledby="luthbox-cart-title">
+            <header>
+                <span class="luthbox-cart-kicker">Área exclusiva para artistas</span>
+                <h1 id="luthbox-cart-title">Carrinho Luthbox</h1>
+                <p>Confira os itens da locação. Cada aluguel corresponde a 1 dia útil.</p>
+            </header>
+            <ul id="luthbox-cart-items" class="luthbox-cart-items"></ul>
+            <div class="luthbox-cart-footer">
+                <p>Modalidade: <strong id="luthbox-cart-mode"></strong></p>
+                <p id="luthbox-cart-date-row" hidden>Data do show: <strong id="luthbox-cart-date"></strong></p>
+                <p class="luthbox-cart-total">Total da diária <strong id="luthbox-cart-total"></strong></p>
+                <div class="luthbox-cart-actions">
+                    <a href="/estilos" class="luthbox-cart-back">Voltar ao catálogo</a>
+                    <button type="button" id="luthbox-cart-checkout" class="luthbox-cart-checkout">Continuar para pagamento</button>
+                </div>
+            </div>
+        </section>
 
         <section class="lista-ingressos">
             <% if (itensCarrinho && itensCarrinho.length > 0) { %>

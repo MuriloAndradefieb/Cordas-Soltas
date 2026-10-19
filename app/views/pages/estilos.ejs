@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/css/header-nav.css">
     <link rel="stylesheet" href="/css/detalhes.css">
     <link rel="stylesheet" href="/css/estilo_musica.css">
+    <link rel="stylesheet" href="/css/luthbox-catalogo.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body class="luth-details-page">
@@ -27,10 +28,23 @@
 
     <main class="seguros-main-content" id="main-content">
         </main>
+    <select id="shows-luthbox" hidden aria-hidden="true">
+        <option value="">Selecione um show cadastrado</option>
+        <% if (!(showsLuthbox || []).length) { %><option value="" disabled data-no-show="true">Nenhum show está vinculado à sua banda. Peça ao administrador para configurar a escala.</option><% } %>
+        <% (showsLuthbox || []).forEach(show => { %>
+            <option value="<%= show.id %>" data-date="<%= show.data_show_iso %>" data-title="<%= show.titulo %>" data-local="<%= show.local %>"><%= show.data_show %> — <%= show.titulo %> · <%= show.local %></option>
+        <% }); %>
+    </select>
+
+    <footer class="luth-catalogo-footer">
+        <p>Barueri, Jandira — São Paulo, SP, Brasil</p>
+        <p><a href="mailto:cordassoltascontatos@gmail.com">cordassoltascontatos@gmail.com</a> | +55 (11) 1234-5678</p>
+        <p>Todos os direitos reservados 2025.</p>
+    </footer>
 
       <%- include("../partials/menu"); %>
 
     <script src="js/script.js"></script>
-    <script src="js/estilos.js"></script> 
+    <script src="/js/estilos.js"></script>
 </body>
 </html>

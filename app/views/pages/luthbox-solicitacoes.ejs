@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minhas solicitações Luthbox</title>
+    <link rel="stylesheet" href="/css/header-nav.css">
+    <link rel="stylesheet" href="/css/luthbox-operacao.css">
+</head>
+<body class="luth-operacao-page">
+    <%- include("../partials/header"); %>
+    <main class="luth-operacao-main">
+        <a class="luth-voltar" href="/luthbox-seguros">&larr; Voltar ao catálogo</a>
+        <header class="luth-operacao-header">
+            <p class="luth-kicker">Área do artista</p>
+            <h1>Minhas solicitações</h1>
+            <p>Veja o andamento dos seus pedidos. Abra uma solicitação para consultar os itens e os detalhes.</p>
+        </header>
+        <% if (erro) { %><p class="luth-feedback luth-feedback-error" role="alert"><%= erro %></p><% } %>
+        <% if (enviada) { %><p class="luth-feedback luth-feedback-success" role="status">Solicitação registrada. Pague a diária e aguarde a conferência do administrador para a aprovação e liberação do código de retirada.</p><% } %>
+        <% if (pagamentoInformado) { %><p class="luth-feedback luth-feedback-success" role="status">Aviso de pagamento enviado. A aprovação será liberada após a administração conferir o recebimento.</p><% } %>
+        <% if (Number.isInteger(limpeza)) { %><p class="luth-feedback luth-feedback-success" role="status"><%= limpeza ? `${limpeza} solicitação(ões) concluída(s) removida(s) do histórico.` : 'Não havia solicitações concluídas para remover.' %></p><% } %>
+        <% if (possuiDivida) { %>
+            <aside class="luth-debt-alert" role="alert"><strong>Pagamento aguardando conferência ou em atraso</strong><p>Novas solicitações ficam pausadas até a administração confirmar o recebimento. Abra o pedido e use o botão de pagamento para quitar ou avisar sobre uma transferência.</p></aside>
+        <% } %>
+        <% if (solicitacoes.length === 0) { %>
+            <section class="luth-empty-state"><h2>Nenhuma solicitação ainda</h2><p>Escolha os itens no catálogo para solicitar uma locação.</p><a class="luth-primary-link" href="/luthbox-seguros">Abrir catálogo</a></section>
+        <% } %>
+        <% const historicoRemovivel = solicitacoes.filter(item => !['nao_pago','informado'].includes(item.pagamento_status) && (['recusada','cancelada'].includes(item.status) || (item.status === 'devolvida' && item.pagamento_status === 'pago'))).length; %>
+        <% if (historicoRemovivel) { %>
+            <div class="luth-history-tools"><span><%= historicoRemovivel %> solicitação(ões) concluída(s) podem ser removidas.</span><form method="post" action="/luthbox/solicitacoes/historico" data-clear-history><button class="luth-secondary-button" type="submit">Limpar histórico concluído</button></form></div>
+        <% } %>
+        <section class="luth-solicitacoes-list">
+            <% solicitacoes.forEach(solicitacao => { %>
+                <details class="luth-solicitacao-card luth-request-compact">
+                    <summary class="luth-request-summary">
+                        <span class="luth-request-main"><span class="luth-kicker">Pedido #<%= solicitacao.id %></span><strong><%= solicitacao.show_titulo %></strong><small><%= new Date(`${solicitacao.data_evento_iso}T12:00:00`).toLocaleDateString('pt-BR') %> · <%= solicitacao.show_local %></small></span>
+                        <span class="luth-request-meta"><span class="luth-status status-<%= solicitacao.status %>"><%= solicitacao.status === 'pendente' ? (solicitacao.pagamento_status === 'pago' ? 'Aguardando aprovação' : 'Aguardando pagamento') : ({aprovada:'Aprovada', retirada:'Retirada', devolvida:'Devolvida', recusada:'Recusada', cancelada:'Cancelada'})[solicitacao.status] || solicitacao.status %></span><span class="luth-payment-badge payment-<%= solicitacao.pagamento_status %>"><%= solicitacao.pagamento_status === 'pago' ? 'Pagamento confirmado' : solicitacao.pagamento_status === 'informado' ? 'Conferindo pagamento' : solicitacao.pagamento_status === 'nao_pago' ? 'Não pago · bloqueado' : 'Pagamento pendente' %></span><strong>R$ <%= solicitacao.total.toFixed(2).replace('.', ',') %></strong></span>
+                    </summary>
+                    <div class="luth-request-details">
+                        <p><strong>Modalidade:</strong> <%= solicitacao.modalidade === 'imediata' ? 'Imediata' : 'Agendada' %> · <strong>Devolução:</strong> <%= new Date(`${solicitacao.devolucao_ate}T12:00:00`).toLocaleDateString('pt-BR') %></p>
+                        <ul class="luth-item-list"><% solicitacao.itens.forEach(item => { %><li><span><strong><%= item.nome_item %></strong><small><%= item.quantidade %> unidade(s) · <%= item.classificacao %> · <%= item.compatibilidade %></small></span><span>R$ <%= (Number(item.preco_unitario) * item.quantidade).toFixed(2).replace('.', ',') %></span></li><% }); %></ul>
+                        <% if (solicitacao.codigo_retirada && ['aprovada','retirada','devolvida'].includes(solicitacao.status)) { %><section class="luth-code-box" aria-label="Comprovante de retirada"><span>Código de retirada</span><strong><%= solicitacao.codigo_retirada %></strong><small>Apresente este código para retirar os itens.</small></section><% } else if (solicitacao.status === 'pendente') { %><p class="luth-pending-note">Em conferência pela administração. O código aparecerá aqui após a aprovação.</p><% } %>
+                        <% if (solicitacao.pagamento_status === 'informado') { %><p class="luth-payment-waiting">Você avisou que pagou. A administração precisa conferir o recebimento antes de aprovar o pedido.</p><% } else if (solicitacao.pagamento_status === 'nao_pago') { %><p class="luth-payment-debt"><strong>Pagamento não confirmado · novas solicitações bloqueadas</strong><small>Faça o pagamento e avise a administração para liberar sua conta.</small></p><% } else { %><p class="luth-payment-state">Pagamento: <strong><%= solicitacao.pagamento_status === 'pago' ? 'Confirmado pela administração' : 'Pendente' %></strong><% if (solicitacao.pagamento_prazo_iso) { %> · pagar até <%= new Date(`${solicitacao.pagamento_prazo_iso}T12:00:00`).toLocaleDateString('pt-BR') %><% } %></p><% } %>
+                        <% if (['pendente','nao_pago'].includes(solicitacao.pagamento_status) && solicitacao.status !== 'recusada') { %><a class="luth-primary-link" href="/luthbox/solicitacoes/<%= solicitacao.id %>/pagar">Pagar agora</a><% } %>
+                    </div>
+                </details>
+            <% }); %>
+        </section>
+    </main>
+    <dialog class="luth-history-dialog" id="clear-history-dialog"><h2>Limpar histórico?</h2><p>Solicitações concluídas e recusadas serão removidas. Pedidos em andamento e cobranças não pagas serão preservados.</p><div><button type="button" data-history-cancel>Voltar</button><button type="button" class="luth-danger-button" data-history-confirm>Limpar histórico</button></div></dialog>
+    <%- include("../partials/menu"); %>
+    <script src="/js/script.js"></script>
+    <script>
+        (() => { const dialog=document.getElementById('clear-history-dialog'); let form=null; document.querySelector('[data-clear-history]')?.addEventListener('submit', event=>{ event.preventDefault(); form=event.currentTarget; dialog.showModal(); }); document.querySelector('[data-history-cancel]')?.addEventListener('click',()=>dialog.close()); document.querySelector('[data-history-confirm]')?.addEventListener('click',()=>{ if(form) form.submit(); }); dialog?.addEventListener('click',event=>{ if(event.target===dialog) dialog.close(); }); })();
+    </script>
+</body>
+</html>

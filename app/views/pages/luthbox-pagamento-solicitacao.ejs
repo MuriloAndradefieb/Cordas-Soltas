@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pagar solicitação Luthbox</title>
+    <link rel="stylesheet" href="/css/header-nav.css">
+    <link rel="stylesheet" href="/css/luthbox-operacao.css">
+</head>
+<body class="luth-operacao-page">
+    <%- include("../partials/header"); %>
+    <main class="luth-operacao-main luth-payment-main">
+        <a class="luth-voltar" href="/luthbox/solicitacoes">&larr; Voltar às solicitações</a>
+        <header class="luth-operacao-header">
+            <p class="luth-kicker">Pagamento Luthbox · Pedido #<%= solicitacao.id %></p>
+            <h1>Finalize o pagamento</h1>
+            <p>A solicitação só será aprovada e receberá o código de retirada depois que a administração confirmar o pagamento.</p>
+        </header>
+        <section class="luth-payment-panel">
+            <div class="luth-payment-summary">
+                <div><span>Show</span><strong><%= solicitacao.show_titulo %></strong><small><%= solicitacao.show_local %> · <%= new Date(`${solicitacao.data_evento_iso}T12:00:00`).toLocaleDateString('pt-BR') %></small></div>
+                <div><span>Itens</span><strong><%= solicitacao.itens.map(item => `${item.quantidade}× ${item.nome_item}`).join(' · ') %></strong></div>
+                <div class="luth-payment-total"><span>Total da diária</span><strong>R$ <%= solicitacao.total.toFixed(2).replace('.', ',') %></strong></div>
+                <% if (solicitacao.pagamento_prazo_iso) { %><small>Prazo para pagamento: <%= new Date(`${solicitacao.pagamento_prazo_iso}T12:00:00`).toLocaleDateString('pt-BR') %></small><% } %>
+            </div>
+            <% if (solicitacao.pagamento_status === 'informado') { %>
+                <aside class="luth-payment-waiting"><strong>Pagamento informado</strong><p>A administração está conferindo o recebimento. O código de retirada será liberado após a confirmação.</p></aside>
+            <% } else { %>
+                <div class="luth-payment-pix">
+                    <h2>Pague com PIX</h2>
+                    <p>Escaneie o QR Code abaixo no aplicativo do seu banco e pague o valor exato desta solicitação.</p>
+                    <img src="/img/qr-code.jpg" alt="QR Code PIX da Luthbox">
+                    <p class="luth-payment-manual-note">Depois de concluir a transferência, avise a administração pelo botão abaixo. O aviso não confirma o pagamento automaticamente.</p>
+                    <form method="post" action="/luthbox/solicitacoes/<%= solicitacao.id %>/pagamento-informado">
+                        <button class="luth-admin-button" type="submit">Já paguei · avisar administração</button>
+                    </form>
+                </div>
+            <% } %>
+        </section>
+    </main>
+    <%- include("../partials/menu"); %>
+    <script src="/js/script.js"></script>
+</body>
+</html>

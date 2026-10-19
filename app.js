@@ -18,16 +18,36 @@ app.set('views', './app/views');
 app.use(express.json({ limit: LIMITE_UPLOAD }));
 app.use(express.urlencoded({ extended: true, limit: LIMITE_UPLOAD }));
 
-// ─── Sessão ───────────────────────────────────────────────────────────────────
-app.use(session({
-    secret:            process.env.SESSION_SECRET || 'cordas_soltas_secret',
+// ─── Sessões separadas: conta do site e administração ─────────────────────────
+// Cookies distintos permitem que o administrador e um artista usem o mesmo
+// navegador sem que o login de um substitua ou encerre a sessão do outro.
+const sessaoSite = session({
+    name:               'connect.sid',
+    secret:             process.env.SESSION_SECRET || 'cordas_soltas_secret',
     resave:            false,
     saveUninitialized: false,
     cookie: {
         secure:   false,
         maxAge:   1000 * 60 * 60 * 24  // 24 horas
     }
-}));
+});
+
+const sessaoAdmin = session({
+    name:               'cordas.admin.sid',
+    secret:             process.env.ADMIN_SESSION_SECRET || process.env.SESSION_SECRET || 'cordas_soltas_admin_secret',
+    resave:             false,
+    saveUninitialized:  false,
+    cookie: {
+        secure: false,
+        path: '/adm',
+        maxAge: 1000 * 60 * 60 * 24
+    }
+});
+
+app.use((req, res, next) => {
+    const rotaAdmin = req.path === '/adm' || req.path.startsWith('/adm/');
+    (rotaAdmin ? sessaoAdmin : sessaoSite)(req, res, next);
+});
 
 // ─── Rotas ────────────────────────────────────────────────────────────────────
 const rotas = require('./app/routes/router');

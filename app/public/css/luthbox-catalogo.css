@@ -1,0 +1,81 @@
+.luth-details-page { min-height: 100vh; display: flex; flex-direction: column; background: #0a0a0c; color: #f8fafc; }
+.luth-details-page .seguros-main-content { display: block; flex: 1 0 auto; width: 100%; min-height: 0; padding: 2rem 1rem 4rem; }
+.luth-catalogo { width: min(100%, 1180px); margin: 0 auto; }
+.luth-catalogo-voltar { display: inline-flex; min-height: 44px; align-items: center; color: #ffd27a; text-decoration: none; }
+.luth-catalogo-acoes { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem 1rem; }
+.luth-catalogo-solicitacoes { display: inline-flex; min-height: 44px; align-items: center; gap: .55rem; padding: 0 1rem; border: 1px solid #f5a623; border-radius: 999px; background: #f5a623; color: #171006; font-weight: 800; text-decoration: none; transition: background .18s ease, transform .18s ease; }
+.luth-catalogo-solicitacoes:hover { background: #ffd27a; transform: translateY(-1px); }
+.luth-catalogo-header { max-width: 720px; margin: 1.5rem 0 2rem; }
+.luth-catalogo-kicker, .luth-produto-categoria { color: #ffd27a; font-size: .78rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.luth-catalogo-header h1 { margin: .4rem 0; color: #f5a623; font-size: clamp(2.4rem, 6vw, 4rem); }
+.luth-catalogo-header p { color: #c5c8d0; line-height: 1.6; }
+.luth-catalogo-feedback { padding:1rem 1.2rem; border:1px solid #77453c; border-radius:12px; background:#552a21; color:#ffd7c4; line-height:1.55; }
+.luth-catalogo-controles { display: flex; flex-wrap: wrap; align-items: center; gap: .7rem; margin-bottom: 1.2rem; }
+.luth-catalogo-controles label { font-weight: 700; }
+.luth-catalogo-controles select, .luth-catalogo-controles input, .luth-data-show input { min-height: 46px; padding: .65rem .8rem; border: 1px solid #44444e; border-radius: 10px; background: #17171d; color: #fff; font: inherit; }
+.luth-catalogo-controles input { flex: 1; min-width: 220px; }
+.luth-catalogo-layout { display: grid; grid-template-columns: minmax(0, 1fr) 330px; align-items: start; gap: 1.2rem; }
+.luth-produtos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.luth-produto { display: grid; grid-template-columns: 112px minmax(0, 1fr); overflow: hidden; border: 1px solid #303039; border-radius: 16px; background: linear-gradient(145deg, #1c1c23, #121216); cursor: pointer; transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease; }
+.luth-produto:hover { border-color:#f5a623; transform:translateY(-2px); box-shadow:0 12px 32px #0007; }
+.luth-produto > img { width: 112px; height: 100%; min-height: 190px; object-fit: cover; }
+.luth-produto-info { display: flex; flex-direction: column; align-items: flex-start; gap: .45rem; padding: 1rem; }
+.luth-produto-info h2 { font-size: 1.12rem; }
+.luth-produto-info p { color: #b7b9c2; font-size: .87rem; line-height: 1.45; }
+.luth-produto-info .luth-produto-compativel { color: #f3cf91; font-size: .8rem; }
+.luth-produto-info .luth-produto-estoque { color: #a8adb8; font-size: .76rem; }
+.luth-produto-rodape { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: .5rem; margin-top: auto; padding-top: .5rem; }
+.luth-produto-rodape strong { color: #ffd27a; white-space: nowrap; }
+.luth-produto-rodape small, .luth-itens-selecionados small { display: block; color: #a8adb8; font-size: .72rem; font-weight: 500; }
+.luth-produto-rodape button, .luth-contador button { min-width: 44px; min-height: 44px; border: 0; border-radius: 9px; background: #f5a623; color: #171006; font: inherit; font-weight: 800; cursor: pointer; }
+.luth-produto-rodape button:hover, .luth-contador button:hover { background: #ffd27a; }
+.luth-produto-rodape button:disabled { background: #45454d; color: #c2c2c8; cursor: not-allowed; }
+.luth-produto-rodape button:disabled:hover { background:#45454d; }
+.luth-item-dialog { position:fixed; inset:0; margin:auto; width:min(900px,calc(100vw - 2rem)); max-width:none; max-height:min(90vh,820px); box-sizing:border-box; padding:0; overflow:auto; border:1px solid #48413a; border-radius:18px; background:#19191f; color:#f8fafc; box-shadow:0 24px 90px #000b; }
+.luth-item-dialog::backdrop { background:#050507d9; backdrop-filter:blur(4px); }
+.luth-dialog-content { display:grid; grid-template-columns:minmax(0,1fr) minmax(300px,.9fr); align-items:center; gap:1.4rem; padding:1.5rem; }
+.luth-dialog-content > img { display:block; width:100%; height:min(68vh,560px); min-height:280px; max-height:650px; align-self:center; border-radius:12px; background:#101014; object-fit:contain; object-position:center; }
+.luth-dialog-info { display:flex; flex-direction:column; align-items:stretch; gap:.65rem; padding:.4rem .3rem .4rem 0; }
+.luth-dialog-info h2 { margin:0; color:#f5a623; font-size:clamp(1.6rem,4vw,2.2rem); }
+.luth-dialog-info p { color:#c4c6ce; line-height:1.55; }
+.luth-dialog-stock { color:#a8adb8 !important; font-size:.84rem; }
+.luth-dialog-price { color:#ffd27a; font-size:1.2rem; }
+.luth-dialog-close { position:absolute; top:.55rem; right:.55rem; z-index:1; display:grid; width:42px; height:42px; place-items:center; margin:0; border:1px solid #55555e; border-radius:50%; background:#25252c; color:#fff; font-size:1.6rem; line-height:1; cursor:pointer; }
+.luth-dialog-booking { margin:.6rem 0; padding:0; }
+.luth-dialog-show-label { font-weight:700; }
+.luth-dialog-info select { width:100%; min-height:46px; padding:.65rem .8rem; border:1px solid #44444e; border-radius:10px; background:#17171d; color:#fff; font:inherit; }
+.luth-dialog-add { width:100%; min-height:48px; margin-top:.3rem; border:0; border-radius:999px; background:linear-gradient(135deg,#f5a623,#ffd27a); color:#171006; font:inherit; font-weight:800; cursor:pointer; }
+.luth-dialog-add:disabled { opacity:.45; cursor:not-allowed; }
+.luth-dialog-feedback:not([hidden]) { padding:.75rem; border:1px solid #77453c; border-radius:9px; background:#552a21; color:#ffd7c4; font-size:.88rem; }
+.luth-item-dialog :focus-visible { outline:3px solid #ffd27a; outline-offset:2px; }
+.luth-resumo { position: sticky; top: 1rem; padding: 1.2rem; border: 1px solid #48413a; border-radius: 16px; background: #19191f; box-shadow: 0 18px 44px #0006; }
+.luth-resumo h2 { margin-bottom: .3rem; }
+.luth-resumo-prazo, .luth-resumo-nota, .luth-preco-nota { color: #a8adb8; font-size: .82rem; line-height: 1.5; }
+.luth-modalidade { display: grid; gap: .7rem; margin: 1rem 0; border: 0; }
+.luth-modalidade legend, .luth-data-show label { margin-bottom: .5rem; font-weight: 700; }
+.luth-modalidade label { display: grid; grid-template-columns: 20px 1fr; gap: .15rem .5rem; align-items: start; padding: .7rem; border: 1px solid #363640; border-radius: 10px; cursor: pointer; }
+.luth-modalidade input { accent-color: #f5a623; }
+.luth-modalidade small { grid-column: 2; color: #a8adb8; font-size: .78rem; line-height: 1.4; }
+.luth-data-show:not([hidden]) { display: grid; gap: .4rem; margin: .7rem 0 1rem; }
+.luth-data-show input, .luth-data-show select { width: 100%; min-height: 46px; padding: .65rem .8rem; border: 1px solid #44444e; border-radius: 10px; background: #17171d; color: #fff; font: inherit; }
+.luth-itens-selecionados { display: grid; gap: .5rem; max-height: 230px; overflow: auto; list-style: none; }
+.luth-itens-selecionados > li { display: flex; align-items: center; justify-content: space-between; gap: .5rem; padding: .65rem 0; border-bottom: 1px solid #33333b; }
+.luth-itens-selecionados strong { font-size: .87rem; }
+.luth-vazio, .luth-sem-resultados { color: #a8adb8; padding: 1rem 0; }
+.luth-contador { display: inline-flex; align-items: center; gap: .45rem; }
+.luth-contador button { min-width: 36px; min-height: 36px; }
+.luth-total { display: flex; justify-content: space-between; margin: 1rem 0; font-weight: 700; }
+.luth-total strong { color: #ffd27a; font-size: 1.15rem; }
+.luth-finalizar { width: 100%; min-height: 48px; border: 0; border-radius: 999px; background: linear-gradient(135deg, #f5a623, #ffd27a); color: #171006; font: inherit; font-weight: 800; cursor: pointer; }
+.luth-finalizar:disabled { opacity: .45; cursor: not-allowed; }
+.luth-resumo-nota { margin-top: .7rem; }
+.luth-mensagem:not([hidden]) { margin: .7rem 0; padding: .7rem; border-radius: 9px; background: #552a21; color: #ffd7c4; font-size: .84rem; }
+.luth-preco-nota { margin-top: 1rem; }
+.luth-details-page :focus-visible { outline: 3px solid #ffd27a; outline-offset: 2px; }
+.luth-catalogo-footer { flex: 0 0 auto; width: 100%; padding: 1.5rem 1rem; border-top: 1px solid #303039; background: #09090b; color: #a8adb8; text-align: center; font-size: .82rem; line-height: 1.7; }
+.luth-catalogo-footer a { color: #ffd27a; text-decoration: none; }
+.luth-catalogo-footer a:hover { text-decoration: underline; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+@media (max-width: 900px) { .luth-catalogo-layout { grid-template-columns: 1fr; } .luth-resumo { position: static; } }
+@media (max-width: 720px) { .luth-item-dialog { max-height:90dvh; } .luth-dialog-content { grid-template-columns:1fr; gap:1rem; padding:1rem; } .luth-dialog-content > img { height:min(38vh,300px); min-height:180px; } .luth-dialog-info { padding:.3rem; } .luth-dialog-close { top:.4rem; right:.4rem; } }
+@media (max-width: 620px) { .luth-produtos { grid-template-columns: 1fr; } .luth-produto { grid-template-columns: 90px minmax(0, 1fr); } .luth-produto > img { width: 90px; min-height: 205px; } .luth-catalogo-controles { align-items: stretch; } .luth-catalogo-controles select, .luth-catalogo-controles input { width: 100%; } }

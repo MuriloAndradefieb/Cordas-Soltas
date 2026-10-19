@@ -330,6 +330,10 @@
 
             window.location.href = '/luthbox-seguros';
         });
+
+        if (new URLSearchParams(window.location.search).get('acesso') === 'restrito') {
+            abrirModalBloqueio(usuarioLogado ? 'visitante' : 'deslogado');
+        }
     </script>
 
     <script src="js/script.js"></script>

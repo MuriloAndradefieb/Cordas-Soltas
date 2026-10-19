@@ -182,6 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
             $('order-summary').innerHTML = `
                 <p class="summary-title">Resumo do Pedido</p>
                 <p>${itemLabel}: <strong>${orderData.title || fallbackTitle}</strong></p>
+                ${isLuthbox ? `<p>Locação: <strong>1 dia útil</strong></p><p>Modalidade: <strong>${orderData.modalidade === 'agendado' ? 'Com agendamento' : 'Sem agendamento — solicitação imediata'}</strong></p>${orderData.dataShow ? `<p>Data do show: <strong>${new Date(`${orderData.dataShow}T12:00:00`).toLocaleDateString('pt-BR')}</strong></p>` : ''}<p>Itens: <strong>${(orderData.items || []).map(item => `${item.quantidade}× ${item.nome}`).join(', ')}</strong></p>` : ''}
                 <p class="summary-total">Total a Pagar: ${Utils.formatCurrency(orderData.total)}</p>
             `;
         }

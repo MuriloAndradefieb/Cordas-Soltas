@@ -1,4 +1,5 @@
 const UsuariosModel = require('../models/Usuariosmodel');
+const LuthboxModel = require('../models/LuthboxModel');
 const bcrypt       = require('bcryptjs');
 
 const camposPermitidosPorRole = {
@@ -31,10 +32,14 @@ const PerfilController = {
 
             // Atualiza a sessão com os dados reais do banco
             req.session.usuario = usuarioBanco;
+            const agendaArtista = usuarioBanco.role === 'artista'
+                ? await LuthboxModel.listarAgendaArtista(id)
+                : [];
 
             return res.render('pages/perfil', {
                 titulo: 'Meu Perfil',
                 usuario: usuarioBanco,
+                agendaArtista,
                 erro: req.query.erro || null,
                 sucesso: req.query.sucesso || null
             });

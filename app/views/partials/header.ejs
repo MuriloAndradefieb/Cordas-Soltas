@@ -9,6 +9,7 @@
             <a href="/"           class="nav-link" data-page="inicio">INGRESSOS</a>
             <a href="/seletivas"  class="nav-link" data-page="seletivas">CONCURSO</a>
             <a href="/luthbox"    class="nav-link" data-page="luthbox">LUTHBOX</a>
+            <a href="/luthbox-seguros" class="nav-link" data-page="luthbox-catalogo">CATÁLOGO LUTHBOX</a>
             <a href="/sobre"      class="nav-link" data-page="sobre">SOBRE</a>
         </nav>
 
@@ -33,13 +34,15 @@
     (function() {
         var path = window.location.pathname;
         var links = document.querySelectorAll('.nav-desktop .nav-link');
+        var linkAtivo = null;
         links.forEach(function(link) {
             var href = link.getAttribute('href');
             if (href === '/' && (path === '/' || path.startsWith('/detalhes'))) {
-                link.classList.add('active');
-            } else if (href !== '/' && path.startsWith(href)) {
-                link.classList.add('active');
+                linkAtivo = link;
+            } else if (href !== '/' && (path === href || path.startsWith(href + '/')) && (!linkAtivo || href.length > linkAtivo.getAttribute('href').length)) {
+                linkAtivo = link;
             }
         });
+        if (linkAtivo) linkAtivo.classList.add('active');
     })();
     </script>

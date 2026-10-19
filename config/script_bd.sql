@@ -148,3 +148,5 @@ CREATE TABLE IF NOT EXISTS pedidos (
     CONSTRAINT fk_pedidos_show
         FOREIGN KEY (show_id)    REFERENCES shows(id)    ON DELETE CASCADE
 );
+
+

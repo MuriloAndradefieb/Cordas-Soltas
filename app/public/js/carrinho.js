@@ -1,4 +1,32 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const pedidoLuthbox = JSON.parse(localStorage.getItem('luthboxOrder') || 'null');
+    const secaoLuthbox = document.getElementById('luthbox-cart-section');
+    if (pedidoLuthbox && secaoLuthbox) {
+        secaoLuthbox.hidden = false;
+        const listaLuthbox = document.getElementById('luthbox-cart-items');
+        pedidoLuthbox.items.forEach(item => {
+            const linha = document.createElement('li');
+            const nome = document.createElement('strong');
+            nome.textContent = item.nome;
+            const detalhe = document.createElement('span');
+            detalhe.textContent = `${item.categoria} · ${item.instrumento} · ${item.quantidade} × ${Number(item.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}`;
+            linha.append(nome, detalhe);
+            listaLuthbox.appendChild(linha);
+        });
+        document.getElementById('luthbox-cart-mode').textContent = pedidoLuthbox.modalidade === 'agendado' ? 'Com agendamento' : 'Sem agendamento — solicitação imediata';
+        document.getElementById('luthbox-cart-total').textContent = Number(pedidoLuthbox.total).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        if (pedidoLuthbox.dataShow) {
+            document.getElementById('luthbox-cart-date-row').hidden = false;
+            document.getElementById('luthbox-cart-date').textContent = `${new Date(`${pedidoLuthbox.dataShow}T12:00:00`).toLocaleDateString('pt-BR')} · ${pedidoLuthbox.showTitle || ''} · ${pedidoLuthbox.showLocal || ''}`;
+        }
+        document.querySelector('.lista-ingressos').hidden = true;
+        document.querySelector('.resumo-compra').hidden = true;
+        document.getElementById('luthbox-cart-checkout').addEventListener('click', () => {
+            localStorage.setItem('currentOrder', JSON.stringify(pedidoLuthbox));
+            window.location.href = '/pagamento-luth';
+        });
+    }
+
     const corpoResumo  = document.getElementById('corpo-resumo');
     const displayTotal = document.getElementById('summary-total');
 

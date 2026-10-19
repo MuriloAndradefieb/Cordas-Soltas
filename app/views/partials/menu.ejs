@@ -6,5 +6,12 @@
             <li><a href="/sobre">Sobre</a></li>
             <li><a href="/seletivas">Concurso</a></li>
             <li><a href="/luthbox">Luthbox</a></li>
+            <li><a href="/luthbox-seguros">Catálogo Luthbox</a></li>
+            <% if (usuario && usuario.role === 'artista') { %>
+                <li><a href="/luthbox/solicitacoes">Minhas solicitações Luthbox</a></li>
+            <% } %>
+            <% if (usuario && ['admin', 'admin_geral'].includes(usuario.role)) { %>
+                <li><a href="/adm/luthbox">Operação Luthbox</a></li>
+            <% } %>
         </ul>
     </aside>
