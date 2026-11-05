@@ -17,13 +17,13 @@
                 <li onclick="window.location.href='/adm/cadastro'"><img src="/img/perfil-icon.png" width="10" alt=""> Cadastro</li>
                 <li onclick="window.location.href='/adm/ingressos'"><img src="/img/ingressos-icon.png" width="10" alt=""> Ingressos</li>
                 <li onclick="window.location.href='/adm/luthbox'"><img src="/img/luthbox-icon.png" width="10" alt=""> Luthbox</li>
+                <li onclick="window.location.href='/adm/escala'"><img src="/img/luthbox-icon.png" width="10" alt=""> Escala</li>
                 <li class="active" onclick="window.location.href='/adm/luthbox/solicitacoes'"><img src="/img/luthbox-icon.png" width="10" alt=""> Solicitações</li>
                 <li onclick="window.location.href='/adm/formularios'"><img src="/img/formulario-icon.png" width="10" alt=""> Formulários</li>
             </ul>
         </nav>
         <main class="content-area">
             <div class="luthbox-admin-content">
-                <header class="sub-header"><span class="title">SOLICITAÇÕES LUTHBOX</span><span class="luth-admin-subtitle">Aprovações, retiradas e devoluções</span></header>
                 <% if (erro) { %><p class="luth-feedback luth-feedback-error" role="alert"><%= erro %></p><% } %>
                 <% if (sucesso) { %><p class="luth-feedback luth-feedback-success" role="status"><%= sucesso %></p><% } %>
                 <% if (Number.isInteger(limpeza)) { %><p class="luth-feedback luth-feedback-success" role="status"><%= limpeza ? `${limpeza} solicitação(ões) concluída(s) removida(s) do histórico.` : 'Não havia solicitações concluídas para remover.' %></p><% } %>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escala de artistas</title>
+    <link rel="stylesheet" href="/css/admin-dashboard.css">
+    <link rel="stylesheet" href="/css/luthbox-operacao.css">
+    <link rel="stylesheet" href="/css/luthbox-admin.css">
+</head>
+<body class="admin-luthbox-page">
+    <hr class="top-line">
+    <header class="main-header"><img src="/img/LOGO ALTERNATIVA CORDAS SOLTAS SITE.png" width="50" alt="Logo Cordas Soltas" class="logo"></header>
+    <div class="app-container">
+        <nav class="sidebar-nav" aria-label="Navegação administrativa">
+            <ul>
+                <li onclick="window.location.href='/adm/cadastro'"><img src="/img/perfil-icon.png" width="10" alt=""> Cadastro</li>
+                <li onclick="window.location.href='/adm/ingressos'"><img src="/img/ingressos-icon.png" width="10" alt=""> Ingressos</li>
+                <li onclick="window.location.href='/adm/luthbox'"><img src="/img/luthbox-icon.png" width="10" alt=""> Luthbox</li>
+                <li class="active" onclick="window.location.href='/adm/escala'"><img src="/img/luthbox-icon.png" width="10" alt=""> Escala</li>
+                <li onclick="window.location.href='/adm/luthbox/solicitacoes'"><img src="/img/luthbox-icon.png" width="10" alt=""> Solicitações</li>
+                <li onclick="window.location.href='/adm/formularios'"><img src="/img/formulario-icon.png" width="10" alt=""> Formulários</li>
+            </ul>
+        </nav>
+        <main class="content-area">
+            <div class="luthbox-admin-content">
+        <p class="luthbox-admin-intro">Organize quais artistas estão vinculados a cada show.</p>
+        <% if (erro) { %><p class="luth-feedback luth-feedback-error" role="alert"><%= erro %></p><% } %>
+        <% if (sucesso) { %><p class="luth-feedback luth-feedback-success" role="status"><%= sucesso %></p><% } %>
+
+        <section class="luth-admin-section">
+            <h2>Escala de artistas nos shows</h2>
+            <p class="luth-admin-help">Vincule a banda ao show antes da solicitação. O catálogo de cada artista mostra somente os eventos associados aqui.</p>
+            <% if (artistas.length && shows.length) { %>
+                <form class="luth-scale-form" method="post" action="/adm/luthbox/escalas">
+                    <div class="luth-scale-field">
+                        <div class="luth-scale-field-head">
+                            <label for="luth-artista-busca">Artista/banda</label>
+                            <small class="luth-search-count" id="luth-artista-count" aria-live="polite"></small>
+                        </div>
+                        <input type="search" id="luth-artista-busca" placeholder="Buscar por banda ou usuário..." autocomplete="off" aria-controls="luth-artista-select">
+                        <select id="luth-artista-select" name="usuario_id" size="6" required aria-label="Artistas e bandas">
+                            <% artistas.forEach(artista => { %><option value="<%= artista.id %>"><%= artista.nome_banda || artista.username %> — <%= artista.username %></option><% }); %>
+                        </select>
+                    </div>
+                    <div class="luth-scale-field">
+                        <div class="luth-scale-field-head">
+                            <label for="luth-show-busca">Show</label>
+                            <small class="luth-search-count" id="luth-show-count" aria-live="polite"></small>
+                        </div>
+                        <input type="search" id="luth-show-busca" placeholder="Buscar por show, data ou local..." autocomplete="off" aria-controls="luth-show-select">
+                        <select id="luth-show-select" name="show_id" size="6" required aria-label="Shows">
+                            <% shows.forEach(show => { %><option value="<%= show.id %>"><%= show.titulo %> · <%= show.data_show %> · <%= show.local %></option><% }); %>
+                        </select>
+                    </div>
+                    <button class="luth-admin-button" type="submit">Vincular artista ao show</button>
+                </form>
+            <% } else { %><p class="luth-empty-state">Cadastre pelo menos um artista e um show para configurar a escala.</p><% } %>
+            <div class="luth-scale-list">
+                <% escalas.forEach(escala => { %>
+                    <article class="luth-scale-card">
+                        <div><strong><%= escala.nome_banda || escala.username %></strong><small>Conta: <%= escala.username %></small></div>
+                        <div><strong><%= escala.show_titulo %></strong><small><%= escala.data_show %> · <%= escala.show_local %></small></div>
+                        <form method="post" action="/adm/luthbox/escalas/<%= escala.show_id %>/<%= escala.usuario_id %>/desvincular" data-confirm-unlink>
+                            <button class="luth-admin-button luth-danger-button" type="submit">Desvincular</button>
+                        </form>
+                    </article>
+                <% }); %>
+                <% if (!escalas.length) { %><p class="luth-admin-help">Ainda não há artistas vinculados a shows.</p><% } %>
+            </div>
+        </section>
+
+            </div>
+        </main>
+    </div>
+    <dialog class="luth-confirm-dialog" id="luth-unlink-confirm" aria-labelledby="luth-unlink-title">
+        <h2 id="luth-unlink-title">Desvincular banda do show?</h2>
+        <p>O vínculo será removido da escala. Solicitações anteriores continuarão no histórico.</p>
+        <div><button type="button" class="luth-confirm-cancel">Cancelar</button><button type="button" class="luth-admin-button luth-danger-button luth-confirm-accept">Desvincular</button></div>
+    </dialog>
+    <script src="/js/script.js"></script>
+    <script>
+        const unlinkDialog = document.getElementById('luth-unlink-confirm');
+        let unlinkForm = null;
+        document.querySelectorAll('[data-confirm-unlink]').forEach(form => form.addEventListener('submit', event => {
+            event.preventDefault();
+            unlinkForm = form;
+            unlinkDialog.showModal();
+        }));
+        document.querySelector('.luth-confirm-cancel').addEventListener('click', () => unlinkDialog.close());
+        document.querySelector('.luth-confirm-accept').addEventListener('click', () => { if (unlinkForm) unlinkForm.submit(); });
+        unlinkDialog.addEventListener('click', event => { if (event.target === unlinkDialog) unlinkDialog.close(); });
+    </script>
+    <script>
+        // Busca nas listas de artistas e de shows (ignora acentos e maiúsculas; todos os termos devem aparecer)
+        (function () {
+            const normalizar = texto => String(texto || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+            function ativarBusca(idBusca, idLista, idContagem, singular, plural) {
+                const busca = document.getElementById(idBusca);
+                const lista = document.getElementById(idLista);
+                const contagem = document.getElementById(idContagem);
+                if (!busca || !lista) return;
+
+                const todas = Array.from(lista.options).map(opcao => ({
+                    valor: opcao.value,
+                    texto: opcao.textContent.trim(),
+                    chave: normalizar(opcao.textContent)
+                }));
+                let visiveis = todas;
+
+                function rotulo(qtd) { return qtd === 1 ? singular : plural; }
+
+                function filtrar() {
+                    const termos = normalizar(busca.value).split(/\s+/).filter(Boolean);
+                    const selecionado = lista.value;
+                    visiveis = todas.filter(item => termos.every(termo => item.chave.includes(termo)));
+
+                    const opcoes = visiveis.map(item => {
+                        const opcao = document.createElement('option');
+                        opcao.value = item.valor;
+                        opcao.textContent = item.texto;
+                        return opcao;
+                    });
+                    if (!opcoes.length) {
+                        const vazio = document.createElement('option');
+                        vazio.disabled = true;
+                        vazio.value = '';
+                        vazio.textContent = 'Nenhum resultado encontrado';
+                        opcoes.push(vazio);
+                    }
+                    lista.replaceChildren(...opcoes);
+
+                    // Mantém a seleção se o item continua nos resultados
+                    lista.selectedIndex = -1;
+                    if (selecionado && visiveis.some(item => item.valor === selecionado)) lista.value = selecionado;
+
+                    if (contagem) {
+                        contagem.textContent = termos.length
+                            ? visiveis.length + ' de ' + todas.length + ' ' + plural
+                            : todas.length + ' ' + rotulo(todas.length);
+                    }
+                }
+
+                busca.addEventListener('input', filtrar);
+                busca.addEventListener('search', filtrar);
+                busca.addEventListener('keydown', evento => {
+                    if (evento.key === 'Enter') {
+                        // Enter escolhe o primeiro resultado em vez de enviar o formulário
+                        evento.preventDefault();
+                        if (visiveis.length && (!lista.value || !visiveis.some(item => item.valor === lista.value))) lista.value = visiveis[0].valor;
+                    } else if (evento.key === 'ArrowDown' && visiveis.length) {
+                        evento.preventDefault();
+                        if (lista.selectedIndex < 0) lista.selectedIndex = 0;
+                        lista.focus();
+                    } else if (evento.key === 'Escape' && busca.value) {
+                        evento.preventDefault();
+                        busca.value = '';
+                        filtrar();
+                    }
+                });
+
+                filtrar();
+            }
+
+            ativarBusca('luth-artista-busca', 'luth-artista-select', 'luth-artista-count', 'artista', 'artistas');
+            ativarBusca('luth-show-busca', 'luth-show-select', 'luth-show-count', 'show', 'shows');
+        })();
+    </script>
+</body>
+</html>

@@ -17,50 +17,16 @@
                 <li onclick="window.location.href='/adm/cadastro'"><img src="/img/perfil-icon.png" width="10" alt=""> Cadastro</li>
                 <li onclick="window.location.href='/adm/ingressos'"><img src="/img/ingressos-icon.png" width="10" alt=""> Ingressos</li>
                 <li class="active" onclick="window.location.href='/adm/luthbox'"><img src="/img/luthbox-icon.png" width="10" alt=""> Luthbox</li>
+                <li onclick="window.location.href='/adm/escala'"><img src="/img/luthbox-icon.png" width="10" alt=""> Escala</li>
                 <li onclick="window.location.href='/adm/luthbox/solicitacoes'"><img src="/img/luthbox-icon.png" width="10" alt=""> Solicitações</li>
                 <li onclick="window.location.href='/adm/formularios'"><img src="/img/formulario-icon.png" width="10" alt=""> Formulários</li>
             </ul>
         </nav>
         <main class="content-area">
             <div class="luthbox-admin-content">
-        <header class="sub-header"><span class="title">OPERAÇÃO LUTHBOX</span><span class="luth-admin-subtitle">Catálogo e agenda de artistas</span></header>
-        <p class="luthbox-admin-intro">Gerencie os equipamentos e organize quais artistas estão vinculados a cada show.</p>
+        <p class="luthbox-admin-intro">Gerencie os equipamentos disponíveis no catálogo da Luthbox.</p>
         <% if (erro) { %><p class="luth-feedback luth-feedback-error" role="alert"><%= erro %></p><% } %>
         <% if (sucesso) { %><p class="luth-feedback luth-feedback-success" role="status"><%= sucesso %></p><% } %>
-
-        <section class="luth-admin-section">
-            <h2>Escala de artistas nos shows</h2>
-            <p class="luth-admin-help">Vincule a banda ao show antes da solicitação. O catálogo de cada artista mostra somente os eventos associados aqui.</p>
-            <% if (artistas.length && shows.length) { %>
-                <form class="luth-scale-form" method="post" action="/adm/luthbox/escalas">
-                    <label>Artista/banda
-                        <select id="luth-artista-select" name="usuario_id" required>
-                            <option value="">Selecione ou digite para buscar...</option>
-                            <% artistas.forEach(artista => { %><option value="<%= artista.id %>"><%= artista.nome_banda || artista.username %> — <%= artista.username %></option><% }); %>
-                        </select>
-                    </label>
-                    <label>Show
-                        <select id="luth-show-select" name="show_id" required>
-                            <option value="">Selecione ou digite para buscar...</option>
-                            <% shows.forEach(show => { %><option value="<%= show.id %>"><%= show.titulo %> · <%= show.data_show %> · <%= show.local %></option><% }); %>
-                        </select>
-                    </label>
-                    <button class="luth-admin-button" type="submit">Vincular artista ao show</button>
-                </form>
-            <% } else { %><p class="luth-empty-state">Cadastre pelo menos um artista e um show para configurar a escala.</p><% } %>
-            <div class="luth-scale-list">
-                <% escalas.forEach(escala => { %>
-                    <article class="luth-scale-card">
-                        <div><strong><%= escala.nome_banda || escala.username %></strong><small>Conta: <%= escala.username %></small></div>
-                        <div><strong><%= escala.show_titulo %></strong><small><%= escala.data_show %> · <%= escala.show_local %></small></div>
-                        <form method="post" action="/adm/luthbox/escalas/<%= escala.show_id %>/<%= escala.usuario_id %>/desvincular" data-confirm-unlink>
-                            <button class="luth-admin-button luth-danger-button" type="submit">Desvincular</button>
-                        </form>
-                    </article>
-                <% }); %>
-                <% if (!escalas.length) { %><p class="luth-admin-help">Ainda não há artistas vinculados a shows.</p><% } %>
-            </div>
-        </section>
 
         <section class="luth-admin-section">
             <h2>Catálogo e inventário</h2>
@@ -111,23 +77,8 @@
             </div>
         </main>
     </div>
-    <dialog class="luth-confirm-dialog" id="luth-unlink-confirm" aria-labelledby="luth-unlink-title">
-        <h2 id="luth-unlink-title">Desvincular banda do show?</h2>
-        <p>O vínculo será removido da escala. Solicitações anteriores continuarão no histórico.</p>
-        <div><button type="button" class="luth-confirm-cancel">Cancelar</button><button type="button" class="luth-admin-button luth-danger-button luth-confirm-accept">Desvincular</button></div>
-    </dialog>
     <script src="/js/script.js"></script>
     <script>
-        const unlinkDialog = document.getElementById('luth-unlink-confirm');
-        let unlinkForm = null;
-        document.querySelectorAll('[data-confirm-unlink]').forEach(form => form.addEventListener('submit', event => {
-            event.preventDefault();
-            unlinkForm = form;
-            unlinkDialog.showModal();
-        }));
-        document.querySelector('.luth-confirm-cancel').addEventListener('click', () => unlinkDialog.close());
-        document.querySelector('.luth-confirm-accept').addEventListener('click', () => { if (unlinkForm) unlinkForm.submit(); });
-        unlinkDialog.addEventListener('click', event => { if (event.target === unlinkDialog) unlinkDialog.close(); });
         document.querySelectorAll('.luth-image-input').forEach(input => input.addEventListener('change', () => {
             const arquivo = input.files && input.files[0];
             if (!arquivo) return;

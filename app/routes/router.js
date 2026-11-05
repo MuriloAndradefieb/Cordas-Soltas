@@ -465,7 +465,7 @@ router.post('/adm/visitantes/editar/:id', async (req, res) => {
         } = req.body;
 
         if (excluir_conta === 'sim') {
-            if (confirmacao_exclusao !== 'excluirconta') {
+            if (String(confirmacao_exclusao || '').trim().toLowerCase() !== 'excluirconta') {
                 return res.redirect(`/adm/visitantes/editar/${id}?erro=${encodeURIComponent('você precisa confirmar a ação')}`);
             }
             const excluido = await UsuariosModel.excluir(id);
@@ -530,7 +530,7 @@ router.post('/adm/artistas/editar/:id', requireAdminLuthbox, async (req, res) =>
         } = req.body;
 
         if (excluir_conta === 'sim') {
-            if (confirmacao_exclusao !== 'excluirconta') {
+            if (String(confirmacao_exclusao || '').trim().toLowerCase() !== 'excluirconta') {
                 return res.redirect(`/adm/artistas/editar/${id}?erro=${encodeURIComponent('você precisa confirmar a ação')}`);
             }
             const excluido = await UsuariosModel.excluir(id);
@@ -934,19 +934,30 @@ router.post('/luthbox/solicitacoes/historico', requireArtista, async (req, res) 
 });
 router.get('/adm/luthbox', requireAdminLuthbox, async (req, res) => {
     try {
-        const [produtos, escalas, artistas, shows] = await Promise.all([
-            LuthboxModel.listarProdutosAdmin(),
-            LuthboxModel.listarEscalasAdmin(),
-            db.query("SELECT id, username, nome_banda FROM usuarios WHERE role = 'artista' ORDER BY username").then(([rows]) => rows),
-            db.query('SELECT id, titulo, local, data_show FROM shows ORDER BY id DESC').then(([rows]) => rows)
-        ]);
+        const produtos = await LuthboxModel.listarProdutosAdmin();
         return res.render('pages/admin-luthbox', {
-            titulo: 'Operação Luthbox', usuario: u(req), produtos, escalas, artistas, shows,
+            titulo: 'Operação Luthbox', usuario: u(req), produtos,
             erro: req.query.erro || null, sucesso: req.query.sucesso || null
         });
     } catch (err) {
         console.error('Erro ao carregar painel Luthbox:', err.message);
         return res.status(500).send('Não foi possível carregar a operação da Luthbox.');
+    }
+});
+router.get('/adm/escala', requireAdminLuthbox, async (req, res) => {
+    try {
+        const [escalas, artistas, shows] = await Promise.all([
+            LuthboxModel.listarEscalasAdmin(),
+            db.query("SELECT id, username, nome_banda FROM usuarios WHERE role = 'artista' ORDER BY username").then(([rows]) => rows),
+            db.query('SELECT id, titulo, local, data_show FROM shows ORDER BY id DESC').then(([rows]) => rows)
+        ]);
+        return res.render('pages/admin-escala', {
+            titulo: 'Escala de artistas', usuario: u(req), escalas, artistas, shows,
+            erro: req.query.erro || null, sucesso: req.query.sucesso || null
+        });
+    } catch (err) {
+        console.error('Erro ao carregar escala de artistas:', err.message);
+        return res.status(500).send('Não foi possível carregar a escala de artistas.');
     }
 });
 router.get('/adm/luthbox/solicitacoes', requireAdminLuthbox, async (req, res) => {
@@ -974,17 +985,17 @@ router.post('/adm/luthbox/solicitacoes/historico', requireAdminLuthbox, async (r
 router.post('/adm/luthbox/escalas', requireAdminLuthbox, async (req, res) => {
     try {
         await LuthboxModel.vincularArtistaAoShow(req.body.show_id, req.body.usuario_id, req.session.usuario?.id || null);
-        return res.redirect('/adm/luthbox?sucesso=' + encodeURIComponent('Artista vinculado ao show. O evento já aparece no catálogo da banda.'));
+        return res.redirect('/adm/escala?sucesso=' + encodeURIComponent('Artista vinculado ao show. O evento já aparece no catálogo da banda.'));
     } catch (err) {
-        return res.redirect('/adm/luthbox?erro=' + encodeURIComponent(err.message));
+        return res.redirect('/adm/escala?erro=' + encodeURIComponent(err.message));
     }
 });
 router.post('/adm/luthbox/escalas/:showId/:usuarioId/desvincular', requireAdminLuthbox, async (req, res) => {
     try {
         await LuthboxModel.desvincularArtistaDoShow(req.params.showId, req.params.usuarioId);
-        return res.redirect('/adm/luthbox?sucesso=' + encodeURIComponent('Artista desvinculado do show.'));
+        return res.redirect('/adm/escala?sucesso=' + encodeURIComponent('Artista desvinculado do show.'));
     } catch (err) {
-        return res.redirect('/adm/luthbox?erro=' + encodeURIComponent(err.message));
+        return res.redirect('/adm/escala?erro=' + encodeURIComponent(err.message));
     }
 });
 router.get('/adm/luthbox/produtos/:id/editar', requireAdminLuthbox, async (req, res) => {
