@@ -7,7 +7,11 @@ const app     = express();
 const LIMITE_UPLOAD = '200mb';
 
 // ─── Arquivos estáticos ───────────────────────────────────────────────────────
-app.use(express.static(path.join(__dirname, 'app', 'public')));
+app.use(express.static(path.join(__dirname, 'app', 'public'), {
+    maxAge: '1d',
+    etag: true,
+    lastModified: true
+}));
 
 // ─── Template engine ──────────────────────────────────────────────────────────
 app.set('view engine', 'ejs');

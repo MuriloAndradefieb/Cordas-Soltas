@@ -5,6 +5,7 @@ const AuthController    = require('../controllers/authController');
 const PerfilController  = require('../controllers/perfilController');
 const FormularioController = require('../controllers/formularioController');
 const multer            = require('multer');
+const crypto            = require('crypto');
 
 const db = require('../../config/pool_conexoes');
 const CarrinhoModel = require('../models/CarrinhoModel');
@@ -12,6 +13,76 @@ const PedidosModel  = require('../models/PedidosModel');   // ← NOVO
 const LuthboxModel = require('../models/LuthboxModel');
 const ShowImageModel = require('../models/ShowImageModel');
 const UsuariosModel = require('../models/Usuariosmodel');
+
+async function garantirTabelaPagamentosMP() {
+    await db.query(`CREATE TABLE IF NOT EXISTS pagamentos_mercadopago (
+        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+        referencia VARCHAR(64) NOT NULL UNIQUE,
+        usuario_id INT NOT NULL,
+        itens_json JSON NOT NULL,
+        total DECIMAL(10,2) NOT NULL,
+        preferencia_id VARCHAR(100) DEFAULT NULL,
+        pagamento_id VARCHAR(100) DEFAULT NULL UNIQUE,
+        status VARCHAR(30) NOT NULL DEFAULT 'pending',
+        processado_em TIMESTAMP NULL DEFAULT NULL,
+        criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )`);
+}
+
+function mpBaseUrl() {
+    const configurada = String(process.env.APP_BASE_URL || '').trim();
+    if (!configurada) return null;
+    let url;
+    try { url = new URL(configurada); } catch { throw new Error('APP_BASE_URL precisa ser uma URL HTTPS pública.'); }
+    if (url.protocol !== 'https:' || ['localhost', '127.0.0.1', '::1'].includes(url.hostname)) {
+        throw new Error('APP_BASE_URL precisa ser uma URL HTTPS pública, não localhost.');
+    }
+    return configurada.replace(/\/$/, '');
+}
+
+async function buscarPagamentoMP(pagamentoId) {
+    if (!process.env.MP_ACCESS_TOKEN) throw new Error('MP_ACCESS_TOKEN não configurado.');
+    const resposta = await fetch(`https://api.mercadopago.com/v1/payments/${encodeURIComponent(pagamentoId)}`, {
+        headers: { Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}` }
+    });
+    const pagamento = await resposta.json().catch(() => ({}));
+    if (!resposta.ok) throw new Error(pagamento.message || 'Não foi possível consultar o pagamento.');
+    return pagamento;
+}
+
+async function processarPagamentoMP(pagamento) {
+    const referencia = String(pagamento.external_reference || '');
+    if (!referencia) return false;
+    await garantirTabelaPagamentosMP();
+    await PedidosModel.garantirTabela();
+    const conexao = await db.getConnection();
+    try {
+        await conexao.beginTransaction();
+        const [rows] = await conexao.query('SELECT * FROM pagamentos_mercadopago WHERE referencia = ? FOR UPDATE', [referencia]);
+        const pedido = rows[0];
+        if (!pedido || Number(pedido.total) !== Number(pagamento.transaction_amount)) {
+            await conexao.rollback();
+            return false;
+        }
+        await conexao.query('UPDATE pagamentos_mercadopago SET pagamento_id = ?, status = ? WHERE referencia = ?', [String(pagamento.id), pagamento.status, referencia]);
+        if (pagamento.status === 'approved' && !pedido.processado_em) {
+            const itens = typeof pedido.itens_json === 'string' ? JSON.parse(pedido.itens_json) : pedido.itens_json;
+            const valores = itens.map(item => [pedido.usuario_id, item.id, item.tipo_ingresso, item.quantidade, item.preco, 'checkout_pro']);
+            if (valores.length) await conexao.query('INSERT INTO pedidos (usuario_id, show_id, tipo_ingresso, quantidade, preco_unitario, forma_pagamento) VALUES ?', [valores]);
+            for (const item of itens) {
+                if (item.cartId) await conexao.query('DELETE FROM carrinho WHERE id = ? AND usuario_id = ?', [item.cartId, pedido.usuario_id]);
+            }
+            await conexao.query('UPDATE pagamentos_mercadopago SET processado_em = CURRENT_TIMESTAMP WHERE referencia = ?', [referencia]);
+        }
+        await conexao.commit();
+        return true;
+    } catch (err) {
+        await conexao.rollback();
+        throw err;
+    } finally {
+        conexao.release();
+    }
+}
 
 // =========================================================================
 // CONFIGURAÇÃO DO MULTER — BANNERS DO ADMIN (limite: 5 MB, só imagens)
@@ -157,9 +228,16 @@ function somarDiasDataIso(dias) {
 // =========================================================================
 router.get('/', async (req, res) => {
     try {
-        const [todosOsShows] = await db.query("SELECT * FROM shows ORDER BY data_show ASC");
+        const [todosOsShows] = await db.query(
+            `SELECT id, titulo, local, data_show, estilo
+               FROM shows
+              ORDER BY data_show ASC`
+        );
 
-        const showsAgrupados = todosOsShows.reduce((grupos, show) => {
+        const showsAgrupados = todosOsShows.map(show => ({
+            ...show,
+            imagem_url: `/shows/${show.id}/imagem`
+        })).reduce((grupos, show) => {
             const estiloChave = show.estilo ? show.estilo : 'Outro';
             if (!grupos[estiloChave]) grupos[estiloChave] = [];
             grupos[estiloChave].push(show);
@@ -178,6 +256,31 @@ router.get('/', async (req, res) => {
             usuario: req.session.usuario || null,
             showsPorEstilo: {}
         });
+    }
+});
+
+// Imagens de shows ficam fora do HTML inicial; algumas estão salvas como data URL no banco.
+router.get('/shows/:id/imagem', async (req, res) => {
+    try {
+        const id = Number(req.params.id);
+        if (!Number.isInteger(id) || id < 1) return res.sendStatus(404);
+        const [rows] = await db.query('SELECT imagem_url FROM shows WHERE id = ? LIMIT 1', [id]);
+        if (!rows.length || !rows[0].imagem_url) return res.redirect('/img/pessoas-num-festival_1160-736.jpg');
+
+        const imagem = String(rows[0].imagem_url);
+        const dataUrl = imagem.match(/^data:(image\/(?:jpe?g|png|webp|avif|gif));base64,([a-z0-9+/=\s]+)$/i);
+        res.set('Cache-Control', 'public, max-age=300');
+        if (dataUrl) {
+            res.type(dataUrl[1]);
+            res.set('X-Content-Type-Options', 'nosniff');
+            return res.send(Buffer.from(dataUrl[2].replace(/\s/g, ''), 'base64'));
+        }
+        if (/^\/img\/[a-z0-9 _().-]+\.(?:jpe?g|png|webp|avif|gif)$/i.test(imagem)) return res.redirect(302, imagem);
+        if (/^https:\/\//i.test(imagem)) return res.redirect(302, imagem);
+        return res.redirect('/img/pessoas-num-festival_1160-736.jpg');
+    } catch (err) {
+        console.error('Erro ao carregar imagem do show:', err.message);
+        return res.sendStatus(404);
     }
 });
 
@@ -1053,7 +1156,96 @@ router.get('/seletivas',            (req, res) => res.render('pages/seletivas', 
 router.get('/regulamento',          (req, res) => res.render('pages/regulamento',          { titulo: 'Regulamento',  usuario: u(req) }));
 router.get('/sobre',                (req, res) => res.render('pages/sobre',                { titulo: 'Sobre',        usuario: u(req) }));
 router.get('/mensalidade',          (req, res) => res.render('pages/mensalidade',          { titulo: 'Mensalidade',  usuario: u(req) }));
-router.get('/pagamento',            requireAuth, (req, res) => res.render('pages/pagamento', { titulo: 'Pagamento',    usuario: u(req) }));
+router.post('/pagamentos/mercadopago/preferencia', requireAuth, async (req, res) => {
+    try {
+        if (!process.env.MP_ACCESS_TOKEN) return res.status(503).json({ sucesso: false, mensagem: 'Checkout Pro ainda não está configurado no servidor.' });
+        const cartIds = [...new Set((Array.isArray(req.body.cartIds) ? req.body.cartIds : []).map(id => String(id)).filter(id => /^\d+$/.test(id)))];
+        let itens;
+        if (cartIds.length) {
+            const carrinho = await CarrinhoModel.listarPorUsuario(req.session.usuario.id);
+            itens = carrinho.filter(item => cartIds.includes(String(item.cartId)));
+            if (itens.length !== cartIds.length) return res.status(400).json({ sucesso: false, mensagem: 'Um ou mais ingressos não estão mais no seu carrinho.' });
+        } else {
+            const showId = Number(req.body.showId);
+            const inteira = Math.max(0, Math.min(10, Number.parseInt(req.body.tickets?.full, 10) || 0));
+            const meia = Math.max(0, Math.min(10, Number.parseInt(req.body.tickets?.half, 10) || 0));
+            if (!Number.isInteger(showId) || showId < 1 || inteira + meia < 1) return res.status(400).json({ sucesso: false, mensagem: 'Selecione ao menos um ingresso.' });
+            const [shows] = await db.query('SELECT id, titulo, preco FROM shows WHERE id = ? LIMIT 1', [showId]);
+            if (!shows.length || Number(shows[0].preco) <= 0) return res.status(400).json({ sucesso: false, mensagem: 'Este show não está disponível para venda.' });
+            itens = [
+                ...(inteira ? [{ id: shows[0].id, titulo: shows[0].titulo, tipo_ingresso: 'Pista Inteira', quantidade: inteira, preco: Number(shows[0].preco) }] : []),
+                ...(meia ? [{ id: shows[0].id, titulo: shows[0].titulo, tipo_ingresso: 'Pista Meia-Entrada', quantidade: meia, preco: Number(shows[0].preco) / 2 }] : [])
+            ];
+        }
+        const referencia = crypto.randomUUID();
+        const total = Math.round(itens.reduce((soma, item) => soma + Number(item.preco) * Number(item.quantidade), 0) * 100) / 100;
+        await garantirTabelaPagamentosMP();
+        await db.query('INSERT INTO pagamentos_mercadopago (referencia, usuario_id, itens_json, total) VALUES (?, ?, ?, ?)', [referencia, req.session.usuario.id, JSON.stringify(itens), total]);
+        const baseUrl = mpBaseUrl();
+        const corpo = {
+            items: itens.map(item => ({ id: String(item.id), title: `${item.titulo} - ${item.tipo_ingresso}`, quantity: Number(item.quantidade), unit_price: Number(item.preco), currency_id: 'BRL' })),
+            external_reference: referencia,
+            ...(baseUrl ? {
+                back_urls: { success: `${baseUrl}/feedback?mp=return`, pending: `${baseUrl}/feedback?mp=return`, failure: `${baseUrl}/feedback?mp=return` },
+                auto_return: 'approved',
+                notification_url: `${baseUrl}/pagamentos/mercadopago/webhook`
+            } : {})
+        };
+        const resposta = await fetch('https://api.mercadopago.com/checkout/preferences', {
+            method: 'POST', headers: { Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`, 'Content-Type': 'application/json' }, body: JSON.stringify(corpo)
+        });
+        const preferencia = await resposta.json().catch(() => ({}));
+        if (!resposta.ok || !preferencia.init_point) {
+            const detalhe = preferencia.cause?.map(item => item.description || item.code).filter(Boolean).join('; ');
+            console.error('Mercado Pago recusou a preferência:', resposta.status, preferencia.message || '', detalhe || '');
+            const mensagem = detalhe || preferencia.message;
+            return res.status(502).json({ sucesso: false, mensagem: mensagem ? `Mercado Pago: ${mensagem}` : 'Mercado Pago não criou a preferência. Confira as credenciais e a configuração do app.' });
+        }
+        await db.query('UPDATE pagamentos_mercadopago SET preferencia_id = ? WHERE referencia = ?', [preferencia.id, referencia]);
+        return res.json({ sucesso: true, url: preferencia.init_point, preferenceId: preferencia.id });
+    } catch (err) {
+        console.error('Erro ao criar preferência do Mercado Pago:', err.code || '', err.message);
+        return res.status(502).json({ sucesso: false, mensagem: err.message.includes('APP_BASE_URL') ? err.message : 'Não foi possível preparar o checkout. Confira o log do servidor para identificar a causa.' });
+    }
+});
+
+router.get('/pagamentos/mercadopago/status', requireAuth, async (req, res) => {
+    try {
+        const pagamentoId = String(req.query.payment_id || req.query.collection_id || '').trim();
+        if (!/^\d+$/.test(pagamentoId)) return res.status(400).json({ sucesso: false, mensagem: 'Pagamento inválido.' });
+        const pagamento = await buscarPagamentoMP(pagamentoId);
+        await garantirTabelaPagamentosMP();
+        const [rows] = await db.query('SELECT referencia FROM pagamentos_mercadopago WHERE referencia = ? AND usuario_id = ?', [String(pagamento.external_reference || ''), req.session.usuario.id]);
+        if (!rows.length || !await processarPagamentoMP(pagamento)) return res.status(404).json({ sucesso: false, mensagem: 'Pagamento não encontrado para esta conta.' });
+        return res.json({ sucesso: true, status: pagamento.status, statusDetail: pagamento.status_detail });
+    } catch (err) {
+        console.error('Erro ao consultar pagamento Mercado Pago:', err.message);
+        return res.status(502).json({ sucesso: false, mensagem: 'Não foi possível confirmar o pagamento agora.' });
+    }
+});
+
+router.post('/pagamentos/mercadopago/webhook', async (req, res) => {
+    try {
+        const pagamentoId = String(req.query['data.id'] || req.body?.data?.id || req.body?.id || '').trim();
+        if (!/^\d+$/.test(pagamentoId)) return res.sendStatus(200);
+        const pagamento = await buscarPagamentoMP(pagamentoId);
+        await processarPagamentoMP(pagamento);
+        return res.sendStatus(200);
+    } catch (err) {
+        console.error('Erro no webhook Mercado Pago:', err.message);
+        return res.sendStatus(500);
+    }
+});
+
+router.get('/feedback', requireAuth, (req, res) => {
+    const parametros = new URLSearchParams();
+    for (const campo of ['payment_id', 'collection_id', 'status', 'collection_status', 'external_reference']) {
+        if (typeof req.query[campo] === 'string') parametros.set(campo, req.query[campo]);
+    }
+    parametros.set('mp', 'return');
+    return res.redirect(`/pagamento?${parametros.toString()}`);
+});
+router.get('/pagamento',            requireAuth, (req, res) => res.render('pages/pagamento', { titulo: 'Pagamento', usuario: u(req), mpPublicKey: process.env.MP_PUBLIC_KEY || '' }));
 router.get('/pagamento-luth',       (req, res) => res.render('pages/pagamento-luth',       { titulo: 'Pagamento Luth',       usuario: u(req) }));
 router.get('/pagamento-mensalidade',(req, res) => res.render('pages/pagamento-mensalidade',{ titulo: 'Pagamento Mensalidade', usuario: u(req) }));
 

@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cordas Soltas</title>
     <meta name="description" content="Encontre shows, festivais e experiências musicais com o Cordas Soltas: ingressos, concursos e muito mais.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/home.css">
     <link rel="stylesheet" href="css/public-redesign.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body class="index-page">
 
@@ -25,13 +26,13 @@
 
         <section class="banner-carousel" id="auto-banner-carousel" aria-label="Destaques">
             <figure class="banner-slide active">
-                <img src="https://i.pinimg.com/1200x/55/00/2a/55002af325af0ee18bb99c57d0a09ab0.jpg" alt="Banner Roda de Samba" class="banner-image">
+                <img src="/img/banner.jpg" alt="Público em um show de música ao vivo" class="banner-image" width="900" height="506" fetchpriority="high" decoding="async">
             </figure>
             <figure class="banner-slide">
-                <img src="https://i.pinimg.com/736x/80/5a/6e/805a6ee351e3bebdb84b3a492037cd5c.jpg" alt="Banner Rock Promoção" class="banner-image">
+                <img src="/img/banner vamo.jpg" alt="Público curtindo um show" class="banner-image" width="851" height="315" loading="lazy" decoding="async">
             </figure>
             <figure class="banner-slide">
-                <img src="https://i.pinimg.com/736x/38/a1/15/38a115b087af38289413aaa96c8130c6.jpg" alt="Banner Jazz Festival" class="banner-image">
+                <img src="/img/pessoas-num-festival_1160-736.jpg" alt="Público em um festival" class="banner-image" width="740" height="488" loading="lazy" decoding="async">
             </figure>
         </section>
 
@@ -66,7 +67,7 @@
                                     <li class="card">
                                         <a class="card-link" href="/detalhes?id=<%= show.id %>">
                                             <figure class="card-media">
-                                                <img src="<%= show.imagem_url || show.imagem || '/img/pexels-wendywei-1190297.jpg' %>" alt="<%= show.titulo %>" class="card-image" onerror="this.onerror=null;this.src='/img/pexels-wendywei-1190297.jpg';">
+                                            <img src="<%= show.imagem_url || show.imagem || '/img/pessoas-num-festival_1160-736.jpg' %>" alt="<%= show.titulo %>" class="card-image" width="250" height="313" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='/img/pessoas-num-festival_1160-736.jpg';">
                                             </figure>
 
                                             <section class="card-info">

@@ -73,9 +73,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 title:        showRealDoBanco.title,
                 tickets:      { full: ticketState.full, half: ticketState.half },
                 total:        ticketState.total,
+                source:       'direct',
                 orderDate:    new Date().toISOString()
             };
 
+            localStorage.removeItem('cartItems');
             localStorage.setItem('currentOrder', JSON.stringify(currentOrder));
             window.location.href = '/pagamento';
         });

@@ -131,7 +131,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const currentOrder = {
                 title:  tituloShow,
                 total:  totalGeral,
-                showId: itensSelecionados[0]?.id || null
+                showId: itensSelecionados[0]?.id || null,
+                source: 'cart'
             };
             localStorage.setItem('currentOrder', JSON.stringify(currentOrder));
 
