@@ -1,4 +1,6 @@
-.luth-details-page { min-height: 100vh; display: flex; flex-direction: column; background: #0a0a0c; color: #f8fafc; }
+/* Fundo igual ao das demais páginas (public-redesign.css): degradê do corpo + brilho fixo atrás do conteúdo */
+.luth-details-page { min-height: 100vh; display: flex; flex-direction: column; background: radial-gradient(circle at top left, rgba(245, 166, 35, 0.12), transparent 32rem), linear-gradient(180deg, #08080a 0%, #111116 42%, #08080a 100%); color: #f8fafc; overflow-x: hidden; }
+.luth-details-page::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(circle at 78% 12%, rgba(78, 161, 255, 0.14), transparent 28rem), radial-gradient(circle at 12% 72%, rgba(245, 166, 35, 0.12), transparent 24rem); }
 .luth-details-page .seguros-main-content { display: block; flex: 1 0 auto; width: 100%; min-height: 0; padding: 2rem 1rem 4rem; }
 .luth-catalogo { width: min(100%, 1180px); margin: 0 auto; }
 .luth-catalogo-voltar { display: inline-flex; min-height: 44px; align-items: center; color: #ffd27a; text-decoration: none; }
@@ -48,7 +50,11 @@
 .luth-dialog-add:disabled { opacity:.45; cursor:not-allowed; }
 .luth-dialog-feedback:not([hidden]) { padding:.75rem; border:1px solid #77453c; border-radius:9px; background:#552a21; color:#ffd7c4; font-size:.88rem; }
 .luth-item-dialog :focus-visible { outline:3px solid #ffd27a; outline-offset:2px; }
-.luth-resumo { position: sticky; top: 1rem; padding: 1.2rem; border: 1px solid #48413a; border-radius: 16px; background: #19191f; box-shadow: 0 18px 44px #0006; }
+/* Coluna do resumo: o painel "Sua seleção" e o botão de solicitações abaixo dele acompanham a rolagem juntos */
+.luth-resumo-coluna { position: sticky; top: 1rem; display: grid; gap: .8rem; }
+.luth-resumo-solicitacoes { display: flex; min-height: 48px; align-items: center; justify-content: center; gap: .55rem; padding: 0 1rem; border: 1px solid #f5a623; border-radius: 999px; background: transparent; color: #ffd27a; font-weight: 800; text-align: center; text-decoration: none; transition: background .18s ease, color .18s ease, transform .18s ease; }
+.luth-resumo-solicitacoes:hover { background: rgba(245, 166, 35, 0.14); color: #fff; transform: translateY(-1px); }
+.luth-resumo { padding: 1.2rem; border: 1px solid #48413a; border-radius: 16px; background: #19191f; box-shadow: 0 18px 44px #0006; }
 .luth-resumo h2 { margin-bottom: .3rem; }
 .luth-resumo-prazo, .luth-resumo-nota, .luth-preco-nota { color: #a8adb8; font-size: .82rem; line-height: 1.5; }
 .luth-modalidade { display: grid; gap: .7rem; margin: 1rem 0; border: 0; }
@@ -72,10 +78,12 @@
 .luth-mensagem:not([hidden]) { margin: .7rem 0; padding: .7rem; border-radius: 9px; background: #552a21; color: #ffd7c4; font-size: .84rem; }
 .luth-preco-nota { margin-top: 1rem; }
 .luth-details-page :focus-visible { outline: 3px solid #ffd27a; outline-offset: 2px; }
-.luth-catalogo-footer { flex: 0 0 auto; width: 100%; padding: 1.5rem 1rem; border-top: 1px solid #303039; background: #09090b; color: #a8adb8; text-align: center; font-size: .82rem; line-height: 1.7; }
+/* Rodapé igual ao das demais páginas: mesma linha de topo (branco a 9%), fundo translúcido, espaçamento e fonte */
+.luth-catalogo-footer { flex: 0 0 auto; width: 100%; margin-top: auto; padding: 2rem 1rem; border-top: 1px solid rgba(255, 255, 255, 0.09); background: rgba(9, 9, 11, 0.9); color: #a8adb8; text-align: center; font-size: .8rem; line-height: 1.5; }
+.luth-catalogo-footer p { margin: .2rem 0; }
 .luth-catalogo-footer a { color: #ffd27a; text-decoration: none; }
 .luth-catalogo-footer a:hover { text-decoration: underline; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
-@media (max-width: 900px) { .luth-catalogo-layout { grid-template-columns: 1fr; } .luth-resumo { position: static; } }
+@media (max-width: 900px) { .luth-catalogo-layout { grid-template-columns: 1fr; } .luth-resumo-coluna { position: static; } }
 @media (max-width: 720px) { .luth-item-dialog { max-height:90dvh; } .luth-dialog-content { grid-template-columns:1fr; gap:1rem; padding:1rem; } .luth-dialog-content > img { height:min(38vh,300px); min-height:180px; } .luth-dialog-info { padding:.3rem; } .luth-dialog-close { top:.4rem; right:.4rem; } }
 @media (max-width: 620px) { .luth-produtos { grid-template-columns: 1fr; } .luth-produto { grid-template-columns: 90px minmax(0, 1fr); } .luth-produto > img { width: 90px; min-height: 205px; } .luth-catalogo-controles { align-items: stretch; } .luth-catalogo-controles select, .luth-catalogo-controles input { width: 100%; } }

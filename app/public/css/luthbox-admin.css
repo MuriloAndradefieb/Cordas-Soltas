@@ -96,6 +96,16 @@
 .luth-confirm-cancel { min-height:44px; padding:.6rem 1rem; border:1px solid #55555e; border-radius:9px; background:transparent; color:#f4f4f6; font:inherit; cursor:pointer; }
 .luth-confirm-dialog :focus-visible { outline:3px solid #ffd27a; outline-offset:2px; }
 .luth-upload-feedback { margin:0; }
+/* Filtros da página de solicitações: usam o mesmo formulário da Escala (.luth-scale-form / .luth-scale-field) */
+.admin-luthbox-page .luth-filter-form { margin:0 0 .75rem; }
+.admin-luthbox-page .luth-filter-form > button:disabled { opacity:.45; cursor:not-allowed; }
+/* Campo recolhido: só a opção escolhida aparece e as demais abrem abaixo ao clicar */
+.admin-luthbox-page .luth-filter-form select { color-scheme:dark; cursor:pointer; }
+.admin-luthbox-page .luth-filter-form select option { background:#0f0f13; color:#fff; }
+.admin-luthbox-page .luth-filter-form select option:disabled { color:#92949e; font-style:italic; }
+.admin-luthbox-page .luth-filter-form select.is-ativo { border-color:#f5a623; }
+.luth-filter-summary { margin:0 0 1rem; color:#9fa2ac; font-size:.8rem; }
+.luth-filter-empty { margin:0 0 1rem; }
 .admin-luthbox-page [hidden] { display:none !important; }
 .admin-luthbox-page :focus-visible { outline:3px solid #ffd27a; outline-offset:2px; }
 @media(max-width:900px) { .luth-product-admin-summary-row > img { height:160px; } }
@@ -103,3 +113,6 @@
 @media(max-width:900px) { .admin-luthbox-page .luth-scale-form { grid-template-columns:1fr 1fr; } .admin-luthbox-page .luth-scale-form > button { grid-column:1 / -1; justify-self:start; } }
 @media(max-width:760px) { .luth-product-edit-page-panel { grid-template-columns:1fr; } .luth-product-edit-page-image .luth-product-image-drop { aspect-ratio:16/10; } }
 @media(max-width:560px) { .luthbox-admin-content > .sub-header { align-items:flex-start; flex-direction:column; } .luth-product-admin-summary-row > img { height:190px; } .luth-product-summary-actions { grid-template-columns:minmax(0,1fr) minmax(0,1fr); } .luth-scale-card { grid-template-columns:1fr; } .luth-scale-card form { justify-self:start; } .admin-luthbox-page .luth-scale-form { grid-template-columns:1fr; } .admin-luthbox-page .luth-scale-form > button { grid-column:1; justify-self:stretch; } .luth-product-editor-grid { grid-template-columns:1fr; } .luth-product-description { grid-column:1; } .admin-luthbox-page .luth-admin-section { padding:.85rem; } }
+/* Filtros: colunas que podem encolher (o select não alarga a página em telas estreitas) */
+@media(max-width:900px) { .admin-luthbox-page .luth-filter-form { grid-template-columns:minmax(0,1fr) minmax(0,1fr); } }
+@media(max-width:560px) { .admin-luthbox-page .luth-filter-form { grid-template-columns:minmax(0,1fr); } }

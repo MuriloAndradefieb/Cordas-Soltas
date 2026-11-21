@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            console.log('🚀 Enviando dados de novo administrador para o servidor...');
+            console.log('Enviando dados de novo administrador para o servidor...');
         });
     }
 });

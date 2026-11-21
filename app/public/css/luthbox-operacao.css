@@ -1,5 +1,7 @@
 * { box-sizing: border-box; }
-.luth-operacao-page { min-height: 100vh; margin: 0; display: flex; flex-direction: column; background: #0b0b0e; color: #f5f5f7; font-family: Inter, Roboto, sans-serif; }
+.luth-operacao-page { min-height: 100vh; margin: 0; display: flex; flex-direction: column; background: radial-gradient(circle at top left, rgba(245, 166, 35, 0.12), transparent 32rem), linear-gradient(180deg, #08080a 0%, #111116 42%, #08080a 100%); color: #f5f5f7; font-family: Inter, Roboto, sans-serif; }
+/* Brilho fixo atrás do conteúdo, igual ao das demais páginas (public-redesign.css) */
+.luth-operacao-page::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(circle at 78% 12%, rgba(78, 161, 255, 0.14), transparent 28rem), radial-gradient(circle at 12% 72%, rgba(245, 166, 35, 0.12), transparent 24rem); }
 .luth-operacao-main { width: min(100% - 2rem, 1100px); margin: 0 auto; padding: 2rem 0 4rem; flex: 1; }
 .luth-voltar { display: inline-flex; min-height: 44px; align-items: center; color: #ffd27a; text-decoration: none; }
 .luth-operacao-header { margin: 1rem 0 2rem; }

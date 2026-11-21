@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             </section>
             <div class="luth-catalogo-layout">
                 <section class="luth-produtos" id="luth-produtos" aria-live="polite"></section>
+                <div class="luth-resumo-coluna">
                 <aside class="luth-resumo" aria-labelledby="resumo-titulo">
                     <h2 id="resumo-titulo">Sua seleção</h2>
                     <p class="luth-resumo-prazo">Locação válida por 1 dia útil.</p>
@@ -60,6 +61,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <button type="button" class="luth-finalizar" id="luth-finalizar" disabled>Enviar para aprovação</button>
                     <p class="luth-resumo-nota">Após enviar, acompanhe a aprovação e o código de retirada em Minhas solicitações.</p>
                 </aside>
+                <a href="/luthbox/solicitacoes" class="luth-resumo-solicitacoes">Minhas solicitações Luthbox <span aria-hidden="true">→</span></a>
+                </div>
             </div>
             <dialog class="luth-item-dialog" id="luth-item-dialog" aria-labelledby="luth-dialog-title">
                 <button type="button" class="luth-dialog-close" aria-label="Fechar detalhes">×</button>

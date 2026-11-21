@@ -223,3 +223,30 @@ body {
         padding: 14px 30px;
     }
 }
+
+/* ── Telas grandes: a imagem preenche a coluna inteira ────────────
+   Acima de 900px o public-redesign.css monta os dois blocos em grid
+   (imagem | texto). O max-width:45% do layout antigo (flex) passou a ser
+   calculado sobre a coluna do grid, e a foto ficava com menos da metade
+   dela, deixando um vazio ao lado do texto. Agora a figura ocupa a coluna
+   toda e a foto fica posicionada dentro dela (cover), de modo que a
+   proporção da foto não altera a altura do bloco. */
+@media (min-width: 901px) {
+    .luthbox-page .luthbox-bloco-intro .bloco-imagem,
+    .luthbox-page .luthbox-bloco-cta   .bloco-imagem {
+        position: relative;
+        width: 100%;
+        max-width: none;
+        min-height: 280px;
+    }
+
+    .luthbox-page .luthbox-bloco-intro .bloco-imagem img,
+    .luthbox-page .luthbox-bloco-cta   .bloco-imagem img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+    }
+}

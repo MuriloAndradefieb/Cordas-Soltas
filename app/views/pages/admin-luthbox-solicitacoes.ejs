@@ -33,9 +33,52 @@
                     <% const historicoRemovivel = solicitacoes.filter(item => !['nao_pago','informado'].includes(item.pagamento_status) && (['recusada','cancelada'].includes(item.status) || (item.status === 'devolvida' && item.pagamento_status === 'pago'))).length; %>
                     <% if (historicoRemovivel) { %><div class="luth-history-tools"><span><%= historicoRemovivel %> solicitação(ões) concluída(s) podem ser removidas.</span><form method="post" action="/adm/luthbox/solicitacoes/historico" data-clear-history><button class="luth-secondary-button" type="submit">Limpar histórico concluído</button></form></div><% } %>
                     <% if (solicitacoes.length === 0) { %><p class="luth-empty-state">Ainda não há solicitações.</p><% } %>
+                    <%
+                        /* Chave do filtro "Status do pedido": a mesma regra do selo .luth-status abaixo. */
+                        const chaveStatus = (s) => s.status === 'pendente' ? (s.pagamento_status === 'pago' ? 'aguardando-aprovacao' : 'aguardando-pagamento') : s.status;
+                        const filtrosStatus = [
+                            { valor: 'aguardando-aprovacao', rotulo: 'Aguardando aprovação' },
+                            { valor: 'aguardando-pagamento', rotulo: 'Aguardando pagamento' },
+                            { valor: 'aprovada', rotulo: 'Aprovada' },
+                            { valor: 'retirada', rotulo: 'Retirada' },
+                            { valor: 'devolvida', rotulo: 'Devolvida' },
+                            { valor: 'recusada', rotulo: 'Recusada' },
+                            { valor: 'cancelada', rotulo: 'Cancelada' }
+                        ];
+                        /* Chave do filtro "Pagamento": a mesma regra do selo .luth-payment-badge (o que precisa de ação vem primeiro). */
+                        const filtrosPagamento = [
+                            { valor: 'informado', rotulo: 'Conferir pagamento' },
+                            { valor: 'pendente', rotulo: 'Pagamento pendente' },
+                            { valor: 'pago', rotulo: 'Pagamento confirmado' },
+                            { valor: 'nao_pago', rotulo: 'Não pago · bloqueado' }
+                        ];
+                        /* Opção sem nenhum pedido fica desabilitada (cinza), como as opções indisponíveis da Escala. */
+                        const gruposFiltro = [
+                            { grupo: 'status', titulo: 'Status do pedido', todos: 'Todos os status', opcoes: filtrosStatus, existe: (valor) => solicitacoes.some(s => chaveStatus(s) === valor) },
+                            { grupo: 'pagamento', titulo: 'Pagamento', todos: 'Todos os pagamentos', opcoes: filtrosPagamento, existe: (valor) => solicitacoes.some(s => s.pagamento_status === valor) }
+                        ];
+                    %>
+                    <% if (solicitacoes.length > 0) { %>
+                    <div class="luth-scale-form luth-filter-form" data-luth-filtros role="group" aria-label="Filtrar solicitações">
+                        <% gruposFiltro.forEach(grupo => { %>
+                            <div class="luth-scale-field">
+                                <div class="luth-scale-field-head">
+                                    <label for="luth-filtro-<%= grupo.grupo %>"><%= grupo.titulo %></label>
+                                </div>
+                                <select id="luth-filtro-<%= grupo.grupo %>" data-grupo="<%= grupo.grupo %>" autocomplete="off">
+                                    <option value="" selected><%= grupo.todos %></option>
+                                    <% grupo.opcoes.forEach(opcao => { %><option value="<%= opcao.valor %>"<%= grupo.existe(opcao.valor) ? '' : ' disabled' %>><%= opcao.rotulo %></option><% }); %>
+                                </select>
+                            </div>
+                        <% }); %>
+                        <button class="luth-secondary-button" type="button" data-filtro-limpar disabled>Limpar filtros</button>
+                    </div>
+                    <p class="luth-filter-summary" data-filtro-resumo aria-live="polite"><%= solicitacoes.length %> solicitaç<%= solicitacoes.length === 1 ? 'ão' : 'ões' %></p>
+                    <p class="luth-empty-state luth-filter-empty" data-filtro-vazio hidden>Nenhuma solicitação corresponde aos filtros selecionados.</p>
+                    <% } %>
                     <div class="luth-solicitacoes-list">
                         <% solicitacoes.forEach(solicitacao => { %>
-                            <details class="luth-solicitacao-card luth-request-compact">
+                            <details class="luth-solicitacao-card luth-request-compact" data-status="<%= chaveStatus(solicitacao) %>" data-pagamento="<%= solicitacao.pagamento_status %>">
                                 <summary class="luth-request-summary">
                                     <span class="luth-request-main"><span class="luth-kicker">Pedido #<%= solicitacao.id %> · <%= solicitacao.nome_banda || solicitacao.username %></span><strong><%= solicitacao.show_titulo %></strong><small><%= new Date(`${solicitacao.data_evento_iso}T12:00:00`).toLocaleDateString('pt-BR') %> · <%= solicitacao.show_local %></small></span>
                                     <span class="luth-request-meta"><span class="luth-status status-<%= solicitacao.status %>"><%= solicitacao.status === 'pendente' ? (solicitacao.pagamento_status === 'pago' ? 'Aguardando aprovação' : 'Aguardando pagamento') : ({aprovada:'Aprovada', retirada:'Retirada', devolvida:'Devolvida', recusada:'Recusada', cancelada:'Cancelada'})[solicitacao.status] || solicitacao.status %></span><span class="luth-payment-badge payment-<%= solicitacao.pagamento_status %>"><%= solicitacao.pagamento_status === 'pago' ? 'Pagamento confirmado' : solicitacao.pagamento_status === 'informado' ? 'Conferir pagamento' : solicitacao.pagamento_status === 'nao_pago' ? 'Não pago · bloqueado' : 'Pagamento pendente' %></span><strong>R$ <%= solicitacao.total.toFixed(2).replace('.', ',') %></strong></span>
@@ -67,6 +110,60 @@
     <script src="/js/script.js"></script>
     <script>
         (() => { const dialog=document.getElementById('clear-history-dialog'); let form=null; document.querySelector('[data-clear-history]')?.addEventListener('submit', event=>{ event.preventDefault(); form=event.currentTarget; dialog.showModal(); }); document.querySelector('[data-history-cancel]')?.addEventListener('click',()=>dialog.close()); document.querySelector('[data-history-confirm]')?.addEventListener('click',()=>{ if(form) form.submit(); }); dialog?.addEventListener('click',event=>{ if(event.target===dialog) dialog.close(); }); })();
+    </script>
+    <script>
+        /* Filtros por status do pedido (.luth-status) e por pagamento (.luth-payment-badge).
+           Cada campo mostra só a opção escolhida e abre as demais ao clicar. "Todos" não filtra e os dois campos se combinam (E).
+           A escolha fica guardada na aba, para não se perder quando uma ação recarrega a página. */
+        (() => {
+            const barra = document.querySelector('[data-luth-filtros]');
+            if (!barra) return;
+            const cartoes = [...document.querySelectorAll('.luth-solicitacao-card[data-status]')];
+            const campos = [...barra.querySelectorAll('select[data-grupo]')];
+            const resumo = document.querySelector('[data-filtro-resumo]');
+            const limpar = barra.querySelector('[data-filtro-limpar]');
+            const vazio = document.querySelector('[data-filtro-vazio]');
+            const CHAVE = 'luthAdminSolicitacoesFiltros';
+            const plural = (n) => `${n} solicitaç${n === 1 ? 'ão' : 'ões'}`;
+
+            const salvar = () => {
+                const dados = {};
+                campos.forEach(campo => { dados[campo.dataset.grupo] = campo.value; });
+                try { sessionStorage.setItem(CHAVE, JSON.stringify(dados)); } catch (erro) { /* sem armazenamento: o filtro só não é lembrado */ }
+            };
+            const restaurar = () => {
+                let guardado = null;
+                try { guardado = JSON.parse(sessionStorage.getItem(CHAVE) || 'null'); } catch (erro) { /* valor inválido: começa sem filtros */ }
+                campos.forEach(campo => {
+                    const valor = guardado && typeof guardado[campo.dataset.grupo] === 'string' ? guardado[campo.dataset.grupo] : '';
+                    const opcao = [...campo.options].find(item => item.value === valor && !item.disabled);
+                    campo.value = opcao ? valor : '';
+                });
+            };
+            const aplicar = () => {
+                const escolhido = (grupo) => campos.find(campo => campo.dataset.grupo === grupo).value;
+                const status = escolhido('status');
+                const pagamento = escolhido('pagamento');
+                let visiveis = 0;
+                cartoes.forEach(cartao => {
+                    const passa = (!status || cartao.dataset.status === status) && (!pagamento || cartao.dataset.pagamento === pagamento);
+                    cartao.hidden = !passa;
+                    if (passa) visiveis++;
+                });
+                const ativo = Boolean(status || pagamento);
+                resumo.textContent = ativo ? `Mostrando ${visiveis} de ${plural(cartoes.length)}` : plural(cartoes.length);
+                campos.forEach(campo => campo.classList.toggle('is-ativo', campo.value !== ''));
+                limpar.disabled = !ativo;
+                if (vazio) vazio.hidden = !(ativo && visiveis === 0);
+            };
+
+            campos.forEach(campo => campo.addEventListener('change', () => { salvar(); aplicar(); }));
+            limpar.addEventListener('click', () => {
+                campos.forEach(campo => { campo.value = ''; });
+                salvar(); aplicar();
+            });
+            restaurar(); aplicar();
+        })();
     </script>
 </body>
 </html>
