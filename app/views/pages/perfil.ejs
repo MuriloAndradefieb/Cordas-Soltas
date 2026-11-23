@@ -79,6 +79,11 @@
             <p class="tipo-conta-tag">
                 <%= isArtist ? 'Conta Artista' : 'Conta Visitante' %>
             </p>
+            <% if (isArtist) { %>
+                <p id="assinatura-luthbox-status" class="assinatura-luthbox-tag <%= assinanteLuthbox ? 'assinante' : 'nao-assinante' %>">
+                    <%= assinanteLuthbox ? 'Assinante Luthbox' : 'Não assinante Luthbox' %>
+                </p>
+            <% } %>
 
             <input type="file" id="upload-foto" style="display: none;" accept="image/*">
         </section>
@@ -475,6 +480,19 @@
             };
             leitor.readAsDataURL(arquivo);
         });
+
+        <% if (isArtist) { %>
+        fetch('/api/luthbox/assinatura/status', { headers: { Accept: 'application/json' } })
+            .then(resposta => resposta.json())
+            .then(resultado => {
+                if (!resultado.sucesso) return;
+                const statusAssinatura = document.getElementById('assinatura-luthbox-status');
+                statusAssinatura.textContent = resultado.ativa ? 'Assinante Luthbox' : 'Não assinante Luthbox';
+                statusAssinatura.classList.toggle('assinante', resultado.ativa);
+                statusAssinatura.classList.toggle('nao-assinante', !resultado.ativa);
+            })
+            .catch(() => {});
+        <% } %>
     </script>
 </body>
 </html>

@@ -214,8 +214,9 @@
                     <h2>faça sua assinatura</h2>
                     <p>Com apenas um valor adicional, você garante a tranquilidade de tocar sabendo que, se algo acontecer, terá um instrumento à sua disposição, veja os planos abaixo:</p>
                     <p class="luthbox-assinatura-preco">Assinatura mensal: R$ <%= Number(precoAssinaturaLuthbox).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %></p>
-                    <a href="#" id="buy-luthbox-btn" class="button-planos buy-button luthbox-mp-button">
-                        <span>Ir ao Mercado Pago</span>
+                    <a href="#" id="buy-luthbox-btn" class="button-planos">
+                        <span class="btn-icone"><img src="/img/assinatura-icon.png" width="40" alt=""></span>
+                        <span>PLANOS</span>
                     </a>
                     <p id="luthbox-assinatura-feedback" class="luthbox-assinatura-feedback" role="alert" hidden></p>
                 </div>
@@ -267,7 +268,10 @@
 
         const estadoAssinatura = new URLSearchParams(window.location.search).get('assinatura');
         if (estadoAssinatura === 'necessaria') {
-            assinaturaFeedback.textContent = 'O catálogo Luthbox fica disponível após a confirmação do pagamento da assinatura mensal.';
+            assinaturaFeedback.textContent = 'Esse recurso é apenas para assinantes da Luthbox. Assine o plano mensal para acessar o catálogo.';
+            assinaturaFeedback.hidden = false;
+        } else if (estadoAssinatura === 'verificacao') {
+            assinaturaFeedback.textContent = 'Não foi possível verificar sua assinatura agora. Tente novamente em instantes ou confira o status no seu perfil.';
             assinaturaFeedback.hidden = false;
         } else if (estadoAssinatura === 'retorno') {
             assinaturaFeedback.textContent = 'Conferindo a confirmação do Mercado Pago...';
@@ -282,8 +286,8 @@
                     }
                     assinaturaFeedback.textContent = 'O Mercado Pago ainda não confirmou o pagamento. O catálogo será liberado assim que a confirmação chegar; você pode voltar a esta página mais tarde.';
                 })
-                .catch(() => {
-                    assinaturaFeedback.textContent = 'Não foi possível confirmar o pagamento agora. Atualize esta página para tentar novamente.';
+                .catch((error) => {
+                    assinaturaFeedback.textContent = error.message || 'Não foi possível confirmar o pagamento agora. Tente novamente em instantes.';
                 });
         }
 
@@ -372,7 +376,7 @@
                 assinaturaFeedback.hidden = false;
                 btnPlanos.removeAttribute('aria-busy');
                 btnPlanos.style.pointerEvents = '';
-                rotulo.textContent = 'Ir ao Mercado Pago';
+                rotulo.textContent = 'PLANOS';
             }
         });
 

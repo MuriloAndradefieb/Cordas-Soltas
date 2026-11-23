@@ -385,6 +385,20 @@ dialog.modal-caixa::backdrop {
     letter-spacing: 0.02em;
 }
 
+.assinatura-luthbox-tag {
+    display: inline-flex;
+    align-items: center;
+    margin: 8px 0 0;
+    padding: 8px 14px;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.assinatura-luthbox-tag.assinante { color: #8fe0a1; background: rgba(41, 132, 65, .15); }
+.assinatura-luthbox-tag.nao-assinante { color: #ffd27a; background: rgba(245, 166, 35, .1); }
+
 .perfil-alerta {
     width: 100%;
     max-width: 520px;
