@@ -1350,10 +1350,7 @@ router.post('/pagamentos/mercadopago/preferencia', requireAuth, async (req, res)
         }
         await garantirTabelaPagamentosMP();
         await db.query('INSERT INTO pagamentos_mercadopago (referencia, usuario_id, itens_json, total) VALUES (?, ?, ?, ?)', [referencia, req.session.usuario.id, JSON.stringify(itens), total]);
-<<<<<<< HEAD
         const retorno = solicitacaoLuthbox ? `${baseUrl}/feedback?mp=return&luthbox=${solicitacaoLuthbox.id}` : `${baseUrl}/feedback?mp=return`;
-=======
->>>>>>> 8d6525933f7072c6f374ea307cdf1f19e88b869a
         const corpo = {
             items: itens.map(item => ({
                 id: String(item.id),
@@ -1363,11 +1360,7 @@ router.post('/pagamentos/mercadopago/preferencia', requireAuth, async (req, res)
                 quantity: Number(item.quantidade), unit_price: Number(item.preco), currency_id: 'BRL'
             })),
             external_reference: referencia,
-<<<<<<< HEAD
             back_urls: { success: retorno, pending: retorno, failure: retorno },
-=======
-            back_urls: { success: `${baseUrl}/feedback?mp=return`, pending: `${baseUrl}/feedback?mp=return`, failure: `${baseUrl}/feedback?mp=return` },
->>>>>>> 8d6525933f7072c6f374ea307cdf1f19e88b869a
             auto_return: 'approved',
             notification_url: `${baseUrl}/pagamentos/mercadopago/webhook`
         };
@@ -1499,7 +1492,6 @@ router.get('/feedback', requireAuth, (req, res) => {
     parametros.set('mp', 'return');
     return res.redirect(`/pagamento?${parametros.toString()}`);
 });
-<<<<<<< HEAD
 router.get('/pagamento', requireAuth, async (req, res) => {
     const dados = { titulo: 'Pagamento', usuario: u(req), mpPublicKey: process.env.MP_PUBLIC_KEY || '', pedidoLuthbox: null };
     if (req.query.luthbox === undefined) return res.render('pages/pagamento', dados);
@@ -1518,9 +1510,6 @@ router.get('/pagamento', requireAuth, async (req, res) => {
         return res.status(500).send('Não foi possível abrir o pagamento da solicitação.');
     }
 });
-=======
-router.get('/pagamento',            requireAuth, (req, res) => res.render('pages/pagamento', { titulo: 'Pagamento', usuario: u(req), mpPublicKey: process.env.MP_PUBLIC_KEY || '' }));
->>>>>>> 8d6525933f7072c6f374ea307cdf1f19e88b869a
 router.get('/meus-ingressos', requireAuth, async (req, res) => {
     try {
         await sincronizarPagamentosMP(req.session.usuario.id);

@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     const formatCurrency = value => Number(value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     let returnTimer;
-<<<<<<< HEAD
     // A página não pede mais nome, e-mail, CPF nem endereço (o Mercado Pago
     // pede o que precisar no checkout). Apaga dados guardados por versões antigas.
     localStorage.removeItem('checkoutInfo');
@@ -74,9 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
         $('compra-total').textContent = formatCurrency(currentOrder.total);
         caixa.hidden = false;
     }
-=======
-    const validEmail = value => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
->>>>>>> 8d6525933f7072c6f374ea307cdf1f19e88b869a
     function showError(message, step) {
         const box = $(`error-message-step${step}`);
         if (box) { box.textContent = message; box.style.display = 'block'; }
@@ -169,7 +165,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 $('product-title-confirm').textContent = currentOrder.title || 'Ingressos';
                 $('total-confirm').textContent = formatCurrency(currentOrder.total);
                 $('confirmation-details').style.display = 'block';
-<<<<<<< HEAD
                 const destino = pedidoLuthbox
                     ? { url: '/luthbox/solicitacoes', nome: 'Minhas solicitações' }
                     : { url: '/meus-ingressos', nome: 'Meus ingressos' };
@@ -177,18 +172,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 let secondsRemaining = 8;
                 countdown.hidden = false;
                 countdown.textContent = `Redirecionando para ${destino.nome} em ${secondsRemaining} segundos...`;
-=======
-                const countdown = $('return-countdown');
-                let secondsRemaining = 8;
-                countdown.hidden = false;
-                countdown.textContent = `Redirecionando para Meus ingressos em ${secondsRemaining} segundos...`;
->>>>>>> 8d6525933f7072c6f374ea307cdf1f19e88b869a
                 clearInterval(returnTimer);
                 returnTimer = setInterval(() => {
                     secondsRemaining -= 1;
                     if (secondsRemaining <= 0) {
                         clearInterval(returnTimer);
-<<<<<<< HEAD
                         window.location.assign(destino.url);
                         return;
                     }
@@ -198,16 +186,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     localStorage.removeItem('cartItems');
                     localStorage.removeItem('currentOrder');
                 }
-=======
-                        window.location.assign('/meus-ingressos');
-                        return;
-                    }
-                    countdown.textContent = `Redirecionando para Meus ingressos em ${secondsRemaining} segundos...`;
-                }, 1000);
-                localStorage.removeItem('checkoutInfo');
-                localStorage.removeItem('cartItems');
-                localStorage.removeItem('currentOrder');
->>>>>>> 8d6525933f7072c6f374ea307cdf1f19e88b869a
             } else {
                 $('result-title').textContent = result.status === 'rejected' ? 'Pagamento não aprovado' : 'Pagamento em processamento';
                 if (pedidoLuthbox) {
