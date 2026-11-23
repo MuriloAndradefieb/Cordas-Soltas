@@ -34,7 +34,7 @@ MP_CLIENT_SECRET=...
 APP_BASE_URL=https://seu-dominio.com.br
 ```
 
-Use uma URL HTTPS pública em `APP_BASE_URL` para habilitar URLs de retorno e notificações; endereços locais como `localhost` são rejeitados pelo Mercado Pago. Sem essa variável, a preferência é criada sem URLs de retorno para permitir abrir o checkout em desenvolvimento, mas a confirmação automática do pedido requer um webhook público. No painel do Mercado Pago, habilite notificações de pagamento para `/pagamentos/mercadopago/webhook`. Use as credenciais de teste e uma conta compradora de teste durante a validação; substitua-as apenas ao publicar em produção.
+Em produção no Render, a aplicação usa automaticamente `RENDER_EXTERNAL_URL` para configurar o botão de retorno e o redirecionamento automático do Checkout Pro. Em desenvolvimento local, configure `APP_BASE_URL` com um túnel HTTPS público (localhost não pode receber o retorno do Mercado Pago). A preferência também configura a notificação de pagamento no webhook `/pagamentos/mercadopago/webhook`. A área “Meus ingressos” consulta pagamentos pendentes diretamente no Mercado Pago para recuperar aprovações mesmo se o navegador não retornar ao site. Use as credenciais de teste e uma conta compradora de teste durante a validação; substitua-as apenas ao publicar em produção.
 
 taskkill /f /im node.exe (para fechar as conexões simultaneas do banco de dados)
 

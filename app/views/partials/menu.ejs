@@ -7,6 +7,9 @@
             <li><a href="/seletivas">Concurso</a></li>
             <li><a href="/luthbox">Luthbox</a></li>
             <li><a href="/luthbox-seguros">Catálogo Luthbox</a></li>
+            <% if (usuario && usuario.role === 'visitante') { %>
+                <li><a href="/meus-ingressos">Meus ingressos</a></li>
+            <% } %>
             <% if (usuario && usuario.role === 'artista') { %>
                 <li><a href="/luthbox/solicitacoes">Minhas solicitações Luthbox</a></li>
             <% } %>

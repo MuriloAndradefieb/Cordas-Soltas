@@ -267,6 +267,27 @@
     border-radius: 5px;
 }
 
+.ticket-confirmation-link {
+    display: inline-flex;
+    min-height: 46px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 12px;
+    padding: 10px 20px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #f5a623, #ffd27a);
+    color: #151006;
+    font-weight: 900;
+    text-decoration: none;
+}
+
+.return-countdown {
+    margin: 0.6rem 0 0;
+    color: var(--checkout-muted, #a8adb8);
+    font-size: 0.9rem;
+    text-align: center;
+}
+
 
 @media (max-width: 600px) {
     .checkout-page .main-content {

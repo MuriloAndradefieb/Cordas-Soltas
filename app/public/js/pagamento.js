@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
     const formatCurrency = value => Number(value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    let returnTimer;
     const validEmail = value => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
     function showError(message, step) {
         const box = $(`error-message-step${step}`);
@@ -86,14 +87,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const params = new URLSearchParams(window.location.search);
         if (!params.has('mp')) return;
         const paymentId = params.get('payment_id') || params.get('collection_id');
-        if (!paymentId) return;
+        const externalReference = params.get('external_reference');
+        if (!paymentId && !externalReference) return;
         renderStep(3);
         $('confirmation-details').style.display = 'none';
         $('pending-details').style.display = 'block';
         $('result-title').textContent = 'Verificando pagamento';
         $('pending-message').textContent = 'Consultando a confirmação diretamente com o Mercado Pago...';
         try {
-            const response = await fetch(`/pagamentos/mercadopago/status?payment_id=${encodeURIComponent(paymentId)}`);
+            const statusParams = new URLSearchParams(paymentId ? { payment_id: paymentId } : { external_reference: externalReference });
+            const response = await fetch(`/pagamentos/mercadopago/status?${statusParams}`);
             const result = await response.json();
             $('pending-details').style.display = 'none';
             if (!response.ok || !result.sucesso) throw new Error(result.mensagem || 'Não foi possível confirmar agora.');
@@ -102,6 +105,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 $('product-title-confirm').textContent = currentOrder.title || 'Ingressos';
                 $('total-confirm').textContent = formatCurrency(currentOrder.total);
                 $('confirmation-details').style.display = 'block';
+                const countdown = $('return-countdown');
+                let secondsRemaining = 8;
+                countdown.hidden = false;
+                countdown.textContent = `Redirecionando para Meus ingressos em ${secondsRemaining} segundos...`;
+                clearInterval(returnTimer);
+                returnTimer = setInterval(() => {
+                    secondsRemaining -= 1;
+                    if (secondsRemaining <= 0) {
+                        clearInterval(returnTimer);
+                        window.location.assign('/meus-ingressos');
+                        return;
+                    }
+                    countdown.textContent = `Redirecionando para Meus ingressos em ${secondsRemaining} segundos...`;
+                }, 1000);
                 localStorage.removeItem('checkoutInfo');
                 localStorage.removeItem('cartItems');
                 localStorage.removeItem('currentOrder');

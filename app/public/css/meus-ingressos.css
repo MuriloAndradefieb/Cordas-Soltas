@@ -1,0 +1,46 @@
+.meus-ingressos-page {
+    min-height: 100vh;
+    color: #f8fafc;
+    background: radial-gradient(circle at 15% 20%, rgba(245,166,35,.13), transparent 25rem), #0b0b0e;
+}
+
+.meus-ingressos-main {
+    width: min(920px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: clamp(2.5rem, 7vw, 5rem) 0;
+}
+
+.tickets-heading { margin-bottom: 2rem; }
+.tickets-back { display: inline-flex; min-height: 44px; align-items: center; color: #c7c9d1; text-decoration: none; }
+.tickets-back:hover { color: #ffd27a; }
+.tickets-eyebrow { margin: 1.4rem 0 .25rem; color: #f5a623; font-size: .78rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+.tickets-heading h1 { margin: 0; color: #ffd27a; font: 400 clamp(2.8rem, 8vw, 4.5rem)/1 'Bebas Neue', 'Arial Narrow', sans-serif; text-transform: uppercase; }
+.tickets-heading > p:last-child { max-width: 42rem; margin: .85rem 0 0; color: #b7bac4; line-height: 1.6; }
+.tickets-list { display: grid; gap: 1rem; }
+.ticket-card { display: grid; grid-template-columns: 170px minmax(0, 1fr); overflow: hidden; border: 1px solid rgba(255,255,255,.12); border-radius: 18px; background: linear-gradient(145deg, rgba(245,166,35,.08), transparent 55%), #17171c; }
+.ticket-poster { width: 100%; height: 100%; min-height: 230px; object-fit: cover; background: #24242a; }
+.ticket-info { padding: 1.25rem clamp(1rem, 3vw, 1.75rem); }
+.ticket-status { display: inline-flex; align-items: center; gap: .4rem; color: #9ee3b2; font-size: .82rem; font-weight: 800; }
+.ticket-status span { display: grid; width: 1.25rem; height: 1.25rem; place-items: center; border-radius: 50%; background: #187b35; color: white; }
+.ticket-info h2 { margin: .55rem 0 .15rem; font-size: clamp(1.2rem, 3vw, 1.55rem); }
+.ticket-type { margin: 0; color: #ffd27a; font-weight: 700; }
+.ticket-info dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem 1rem; margin: 1.15rem 0 0; }
+.ticket-info dl div { min-width: 0; }
+.ticket-info dt { color: #aeb1bb; font-size: .78rem; }
+.ticket-info dd { margin: .12rem 0 0; overflow-wrap: anywhere; font-weight: 700; }
+.tickets-empty { padding: clamp(1.5rem, 5vw, 3rem); text-align: center; border: 1px solid rgba(255,255,255,.12); border-radius: 18px; background: #17171c; }
+.tickets-empty-mark { display: inline-grid; width: 3rem; height: 3rem; place-items: center; margin-bottom: .8rem; border-radius: 50%; background: rgba(245,166,35,.14); color: #ffd27a; font-size: 1.5rem; }
+.tickets-empty h2 { margin: 0; }
+.tickets-empty p { color: #b7bac4; line-height: 1.6; }
+.tickets-shop-link, .ticket-confirmation-link { display: inline-flex; min-height: 46px; align-items: center; justify-content: center; margin-top: .5rem; padding: .7rem 1.25rem; border-radius: 999px; background: linear-gradient(135deg, #f5a623, #ffd27a); color: #17120a; font-weight: 900; text-decoration: none; }
+.ticket-confirmation-link { margin-top: .75rem; }
+.perfil-ingressos-link { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin: 0 0 1rem; padding: 1rem; border: 1px solid rgba(249,175,17,.35); border-radius: 12px; background: rgba(249,175,17,.07); text-decoration: none; }
+.perfil-ingressos-link span:first-child { display: grid; gap: .2rem; }
+.perfil-ingressos-link small { color: #aaa; }
+.perfil-ingressos-link > span:last-child { color: #f9af11; font-weight: 700; white-space: nowrap; }
+
+@media (max-width: 560px) {
+    .ticket-card { grid-template-columns: 1fr; }
+    .ticket-poster { height: 190px; min-height: 0; }
+    .ticket-info dl { grid-template-columns: 1fr; }
+}

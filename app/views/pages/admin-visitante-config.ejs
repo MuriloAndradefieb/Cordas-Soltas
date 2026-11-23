@@ -147,7 +147,7 @@
                                                     <span class="vc-price-main"><%= formatarMoeda(compra.preco) %></span>
                                                     <span class="vc-price-note">cada</span>
                                                 </td>
-                                                <td>APROVADO</td>
+                                                <td><%= compra.forma_pagamento === 'checkout_pro' ? 'APROVADO · MERCADO PAGO' : 'APROVADO' %></td>
                                             </tr>
                                         <% }); %>
                                     <% } else { %>

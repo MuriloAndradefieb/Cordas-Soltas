@@ -30,7 +30,7 @@ async function garantirTabelaPagamentosMP() {
 }
 
 function mpBaseUrl() {
-    const configurada = String(process.env.APP_BASE_URL || '').trim();
+    const configurada = String(process.env.APP_BASE_URL || process.env.RENDER_EXTERNAL_URL || '').trim();
     if (!configurada) return null;
     let url;
     try { url = new URL(configurada); } catch { throw new Error('APP_BASE_URL precisa ser uma URL HTTPS pública.'); }
@@ -48,6 +48,42 @@ async function buscarPagamentoMP(pagamentoId) {
     const pagamento = await resposta.json().catch(() => ({}));
     if (!resposta.ok) throw new Error(pagamento.message || 'Não foi possível consultar o pagamento.');
     return pagamento;
+}
+
+async function buscarPagamentosMPPorReferencia(referencia) {
+    if (!process.env.MP_ACCESS_TOKEN) throw new Error('MP_ACCESS_TOKEN não configurado.');
+    const parametros = new URLSearchParams({
+        sort: 'date_created',
+        criteria: 'desc',
+        external_reference: referencia,
+        limit: '20'
+    });
+    const resposta = await fetch(`https://api.mercadopago.com/v1/payments/search?${parametros}`, {
+        headers: { Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}` }
+    });
+    const resultado = await resposta.json().catch(() => ({}));
+    if (!resposta.ok) throw new Error(resultado.message || 'Não foi possível localizar o pagamento.');
+    return Array.isArray(resultado.results) ? resultado.results : [];
+}
+
+async function sincronizarPagamentosMP(usuarioId) {
+    await garantirTabelaPagamentosMP();
+    const [pendentes] = await db.query(
+        'SELECT referencia FROM pagamentos_mercadopago WHERE usuario_id = ? AND processado_em IS NULL AND criado_em >= NOW() - INTERVAL 90 DAY ORDER BY criado_em DESC LIMIT 10',
+        [usuarioId]
+    );
+    for (const registro of pendentes) {
+        try {
+            const pagamentos = await buscarPagamentosMPPorReferencia(registro.referencia);
+            for (const pagamento of pagamentos) {
+                if (String(pagamento.external_reference || '') === registro.referencia) {
+                    await processarPagamentoMP(pagamento);
+                }
+            }
+        } catch (err) {
+            console.error('Não foi possível sincronizar um pagamento pendente:', err.message);
+        }
+    }
 }
 
 async function processarPagamentoMP(pagamento) {
@@ -1179,17 +1215,21 @@ router.post('/pagamentos/mercadopago/preferencia', requireAuth, async (req, res)
         }
         const referencia = crypto.randomUUID();
         const total = Math.round(itens.reduce((soma, item) => soma + Number(item.preco) * Number(item.quantidade), 0) * 100) / 100;
+        const baseUrl = mpBaseUrl();
+        if (!baseUrl) {
+            return res.status(503).json({
+                sucesso: false,
+                mensagem: 'Configure APP_BASE_URL com o endereço HTTPS público do site para habilitar retorno e confirmação do pagamento.'
+            });
+        }
         await garantirTabelaPagamentosMP();
         await db.query('INSERT INTO pagamentos_mercadopago (referencia, usuario_id, itens_json, total) VALUES (?, ?, ?, ?)', [referencia, req.session.usuario.id, JSON.stringify(itens), total]);
-        const baseUrl = mpBaseUrl();
         const corpo = {
             items: itens.map(item => ({ id: String(item.id), title: `${item.titulo} - ${item.tipo_ingresso}`, quantity: Number(item.quantidade), unit_price: Number(item.preco), currency_id: 'BRL' })),
             external_reference: referencia,
-            ...(baseUrl ? {
-                back_urls: { success: `${baseUrl}/feedback?mp=return`, pending: `${baseUrl}/feedback?mp=return`, failure: `${baseUrl}/feedback?mp=return` },
-                auto_return: 'approved',
-                notification_url: `${baseUrl}/pagamentos/mercadopago/webhook`
-            } : {})
+            back_urls: { success: `${baseUrl}/feedback?mp=return`, pending: `${baseUrl}/feedback?mp=return`, failure: `${baseUrl}/feedback?mp=return` },
+            auto_return: 'approved',
+            notification_url: `${baseUrl}/pagamentos/mercadopago/webhook`
         };
         const resposta = await fetch('https://api.mercadopago.com/checkout/preferences', {
             method: 'POST', headers: { Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`, 'Content-Type': 'application/json' }, body: JSON.stringify(corpo)
@@ -1212,9 +1252,20 @@ router.post('/pagamentos/mercadopago/preferencia', requireAuth, async (req, res)
 router.get('/pagamentos/mercadopago/status', requireAuth, async (req, res) => {
     try {
         const pagamentoId = String(req.query.payment_id || req.query.collection_id || '').trim();
-        if (!/^\d+$/.test(pagamentoId)) return res.status(400).json({ sucesso: false, mensagem: 'Pagamento inválido.' });
-        const pagamento = await buscarPagamentoMP(pagamentoId);
         await garantirTabelaPagamentosMP();
+        let pagamento;
+        if (/^\d+$/.test(pagamentoId)) {
+            pagamento = await buscarPagamentoMP(pagamentoId);
+        } else {
+            const referencia = String(req.query.external_reference || '').trim();
+            if (!referencia) return res.status(400).json({ sucesso: false, mensagem: 'Pagamento inválido.' });
+            const [owned] = await db.query('SELECT referencia FROM pagamentos_mercadopago WHERE referencia = ? AND usuario_id = ?', [referencia, req.session.usuario.id]);
+            if (!owned.length) return res.status(404).json({ sucesso: false, mensagem: 'Pagamento não encontrado para esta conta.' });
+            const pagamentos = await buscarPagamentosMPPorReferencia(referencia);
+            pagamento = pagamentos.find(item => String(item.external_reference || '') === referencia && item.status === 'approved')
+                || pagamentos.find(item => String(item.external_reference || '') === referencia);
+            if (!pagamento) return res.status(404).json({ sucesso: false, mensagem: 'O Mercado Pago ainda não localizou este pagamento.' });
+        }
         const [rows] = await db.query('SELECT referencia FROM pagamentos_mercadopago WHERE referencia = ? AND usuario_id = ?', [String(pagamento.external_reference || ''), req.session.usuario.id]);
         if (!rows.length || !await processarPagamentoMP(pagamento)) return res.status(404).json({ sucesso: false, mensagem: 'Pagamento não encontrado para esta conta.' });
         return res.json({ sucesso: true, status: pagamento.status, statusDetail: pagamento.status_detail });
@@ -1246,6 +1297,20 @@ router.get('/feedback', requireAuth, (req, res) => {
     return res.redirect(`/pagamento?${parametros.toString()}`);
 });
 router.get('/pagamento',            requireAuth, (req, res) => res.render('pages/pagamento', { titulo: 'Pagamento', usuario: u(req), mpPublicKey: process.env.MP_PUBLIC_KEY || '' }));
+router.get('/meus-ingressos', requireAuth, async (req, res) => {
+    try {
+        await sincronizarPagamentosMP(req.session.usuario.id);
+        const ingressos = await PedidosModel.listarIngressosMercadoPago(req.session.usuario.id);
+        return res.render('pages/meus-ingressos', {
+            titulo: 'Meus ingressos',
+            usuario: u(req),
+            ingressos
+        });
+    } catch (err) {
+        console.error('Erro ao carregar ingressos do usuário:', err.message);
+        return res.status(500).send('Não foi possível carregar seus ingressos agora.');
+    }
+});
 router.get('/pagamento-luth',       (req, res) => res.render('pages/pagamento-luth',       { titulo: 'Pagamento Luth',       usuario: u(req) }));
 router.get('/pagamento-mensalidade',(req, res) => res.render('pages/pagamento-mensalidade',{ titulo: 'Pagamento Mensalidade', usuario: u(req) }));
 
