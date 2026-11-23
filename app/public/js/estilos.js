@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <ul class="luth-itens-selecionados" id="luth-itens-selecionados"><li class="luth-vazio">Adicione itens ao catálogo.</li></ul>
                     <p class="luth-total">Total da diária <strong id="luth-total">R$ 0,00</strong></p>
                     <button type="button" class="luth-finalizar" id="luth-finalizar" disabled>Enviar para aprovação</button>
-                    <p class="luth-resumo-nota">Após enviar, acompanhe a aprovação e o código de retirada em Minhas solicitações.</p>
+                    <p class="luth-resumo-nota">Ao enviar, você segue para o pagamento. Depois, acompanhe a aprovação e o código de retirada em Minhas solicitações.</p>
                 </aside>
                 <a href="/luthbox/solicitacoes" class="luth-resumo-solicitacoes">Minhas solicitações Luthbox <span aria-hidden="true">→</span></a>
                 </div>
@@ -293,7 +293,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         }).then(async resposta => {
             const dados = await resposta.json();
             if (!resposta.ok) throw new Error(dados.mensagem || 'Não foi possível enviar a solicitação.');
-            window.location.href = '/luthbox/solicitacoes?enviada=1';
+            // Solicitação registrada: segue para o pagamento com o resumo da compra
+            window.location.href = `/pagamento?luthbox=${encodeURIComponent(dados.id)}`;
         }).catch(erro => {
             const aviso = document.getElementById('luth-mensagem');
             aviso.textContent = erro.message;

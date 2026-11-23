@@ -118,7 +118,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const precoTexto  = card.querySelector('.item-preco-txt').textContent;
                 const preco       = parseFloat(precoTexto.replace(/\./g, '').replace(',', '.'));
 
-                itensSelecionados.push({ cartId, id: showId, tipo_ingresso: tipoIngresso, quantidade, preco });
+                // titulo: nome do show deste ingresso, mostrado no resumo da página de pagamento
+                const titulo = card.querySelector('.item-nome-banco')?.textContent.trim() || '';
+
+                itensSelecionados.push({ cartId, id: showId, titulo, tipo_ingresso: tipoIngresso, quantidade, preco });
             });
 
             // Persiste no localStorage para o pagamento.js recuperar e confirmar

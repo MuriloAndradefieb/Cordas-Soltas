@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/luthbox-operacao.css">
     <link rel="stylesheet" href="/css/luthbox-admin.css">
 </head>
-<body class="admin-luthbox-page">
+<body class="admin-luthbox-page admin-luth-padrao">
     <hr class="top-line">
     <header class="main-header"><img src="/img/LOGO ALTERNATIVA CORDAS SOLTAS SITE.png" width="50" alt="Logo Cordas Soltas" class="logo"></header>
     <div class="app-container">
@@ -23,16 +23,19 @@
             </ul>
         </nav>
         <main class="content-area">
-            <div class="luthbox-admin-content">
-        <p class="luthbox-admin-intro">Organize quais artistas estão vinculados a cada show.</p>
-        <% if (erro) { %><p class="luth-feedback luth-feedback-error" role="alert"><%= erro %></p><% } %>
-        <% if (sucesso) { %><p class="luth-feedback luth-feedback-success" role="status"><%= sucesso %></p><% } %>
+            <header class="sub-header">
+                <span class="title">ESCALA</span>
+            </header>
 
-        <section class="luth-admin-section">
-            <h2>Escala de artistas nos shows</h2>
+            <% if (erro) { %><p class="luth-feedback luth-feedback-error" role="alert"><%= erro %></p><% } %>
+            <% if (sucesso) { %><p class="luth-feedback luth-feedback-success" role="status"><%= sucesso %></p><% } %>
+
             <p class="luth-admin-help">Vincule a banda ao show antes da solicitação. O catálogo de cada artista mostra somente os eventos associados aqui.</p>
-            <% if (artistas.length && shows.length) { %>
-                <form class="luth-scale-form" method="post" action="/adm/luthbox/escalas">
+
+            <section class="user-section">
+                <h2 class="category-title">Vincular artista ao show</h2>
+                <% if (artistas.length && shows.length) { %>
+                <form class="luth-scale-form luth-admin-painel" method="post" action="/adm/luthbox/escalas">
                     <div class="luth-scale-field">
                         <div class="luth-scale-field-head">
                             <label for="luth-artista-busca">Artista/banda</label>
@@ -53,30 +56,55 @@
                             <% shows.forEach(show => { %><option value="<%= show.id %>"><%= show.titulo %> · <%= show.data_show %> · <%= show.local %></option><% }); %>
                         </select>
                     </div>
-                    <button class="luth-admin-button" type="submit">Vincular artista ao show</button>
+                    <button class="btn-add luth-scale-submit" type="submit"><span>+</span> Vincular artista ao show</button>
                 </form>
-            <% } else { %><p class="luth-empty-state">Cadastre pelo menos um artista e um show para configurar a escala.</p><% } %>
-            <div class="luth-scale-list">
-                <% escalas.forEach(escala => { %>
-                    <article class="luth-scale-card">
-                        <div><strong><%= escala.nome_banda || escala.username %></strong><small>Conta: <%= escala.username %></small></div>
-                        <div><strong><%= escala.show_titulo %></strong><small><%= escala.data_show %> · <%= escala.show_local %></small></div>
-                        <form method="post" action="/adm/luthbox/escalas/<%= escala.show_id %>/<%= escala.usuario_id %>/desvincular" data-confirm-unlink>
-                            <button class="luth-admin-button luth-danger-button" type="submit">Desvincular</button>
-                        </form>
-                    </article>
-                <% }); %>
-                <% if (!escalas.length) { %><p class="luth-admin-help">Ainda não há artistas vinculados a shows.</p><% } %>
-            </div>
-        </section>
+                <% } else { %><p class="luth-admin-vazio">Cadastre pelo menos um artista e um show para configurar a escala.</p><% } %>
+            </section>
 
-            </div>
+            <section class="user-section">
+                <h2 class="category-title">Artistas escalados</h2>
+                <section class="table-container">
+                    <table class="adm-table luth-escala-tabela">
+                        <thead>
+                            <tr>
+                                <th>BANDA</th>
+                                <th>SHOW</th>
+                                <th>AÇÕES</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (escalas.length) { %>
+                                <% escalas.forEach(escala => { %>
+                                    <tr>
+                                        <td><span class="luth-celula-titulo"><%= escala.nome_banda || escala.username %></span><small class="luth-celula-detalhe">Conta: <%= escala.username %></small></td>
+                                        <td><span class="luth-celula-titulo"><%= escala.show_titulo %></span><small class="luth-celula-detalhe"><%= escala.data_show %> · <%= escala.show_local %></small></td>
+                                        <td>
+                                            <form method="post" action="/adm/luthbox/escalas/<%= escala.show_id %>/<%= escala.usuario_id %>/desvincular" data-confirm-unlink>
+                                                <button class="btn-action luth-btn-perigo" type="submit"><img src="/img/x-icon.png" width="15" alt=""> Desvincular</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="3" class="admin-form-empty">Ainda não há artistas vinculados a shows.</td>
+                                </tr>
+                            <% } %>
+                            <tr class="empty-row"><td></td><td></td><td></td></tr>
+                            <tr class="empty-row"><td></td><td></td><td></td></tr>
+                        </tbody>
+                    </table>
+                </section>
+            </section>
         </main>
     </div>
     <dialog class="luth-confirm-dialog" id="luth-unlink-confirm" aria-labelledby="luth-unlink-title">
-        <h2 id="luth-unlink-title">Desvincular banda do show?</h2>
+        <h3 id="luth-unlink-title">Desvincular banda do show?</h3>
         <p>O vínculo será removido da escala. Solicitações anteriores continuarão no histórico.</p>
-        <div><button type="button" class="luth-confirm-cancel">Cancelar</button><button type="button" class="luth-admin-button luth-danger-button luth-confirm-accept">Desvincular</button></div>
+        <section class="modal-botoes">
+            <button type="button" class="btn-modal btn-modal-cancelar luth-confirm-cancel">Voltar</button>
+            <button type="button" class="btn-modal btn-modal-excluir luth-confirm-accept">Sim, desvincular</button>
+        </section>
     </dialog>
     <script src="/js/script.js"></script>
     <script>

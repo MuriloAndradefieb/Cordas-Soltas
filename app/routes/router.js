@@ -30,7 +30,7 @@ async function garantirTabelaPagamentosMP() {
 }
 
 function mpBaseUrl() {
-    const configurada = String(process.env.APP_BASE_URL || '').trim();
+    const configurada = String(process.env.APP_BASE_URL || process.env.RENDER_EXTERNAL_URL || '').trim();
     if (!configurada) return null;
     let url;
     try { url = new URL(configurada); } catch { throw new Error('APP_BASE_URL precisa ser uma URL HTTPS pública.'); }
@@ -50,6 +50,42 @@ async function buscarPagamentoMP(pagamentoId) {
     return pagamento;
 }
 
+async function buscarPagamentosMPPorReferencia(referencia) {
+    if (!process.env.MP_ACCESS_TOKEN) throw new Error('MP_ACCESS_TOKEN não configurado.');
+    const parametros = new URLSearchParams({
+        sort: 'date_created',
+        criteria: 'desc',
+        external_reference: referencia,
+        limit: '20'
+    });
+    const resposta = await fetch(`https://api.mercadopago.com/v1/payments/search?${parametros}`, {
+        headers: { Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}` }
+    });
+    const resultado = await resposta.json().catch(() => ({}));
+    if (!resposta.ok) throw new Error(resultado.message || 'Não foi possível localizar o pagamento.');
+    return Array.isArray(resultado.results) ? resultado.results : [];
+}
+
+async function sincronizarPagamentosMP(usuarioId) {
+    await garantirTabelaPagamentosMP();
+    const [pendentes] = await db.query(
+        'SELECT referencia FROM pagamentos_mercadopago WHERE usuario_id = ? AND processado_em IS NULL AND criado_em >= NOW() - INTERVAL 90 DAY ORDER BY criado_em DESC LIMIT 10',
+        [usuarioId]
+    );
+    for (const registro of pendentes) {
+        try {
+            const pagamentos = await buscarPagamentosMPPorReferencia(registro.referencia);
+            for (const pagamento of pagamentos) {
+                if (String(pagamento.external_reference || '') === registro.referencia) {
+                    await processarPagamentoMP(pagamento);
+                }
+            }
+        } catch (err) {
+            console.error('Não foi possível sincronizar um pagamento pendente:', err.message);
+        }
+    }
+}
+
 async function processarPagamentoMP(pagamento) {
     const referencia = String(pagamento.external_reference || '');
     if (!referencia) return false;
@@ -67,10 +103,17 @@ async function processarPagamentoMP(pagamento) {
         await conexao.query('UPDATE pagamentos_mercadopago SET pagamento_id = ?, status = ? WHERE referencia = ?', [String(pagamento.id), pagamento.status, referencia]);
         if (pagamento.status === 'approved' && !pedido.processado_em) {
             const itens = typeof pedido.itens_json === 'string' ? JSON.parse(pedido.itens_json) : pedido.itens_json;
-            const valores = itens.map(item => [pedido.usuario_id, item.id, item.tipo_ingresso, item.quantidade, item.preco, 'checkout_pro']);
-            if (valores.length) await conexao.query('INSERT INTO pedidos (usuario_id, show_id, tipo_ingresso, quantidade, preco_unitario, forma_pagamento) VALUES ?', [valores]);
-            for (const item of itens) {
-                if (item.cartId) await conexao.query('DELETE FROM carrinho WHERE id = ? AND usuario_id = ?', [item.cartId, pedido.usuario_id]);
+            const itemLuthbox = itens.find(item => item.tipo === 'luthbox');
+            if (itemLuthbox) {
+                // Locação Luthbox: o pagamento confirma a solicitação (não gera ingressos)
+                const confirmada = await LuthboxModel.confirmarPagamentoOnline(conexao, itemLuthbox.solicitacaoId, pedido.usuario_id);
+                if (!confirmada) console.warn(`Pagamento ${pagamento.id} aprovado, mas a solicitação Luthbox #${itemLuthbox.solicitacaoId} não estava aguardando pagamento.`);
+            } else {
+                const valores = itens.map(item => [pedido.usuario_id, item.id, item.tipo_ingresso, item.quantidade, item.preco, 'checkout_pro']);
+                if (valores.length) await conexao.query('INSERT INTO pedidos (usuario_id, show_id, tipo_ingresso, quantidade, preco_unitario, forma_pagamento) VALUES ?', [valores]);
+                for (const item of itens) {
+                    if (item.cartId) await conexao.query('DELETE FROM carrinho WHERE id = ? AND usuario_id = ?', [item.cartId, pedido.usuario_id]);
+                }
             }
             await conexao.query('UPDATE pagamentos_mercadopago SET processado_em = CURRENT_TIMESTAMP WHERE referencia = ?', [referencia]);
         }
@@ -940,6 +983,18 @@ function hojeBrasilISO() {
     return `${valor.year}-${valor.month}-${valor.day}`;
 }
 
+// Solicitação Luthbox da própria conta (null se não existir ou for de outra conta)
+async function buscarSolicitacaoLuthboxDoUsuario(usuarioId, solicitacaoId) {
+    const solicitacoes = await LuthboxModel.listarSolicitacoes(usuarioId);
+    return solicitacoes.find(item => String(item.id) === String(solicitacaoId)) || null;
+}
+
+// Solicitação que pode ser paga (/pagamento?luthbox=ID e botão "Pagar agora"):
+// pagamento pendente ou em atraso, e não recusada
+function solicitacaoLuthboxPagavel(solicitacao) {
+    return ['pendente', 'nao_pago'].includes(solicitacao.pagamento_status) && solicitacao.status !== 'recusada';
+}
+
 async function renderizarCatalogoLuthbox(req, res, tituloPagina = 'Luthbox') {
     try {
         await LuthboxModel.garantirTabelas();
@@ -989,41 +1044,20 @@ router.post('/api/luthbox/solicitacoes', requireArtistaApi, async (req, res) => 
 });
 router.get('/luthbox/solicitacoes', requireArtista, async (req, res) => {
     try {
+        // Registra pagamentos do Mercado Pago que o aviso automático (webhook) ainda não confirmou
+        if (process.env.MP_ACCESS_TOKEN) {
+            await sincronizarPagamentosMP(req.session.usuario.id).catch(err => console.error('Não foi possível conferir pagamentos pendentes:', err.message));
+        }
         const solicitacoes = await LuthboxModel.listarSolicitacoes(req.session.usuario.id);
         return res.render('pages/luthbox-solicitacoes', {
             titulo: 'Minhas solicitações Luthbox', usuario: u(req), solicitacoes,
             possuiDivida: solicitacoes.some(item => ['informado','nao_pago'].includes(item.pagamento_status)),
             enviada: req.query.enviada === '1',
-            pagamentoInformado: req.query.pagamentoInformado === '1',
             limpeza: Number.parseInt(req.query.limpeza, 10), erro: req.query.erro || null
         });
     } catch (err) {
         console.error('Erro ao carregar solicitações da Luthbox:', err.message);
         return res.status(500).send('Não foi possível carregar suas solicitações.');
-    }
-});
-router.get('/luthbox/solicitacoes/:id/pagar', requireArtista, async (req, res) => {
-    try {
-        const solicitacoes = await LuthboxModel.listarSolicitacoes(req.session.usuario.id);
-        const solicitacao = solicitacoes.find(item => String(item.id) === String(req.params.id));
-        if (!solicitacao) return res.status(404).send('Solicitação não encontrada.');
-        if (!['pendente','informado','nao_pago'].includes(solicitacao.pagamento_status) || solicitacao.status === 'recusada') {
-            return res.redirect('/luthbox/solicitacoes');
-        }
-        return res.render('pages/luthbox-pagamento-solicitacao', {
-            titulo: 'Pagamento da solicitação', usuario: u(req), solicitacao
-        });
-    } catch (err) {
-        console.error('Erro ao abrir pagamento da solicitação:', err.message);
-        return res.status(500).send('Não foi possível abrir o pagamento da solicitação.');
-    }
-});
-router.post('/luthbox/solicitacoes/:id/pagamento-informado', requireArtista, async (req, res) => {
-    try {
-        await LuthboxModel.informarPagamento(req.session.usuario.id, req.params.id);
-        return res.redirect('/luthbox/solicitacoes?pagamentoInformado=1');
-    } catch (err) {
-        return res.redirect('/luthbox/solicitacoes?erro=' + encodeURIComponent(err.message));
     }
 });
 router.post('/luthbox/solicitacoes/historico', requireArtista, async (req, res) => {
@@ -1160,8 +1194,25 @@ router.post('/pagamentos/mercadopago/preferencia', requireAuth, async (req, res)
     try {
         if (!process.env.MP_ACCESS_TOKEN) return res.status(503).json({ sucesso: false, mensagem: 'Checkout Pro ainda não está configurado no servidor.' });
         const cartIds = [...new Set((Array.isArray(req.body.cartIds) ? req.body.cartIds : []).map(id => String(id)).filter(id => /^\d+$/.test(id)))];
+        const luthboxId = String(req.body.luthboxSolicitacaoId ?? '');
         let itens;
-        if (cartIds.length) {
+        let solicitacaoLuthbox = null;
+        if (luthboxId) {
+            // Locação Luthbox: itens e preços vêm da solicitação gravada no banco
+            if (!/^\d+$/.test(luthboxId)) return res.status(400).json({ sucesso: false, mensagem: 'Solicitação Luthbox inválida.' });
+            solicitacaoLuthbox = await buscarSolicitacaoLuthboxDoUsuario(req.session.usuario.id, luthboxId);
+            if (!solicitacaoLuthbox) return res.status(404).json({ sucesso: false, mensagem: 'Solicitação Luthbox não encontrada.' });
+            if (!solicitacaoLuthboxPagavel(solicitacaoLuthbox)) return res.status(400).json({ sucesso: false, mensagem: 'Esta solicitação não está aguardando pagamento.' });
+            itens = solicitacaoLuthbox.itens.map(item => ({
+                tipo: 'luthbox',
+                solicitacaoId: solicitacaoLuthbox.id,
+                id: `LUTHBOX-${solicitacaoLuthbox.id}`,
+                titulo: item.nome_item,
+                quantidade: Number(item.quantidade),
+                preco: Number(item.preco_unitario)
+            }));
+            if (!itens.length) return res.status(400).json({ sucesso: false, mensagem: 'A solicitação não possui itens para pagar.' });
+        } else if (cartIds.length) {
             const carrinho = await CarrinhoModel.listarPorUsuario(req.session.usuario.id);
             itens = carrinho.filter(item => cartIds.includes(String(item.cartId)));
             if (itens.length !== cartIds.length) return res.status(400).json({ sucesso: false, mensagem: 'Um ou mais ingressos não estão mais no seu carrinho.' });
@@ -1179,17 +1230,28 @@ router.post('/pagamentos/mercadopago/preferencia', requireAuth, async (req, res)
         }
         const referencia = crypto.randomUUID();
         const total = Math.round(itens.reduce((soma, item) => soma + Number(item.preco) * Number(item.quantidade), 0) * 100) / 100;
+        const baseUrl = mpBaseUrl();
+        if (!baseUrl) {
+            return res.status(503).json({
+                sucesso: false,
+                mensagem: 'Configure APP_BASE_URL com o endereço HTTPS público do site para habilitar retorno e confirmação do pagamento.'
+            });
+        }
         await garantirTabelaPagamentosMP();
         await db.query('INSERT INTO pagamentos_mercadopago (referencia, usuario_id, itens_json, total) VALUES (?, ?, ?, ?)', [referencia, req.session.usuario.id, JSON.stringify(itens), total]);
-        const baseUrl = mpBaseUrl();
+        const retorno = solicitacaoLuthbox ? `${baseUrl}/feedback?mp=return&luthbox=${solicitacaoLuthbox.id}` : `${baseUrl}/feedback?mp=return`;
         const corpo = {
-            items: itens.map(item => ({ id: String(item.id), title: `${item.titulo} - ${item.tipo_ingresso}`, quantity: Number(item.quantidade), unit_price: Number(item.preco), currency_id: 'BRL' })),
+            items: itens.map(item => ({
+                id: String(item.id),
+                title: item.tipo === 'luthbox'
+                    ? `Luthbox #${item.solicitacaoId} - ${item.titulo} (diária)`
+                    : `${item.titulo} - ${item.tipo_ingresso}`,
+                quantity: Number(item.quantidade), unit_price: Number(item.preco), currency_id: 'BRL'
+            })),
             external_reference: referencia,
-            ...(baseUrl ? {
-                back_urls: { success: `${baseUrl}/feedback?mp=return`, pending: `${baseUrl}/feedback?mp=return`, failure: `${baseUrl}/feedback?mp=return` },
-                auto_return: 'approved',
-                notification_url: `${baseUrl}/pagamentos/mercadopago/webhook`
-            } : {})
+            back_urls: { success: retorno, pending: retorno, failure: retorno },
+            auto_return: 'approved',
+            notification_url: `${baseUrl}/pagamentos/mercadopago/webhook`
         };
         const resposta = await fetch('https://api.mercadopago.com/checkout/preferences', {
             method: 'POST', headers: { Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`, 'Content-Type': 'application/json' }, body: JSON.stringify(corpo)
@@ -1212,9 +1274,20 @@ router.post('/pagamentos/mercadopago/preferencia', requireAuth, async (req, res)
 router.get('/pagamentos/mercadopago/status', requireAuth, async (req, res) => {
     try {
         const pagamentoId = String(req.query.payment_id || req.query.collection_id || '').trim();
-        if (!/^\d+$/.test(pagamentoId)) return res.status(400).json({ sucesso: false, mensagem: 'Pagamento inválido.' });
-        const pagamento = await buscarPagamentoMP(pagamentoId);
         await garantirTabelaPagamentosMP();
+        let pagamento;
+        if (/^\d+$/.test(pagamentoId)) {
+            pagamento = await buscarPagamentoMP(pagamentoId);
+        } else {
+            const referencia = String(req.query.external_reference || '').trim();
+            if (!referencia) return res.status(400).json({ sucesso: false, mensagem: 'Pagamento inválido.' });
+            const [owned] = await db.query('SELECT referencia FROM pagamentos_mercadopago WHERE referencia = ? AND usuario_id = ?', [referencia, req.session.usuario.id]);
+            if (!owned.length) return res.status(404).json({ sucesso: false, mensagem: 'Pagamento não encontrado para esta conta.' });
+            const pagamentos = await buscarPagamentosMPPorReferencia(referencia);
+            pagamento = pagamentos.find(item => String(item.external_reference || '') === referencia && item.status === 'approved')
+                || pagamentos.find(item => String(item.external_reference || '') === referencia);
+            if (!pagamento) return res.status(404).json({ sucesso: false, mensagem: 'O Mercado Pago ainda não localizou este pagamento.' });
+        }
         const [rows] = await db.query('SELECT referencia FROM pagamentos_mercadopago WHERE referencia = ? AND usuario_id = ?', [String(pagamento.external_reference || ''), req.session.usuario.id]);
         if (!rows.length || !await processarPagamentoMP(pagamento)) return res.status(404).json({ sucesso: false, mensagem: 'Pagamento não encontrado para esta conta.' });
         return res.json({ sucesso: true, status: pagamento.status, statusDetail: pagamento.status_detail });
@@ -1242,10 +1315,42 @@ router.get('/feedback', requireAuth, (req, res) => {
     for (const campo of ['payment_id', 'collection_id', 'status', 'collection_status', 'external_reference']) {
         if (typeof req.query[campo] === 'string') parametros.set(campo, req.query[campo]);
     }
+    if (typeof req.query.luthbox === 'string' && /^\d+$/.test(req.query.luthbox)) parametros.set('luthbox', req.query.luthbox);
     parametros.set('mp', 'return');
     return res.redirect(`/pagamento?${parametros.toString()}`);
 });
-router.get('/pagamento',            requireAuth, (req, res) => res.render('pages/pagamento', { titulo: 'Pagamento', usuario: u(req), mpPublicKey: process.env.MP_PUBLIC_KEY || '' }));
+router.get('/pagamento', requireAuth, async (req, res) => {
+    const dados = { titulo: 'Pagamento', usuario: u(req), mpPublicKey: process.env.MP_PUBLIC_KEY || '', pedidoLuthbox: null };
+    if (req.query.luthbox === undefined) return res.render('pages/pagamento', dados);
+    // Pagamento de uma solicitação Luthbox (vindo de "Enviar para aprovação")
+    const luthboxId = String(req.query.luthbox);
+    if (!/^\d+$/.test(luthboxId)) return res.redirect('/luthbox/solicitacoes');
+    try {
+        const solicitacao = await buscarSolicitacaoLuthboxDoUsuario(req.session.usuario.id, luthboxId);
+        // Na volta do Mercado Pago a solicitação já pode estar paga: a página
+        // abre mesmo assim para mostrar o resultado.
+        const retornoMP = req.query.mp === 'return' && ['payment_id', 'collection_id', 'external_reference'].some(campo => req.query[campo]);
+        if (!solicitacao || (!solicitacaoLuthboxPagavel(solicitacao) && !retornoMP)) return res.redirect('/luthbox/solicitacoes');
+        return res.render('pages/pagamento', { ...dados, titulo: 'Pagamento Luthbox', pedidoLuthbox: solicitacao });
+    } catch (err) {
+        console.error('Erro ao abrir o pagamento da solicitação Luthbox:', err.message);
+        return res.status(500).send('Não foi possível abrir o pagamento da solicitação.');
+    }
+});
+router.get('/meus-ingressos', requireAuth, async (req, res) => {
+    try {
+        await sincronizarPagamentosMP(req.session.usuario.id);
+        const ingressos = await PedidosModel.listarIngressosMercadoPago(req.session.usuario.id);
+        return res.render('pages/meus-ingressos', {
+            titulo: 'Meus ingressos',
+            usuario: u(req),
+            ingressos
+        });
+    } catch (err) {
+        console.error('Erro ao carregar ingressos do usuário:', err.message);
+        return res.status(500).send('Não foi possível carregar seus ingressos agora.');
+    }
+});
 router.get('/pagamento-luth',       (req, res) => res.render('pages/pagamento-luth',       { titulo: 'Pagamento Luth',       usuario: u(req) }));
 router.get('/pagamento-mensalidade',(req, res) => res.render('pages/pagamento-mensalidade',{ titulo: 'Pagamento Mensalidade', usuario: u(req) }));
 

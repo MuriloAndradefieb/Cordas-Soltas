@@ -506,15 +506,18 @@ async function limparHistoricoSolicitacoes(usuarioId = null) {
     return resultado.affectedRows;
 }
 
-async function informarPagamento(usuarioId, solicitacaoId) {
-    await garantirTabelas();
-    const [result] = await db.query(
+// Pagamento aprovado pelo Mercado Pago: a solicitação passa a "pago" sem
+// precisar do aviso manual nem da conferência do administrador. Recebe a
+// conexão da transação que registra o pagamento. Devolve false se a
+// solicitação não estava aguardando pagamento (já paga ou recusada).
+async function confirmarPagamentoOnline(conexao, solicitacaoId, usuarioId) {
+    const [result] = await conexao.query(
         `UPDATE luthbox_solicitacoes
-            SET pagamento_status = 'informado'
-          WHERE id = ? AND usuario_id = ? AND pagamento_status IN ('pendente','nao_pago') AND status <> 'recusada'`,
+            SET pagamento_status = 'pago'
+          WHERE id = ? AND usuario_id = ? AND pagamento_status IN ('pendente','nao_pago','informado') AND status <> 'recusada'`,
         [solicitacaoId, usuarioId]
     );
-    if (!result.affectedRows) throw new Error('Esta solicitação não está aguardando pagamento ou já foi enviada para conferência.');
+    return result.affectedRows > 0;
 }
 
 async function aprovarSolicitacao(id, adminId) {
@@ -617,4 +620,4 @@ async function atualizarStatus(id, acao, codigoInformado = '', adminId = null) {
     throw new Error('Ação administrativa inválida.');
 }
 
-module.exports = { garantirTabelas, listarCatalogo, listarProdutosAdmin, vincularArtistaAoShow, desvincularArtistaDoShow, listarEscalasAdmin, listarShowsDoArtistaAdmin, listarAgendaArtista, sincronizarShowsArtista, criarProduto, atualizarProdutoCompleto, alterarAtivoProduto, atualizarProduto, criarSolicitacao, listarSolicitacoes, limparHistoricoSolicitacoes, informarPagamento, aprovarSolicitacao, atualizarStatus };
+module.exports = { garantirTabelas, listarCatalogo, listarProdutosAdmin, vincularArtistaAoShow, desvincularArtistaDoShow, listarEscalasAdmin, listarShowsDoArtistaAdmin, listarAgendaArtista, sincronizarShowsArtista, criarProduto, atualizarProdutoCompleto, alterarAtivoProduto, atualizarProduto, criarSolicitacao, listarSolicitacoes, limparHistoricoSolicitacoes, confirmarPagamentoOnline, aprovarSolicitacao, atualizarStatus };

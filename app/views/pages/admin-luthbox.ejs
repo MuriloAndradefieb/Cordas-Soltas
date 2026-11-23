@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/luthbox-operacao.css">
     <link rel="stylesheet" href="/css/luthbox-admin.css">
 </head>
-<body class="admin-luthbox-page">
+<body class="admin-luthbox-page admin-luth-padrao">
     <hr class="top-line">
     <header class="main-header"><img src="/img/LOGO ALTERNATIVA CORDAS SOLTAS SITE.png" width="50" alt="Logo Cordas Soltas" class="logo"></header>
     <div class="app-container">
@@ -23,18 +23,21 @@
             </ul>
         </nav>
         <main class="content-area">
-            <div class="luthbox-admin-content">
-        <p class="luthbox-admin-intro">Gerencie os equipamentos disponíveis no catálogo da Luthbox.</p>
-        <% if (erro) { %><p class="luth-feedback luth-feedback-error" role="alert"><%= erro %></p><% } %>
-        <% if (sucesso) { %><p class="luth-feedback luth-feedback-success" role="status"><%= sucesso %></p><% } %>
+            <header class="sub-header">
+                <span class="title">LUTHBOX</span>
+                <button class="btn-add" type="button" id="luth-novo-produto-botao" aria-controls="luth-novo-produto" aria-expanded="false"><span>+</span> Adicionar produto</button>
+            </header>
 
-        <section class="luth-admin-section">
-            <h2>Catálogo e inventário</h2>
+            <% if (erro) { %><p class="luth-feedback luth-feedback-error" role="alert"><%= erro %></p><% } %>
+            <% if (sucesso) { %><p class="luth-feedback luth-feedback-success" role="status"><%= sucesso %></p><% } %>
+
             <p class="luth-admin-help">Cadastre instrumentos, acessórios e peças avulsas. A classificação organiza o catálogo e a compatibilidade informa para qual instrumento o item serve. Valores iniciais são demonstrativos.</p>
-            <details class="luth-add-product">
-                <summary><span><strong>Adicionar produto ao catálogo</strong><small>Preencha as informações e inclua uma foto para os artistas visualizarem.</small></span><b aria-hidden="true">＋</b></summary>
-                <form class="luth-product-editor-form" method="post" enctype="multipart/form-data" action="/adm/luthbox/produtos">
+
+            <section class="luth-novo-produto" id="luth-novo-produto" aria-labelledby="luth-novo-produto-titulo" hidden>
+                <h2 class="category-title" id="luth-novo-produto-titulo">Novo produto</h2>
+                <form class="luth-product-editor-form luth-admin-painel" method="post" enctype="multipart/form-data" action="/adm/luthbox/produtos">
                     <div class="luth-product-image-editor">
+                        <span class="luth-campo-rotulo">Imagem do item</span>
                         <label class="luth-product-image-drop" for="luthbox-upload-novo">
                             <span id="luthbox-placeholder-novo">Clique para escolher a imagem</span>
                             <img id="luthbox-preview-novo" alt="Prévia da imagem do novo produto" hidden>
@@ -43,7 +46,6 @@
                         <small>Imagem opcional · JPG, PNG, WebP, AVIF ou GIF · até 5 MB.</small>
                     </div>
                     <div class="luth-product-editor-fields">
-                        <h3>Informações do item</h3>
                         <div class="luth-product-editor-grid">
                             <label>Nome<input name="nome" maxlength="160" required placeholder="Ex.: Correia para baixo"></label>
                             <label>Classificação<input name="classificacao" maxlength="80" required list="luth-categorias" placeholder="Ex.: Acessórios"></label>
@@ -52,33 +54,74 @@
                             <label>Unidades disponíveis<input type="number" name="quantidade_disponivel" min="0" max="1000" required></label>
                             <label class="luth-product-description">Descrição<textarea name="descricao" maxlength="500" rows="3" required></textarea></label>
                         </div>
-                        <button class="luth-admin-button" type="submit">Adicionar ao catálogo</button>
+                        <div class="luth-form-acoes">
+                            <button class="luth-btn-neutro" type="button" data-fechar-novo-produto>Cancelar</button>
+                            <button class="btn-add" type="submit"><span>+</span> Adicionar ao catálogo</button>
+                        </div>
                     </div>
                     <datalist id="luth-categorias"><option value="Instrumentos"><option value="Acessórios"><option value="Bateria avulsa"><option value="Áudio"><option value="Kits"></datalist>
                 </form>
-            </details>
-            <div class="luth-product-admin-list">
-                <% produtos.forEach(produto => { %>
-                    <article class="luth-product-admin-card <%= produto.ativo ? '' : 'is-inactive' %>">
-                        <div class="luth-product-admin-summary-row">
-                            <img src="<%= produto.imagem_url || '/img/luthrock.jpg' %>" alt="Imagem de <%= produto.nome %>" id="luthbox-current-<%= produto.id %>">
-                            <span class="luth-admin-product-summary"><strong><%= produto.nome %></strong><small><%= produto.classificacao %> · Compatível com <%= produto.compatibilidade %></small></span>
-                            <span class="luth-admin-product-metrics"><strong>R$ <%= produto.preco.toFixed(2).replace('.', ',') %> / diária</strong><small><%= produto.quantidade_disponivel %> unidades · <%= produto.ativo ? 'No catálogo' : 'Oculto' %></small></span>
-                            <div class="luth-product-summary-actions">
-                                <a class="luth-product-expand" href="/adm/luthbox/produtos/<%= produto.id %>/editar">Editar</a>
-                                <form class="luth-product-toggle" method="post" action="/adm/luthbox/produtos/<%= produto.id %>/ativo"><input type="hidden" name="ativo" value="<%= produto.ativo ? '0' : '1' %>"><button class="luth-admin-button <%= produto.ativo ? 'luth-danger-button' : '' %>" type="submit"><%= produto.ativo ? 'Remover do catálogo' : 'Reativar item' %></button></form>
-                            </div>
-                        </div>
-                    </article>
-                <% }); %>
-            </div>
-        </section>
+            </section>
 
-            </div>
+            <%
+                /* Agrupa os produtos pela classificação, como a página de Ingressos agrupa os shows por estilo. */
+                const gruposProdutos = [];
+                produtos.forEach(produto => {
+                    const nome = String(produto.classificacao || '').trim() || 'Sem classificação';
+                    let grupo = gruposProdutos.find(item => item.nome.toLowerCase() === nome.toLowerCase());
+                    if (!grupo) { grupo = { nome, itens: [] }; gruposProdutos.push(grupo); }
+                    grupo.itens.push(produto);
+                });
+            %>
+            <% if (!produtos.length) { %><p class="luth-admin-vazio">Nenhum produto cadastrado no catálogo.</p><% } %>
+            <% gruposProdutos.forEach(grupo => { %>
+                <h3 class="category-title"><%= grupo.nome %></h3>
+                <div class="luth-produtos-grid">
+                    <% grupo.itens.forEach(produto => { %>
+                        <article class="luth-produto-card<%= produto.ativo ? '' : ' is-inactive' %>">
+                            <img class="luth-produto-imagem" src="<%= produto.imagem_url || '/img/luthrock.jpg' %>" alt="Imagem de <%= produto.nome %>">
+                            <h4 class="luth-produto-nome"><%= produto.nome %></h4>
+                            <p class="luth-produto-info">Compatível com <%= produto.compatibilidade %></p>
+                            <p class="luth-produto-preco">R$ <%= produto.preco.toFixed(2).replace('.', ',') %> / diária</p>
+                            <p class="luth-produto-estoque"><%= produto.quantidade_disponivel %> <%= produto.quantidade_disponivel === 1 ? 'unidade' : 'unidades' %> · <%= produto.ativo ? 'No catálogo' : 'Oculto' %></p>
+                            <div class="luth-produto-acoes">
+                                <a class="btn-action luth-produto-editar" href="/adm/luthbox/produtos/<%= produto.id %>/editar"><img src="/img/confg.png" width="15" alt=""> Editar</a>
+                                <form method="post" action="/adm/luthbox/produtos/<%= produto.id %>/ativo">
+                                    <input type="hidden" name="ativo" value="<%= produto.ativo ? '0' : '1' %>">
+                                    <% if (produto.ativo) { %>
+                                        <button class="btn-action luth-btn-perigo" type="submit"><img src="/img/x-icon.png" width="15" alt=""> Remover do catálogo</button>
+                                    <% } else { %>
+                                        <button class="btn-action" type="submit"><span aria-hidden="true">+</span> Reativar item</button>
+                                    <% } %>
+                                </form>
+                            </div>
+                        </article>
+                    <% }); %>
+                </div>
+            <% }); %>
         </main>
     </div>
     <script src="/js/script.js"></script>
     <script>
+        /* "+ Adicionar produto" mostra e esconde o formulário de novo produto */
+        (() => {
+            const botao = document.getElementById('luth-novo-produto-botao');
+            const painel = document.getElementById('luth-novo-produto');
+            if (!botao || !painel) return;
+            const alternar = (abrir) => {
+                painel.hidden = !abrir;
+                botao.setAttribute('aria-expanded', String(abrir));
+                botao.classList.toggle('is-ativo', abrir);
+                if (abrir) {
+                    painel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    painel.querySelector('input[name="nome"]')?.focus({ preventScroll: true });
+                } else {
+                    botao.focus();
+                }
+            };
+            botao.addEventListener('click', () => alternar(painel.hidden));
+            painel.querySelector('[data-fechar-novo-produto]')?.addEventListener('click', () => alternar(false));
+        })();
         document.querySelectorAll('.luth-image-input').forEach(input => input.addEventListener('change', () => {
             const arquivo = input.files && input.files[0];
             if (!arquivo) return;
@@ -101,8 +144,6 @@
             const remover = input.closest('form')?.querySelector('[name="remover_imagem"]');
             if (remover) remover.checked = false;
             if (preview) { preview.src = URL.createObjectURL(arquivo); preview.hidden = false; }
-            const current = document.getElementById(input.id.replace('upload', 'current'));
-            if (current) current.src = URL.createObjectURL(arquivo);
             if (placeholder) placeholder.hidden = true;
         }));
     </script>

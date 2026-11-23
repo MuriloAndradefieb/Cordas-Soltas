@@ -1,0 +1,199 @@
+/* =====================================================================
+   pagamento-luthbox.css  –  Resumo da locação Luthbox na página de
+   pagamento (/pagamento?luthbox=ID)
+
+   Carregado só nessa página, depois de pagamento.css, e usa as mesmas
+   cores dela (variáveis --checkout-*). Layout compacto:
+     topo     título do pedido + selo da modalidade
+     show     nome em destaque, data e local ao lado
+     prazos   etiquetas pequenas (a de pagamento em dourado)
+     itens    uma linha por item: quantidade, nome + diária, subtotal
+     total    rótulo à esquerda, valor em dourado à direita
+   ===================================================================== */
+
+.luth-compra {
+    display: grid;
+    gap: 0.7rem;
+}
+
+.luth-compra p {
+    margin: 0;
+    line-height: 1.45;
+}
+
+/* ── Topo: título do pedido e selo da modalidade ──────────────────── */
+.luth-compra-topo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.4rem 0.75rem;
+}
+
+.luth-compra .luth-compra-topo .summary-title {
+    margin: 0;
+}
+
+.luth-compra-selo {
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--checkout-border-gold);
+    border-radius: 999px;
+    background: rgba(245, 166, 35, 0.1);
+    color: var(--checkout-gold-soft);
+    font-size: 0.72rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+/* ── Show: nome em destaque, data e local ao lado ─────────────────── */
+.luth-compra .luth-compra-show {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.1rem 0.6rem;
+}
+
+.luth-compra-show strong {
+    color: var(--checkout-text);
+    font-size: 1.08rem;
+    font-weight: 800;
+    overflow-wrap: anywhere;
+}
+
+.luth-compra-show span {
+    color: var(--checkout-muted);
+    font-size: 0.9rem;
+}
+
+/* ── Prazos: etiquetas pequenas; a de pagamento em dourado ────────── */
+.luth-compra .luth-compra-prazos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.luth-compra-prazo {
+    padding: 0.22rem 0.65rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--checkout-muted);
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.luth-compra-prazo strong {
+    color: var(--checkout-text);
+    font-weight: 700;
+}
+
+.luth-compra-prazo-pagar {
+    border-color: var(--checkout-border-gold);
+    background: rgba(245, 166, 35, 0.08);
+    color: var(--checkout-gold-soft);
+}
+
+.luth-compra-prazo-pagar strong {
+    color: var(--checkout-gold-soft);
+}
+
+/* ── Itens: quantidade, nome com a diária e subtotal numa linha ───── */
+.luth-compra-itens {
+    margin: 0.15rem 0 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--checkout-border);
+}
+
+.luth-compra-itens li {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: 0.7rem;
+    padding: 0.55rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.luth-compra-qtd {
+    min-width: 2.1rem;
+    padding: 0.05rem 0.4rem;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.07);
+    color: var(--checkout-gold-soft);
+    font-size: 0.82rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+}
+
+.luth-compra-nome {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 0.5rem;
+    min-width: 0;
+}
+
+.luth-compra-nome strong {
+    color: var(--checkout-text);
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.luth-compra-nome small {
+    color: var(--checkout-muted);
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.luth-compra-subtotal {
+    color: var(--checkout-text);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+/* ── Total ────────────────────────────────────────────────────────── */
+.luth-compra .luth-compra-total {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: 0.15rem;
+}
+
+.luth-compra-total span {
+    color: var(--checkout-muted);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.luth-compra-total strong {
+    color: var(--checkout-gold);
+    font-size: 1.4rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Texto só para leitores de tela ("3 unidades de …") */
+.luth-compra-oculto {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+/* ── Botão "Tentar pagar novamente" (pagamento recusado) ──────────── */
+.luth-compra-retry {
+    width: 100%;
+    margin-top: 1rem;
+    text-decoration: none;
+}
+
+.luth-compra-retry[hidden] {
+    display: none;
+}
