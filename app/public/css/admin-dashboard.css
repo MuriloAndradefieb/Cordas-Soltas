@@ -569,18 +569,24 @@ body {
     color: #ffffff;
 }
 
-.admin-ingressos-page #modal_exclusao {
+.admin-ingressos-page #modal_exclusao,
+.admin-formulario-detalhe-page #modal_exclusao,
+.admin-formularios-page #modal_exclusao {
     background-color: #1e1e1e !important;
 }
 
-.admin-ingressos-page #modal_exclusao h3 {
+.admin-ingressos-page #modal_exclusao h3,
+.admin-formulario-detalhe-page #modal_exclusao h3,
+.admin-formularios-page #modal_exclusao h3 {
     margin-top: 0 !important;
     margin-bottom: 15px !important;
     color: #ffb800 !important;
     font-size: 20px !important;
 }
 
-.admin-ingressos-page #modal_exclusao p {
+.admin-ingressos-page #modal_exclusao p,
+.admin-formulario-detalhe-page #modal_exclusao p,
+.admin-formularios-page #modal_exclusao p {
     margin-bottom: 25px !important;
     color: #ffffff !important;
     font-size: 15px !important;
@@ -824,6 +830,139 @@ body {
     vertical-align: middle;
 }
 
+/* Ações da lista: "ver detalhes" e "excluir" lado a lado */
+.admin-formularios-page .admin-form-acoes {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Excluir: mesmo botão de ícone, em vermelho como o "Excluir" dos shows */
+.admin-formularios-page .btn-action-excluir {
+    border-color: #ff4a4a;
+}
+
+.admin-formularios-page .btn-action-excluir:hover {
+    background-color: #ff4a4a;
+}
+
+/* ── Formulários: filtro de leitura (mesmo campo dos filtros de Solicitações) ── */
+.admin-formularios-page .admin-form-busca {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 16px;
+}
+
+.admin-formularios-page .admin-form-filtro {
+    display: grid;
+    grid-template-columns: minmax(0, 260px) auto;
+    align-items: center;
+    gap: 8px 14px;
+}
+
+.admin-formularios-page .admin-form-filtro label {
+    grid-column: 1 / -1;
+    color: #ffb800;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.admin-formularios-page .admin-form-filtro select {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 220px;
+    min-height: 44px;
+    padding: 10px 40px 10px 14px;
+    border: 1px solid #383838;
+    border-radius: 4px;
+    background-color: #212121;
+    background-image: url("data:image/svg+xml;utf8,<svg fill='%23ffb800' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 12px top 50%;
+    color: #ffffff;
+    color-scheme: dark;
+    font-size: 14px;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+}
+
+.admin-formularios-page .admin-form-filtro select:focus {
+    border-color: #ffb800;
+    outline: none;
+    box-shadow: 0 0 0 1px #ffb800;
+}
+
+.admin-formularios-page .admin-form-filtro select.is-ativo {
+    border-color: #ffb800;
+}
+
+.admin-formularios-page .admin-form-filtro option {
+    background-color: #212121;
+    color: #ffffff;
+}
+
+.admin-formularios-page .admin-form-filtro option:disabled {
+    color: #777777;
+    font-style: italic;
+}
+
+.admin-formularios-page .admin-form-filtro-resumo {
+    margin: 0;
+    color: #999999;
+    font-size: 13px;
+}
+
+.admin-formularios-page .adm-table tr[hidden] {
+    display: none;
+}
+
+/* Situação de leitura: mesmo formato das etiquetas de status de Solicitações */
+.admin-formularios-page .form-leitura {
+    display: inline-block;
+    padding: 4px 8px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.3;
+    white-space: nowrap;
+}
+
+.admin-formularios-page .form-leitura-nao-lido {
+    background-color: #59450f;
+    color: #ffe19a;
+}
+
+.admin-formularios-page .form-leitura-lido {
+    border-color: #444444;
+    background-color: #2b2b2b;
+    color: #bdbdbd;
+}
+
+@media (max-width: 680px) {
+    .admin-formularios-page .admin-form-filtro {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .admin-formularios-page .admin-form-filtro select {
+        min-width: 0;
+    }
+
+    /* Telas estreitas: células mais compactas e e-mail quebrando linha,
+       para a coluna "Situação" não alargar a página */
+    .admin-formularios-page .admin-form-table th,
+    .admin-formularios-page .admin-form-table td {
+        padding: 10px;
+    }
+
+    .admin-formularios-page .admin-form-table .email-link {
+        overflow-wrap: anywhere;
+    }
+}
+
 .admin-formulario-detalhe-page .form-detail-actions {
     width: 100%;
     max-width: 950px;
@@ -849,6 +988,44 @@ body {
 
 .admin-formulario-detalhe-page .btn-topo-cancela:hover {
     background-color: #4a4a4a;
+}
+
+/* Excluir formulário: mesmo formato do "Cancelar", em vermelho como o "Excluir" dos shows */
+.admin-formulario-detalhe-page .form-detail-actions {
+    gap: 12px;
+}
+
+.admin-formulario-detalhe-page .btn-topo-excluir {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 36px;
+    padding: 8px 16px;
+    background-color: #1a1a1a;
+    border: 1px solid #ff4a4a;
+    border-radius: 4px;
+    color: #ff4a4a;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.admin-formulario-detalhe-page .btn-topo-excluir:hover {
+    background-color: #ff4a4a;
+    color: #ffffff;
+}
+
+.admin-formulario-detalhe-page #modal_exclusao .modal-erro,
+.admin-formularios-page #modal_exclusao .modal-erro {
+    margin: -10px 0 20px !important;
+    color: #ff8a8a !important;
+    font-size: 14px !important;
+}
+
+.admin-formulario-detalhe-page #modal_exclusao .btn-modal:disabled,
+.admin-formularios-page #modal_exclusao .btn-modal:disabled {
+    opacity: 0.6;
+    cursor: wait;
 }
 
 .admin-formulario-detalhe-page .form-detail-card {

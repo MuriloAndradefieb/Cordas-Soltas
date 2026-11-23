@@ -2,12 +2,8 @@
    luthbox-admin.css  –  Área administrativa da Luthbox
    ===================================================================== */
 
-/* ── Página "Editar item" (admin-luthbox-produto-form) e área de imagem ─ */
+/* ── Área de imagem dos itens (Novo produto e Editar produto) ───────── */
 .admin-luthbox-page .content-area { min-height:calc(100vh - 76px); }
-.luthbox-admin-content { width:min(100%,1180px); margin:0 auto; }
-.luthbox-admin-content > .sub-header { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:1rem 1.2rem; background:#26262c; border:1px solid #383840; border-radius:10px; }
-.luthbox-admin-content > .sub-header .title { color:#fff; font-weight:800; letter-spacing:.04em; }
-.luth-admin-subtitle { color:#b9bbc3; font-size:.9rem; }
 .luth-product-image-drop { position:relative; display:grid; width:100%; aspect-ratio:4 / 3; place-items:center; overflow:hidden; border:2px dashed #585861; border-radius:10px; background:#101014; color:#c1c3ca; text-align:center; cursor:pointer; }
 .luth-product-image-drop:hover { border-color:#f5a623; background:#1b1710; }
 .luth-product-image-drop span { padding:.8rem; line-height:1.5; }
@@ -15,22 +11,6 @@
 .luth-image-input { width:1px; height:1px; position:absolute; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; }
 .luth-remove-image { display:flex !important; grid-template-columns:auto 1fr; align-items:center; gap:.45rem !important; color:#c6c8cf !important; font-size:.82rem !important; }
 .luth-remove-image input { width:1rem; min-height:1rem !important; accent-color:#a63c3c; }
-.luth-product-edit-page-form { margin-top:1rem; }
-.luth-product-edit-page-actions { display:flex; justify-content:flex-end; gap:.7rem; margin-bottom:1rem; }
-.luth-product-edit-page-actions .luth-admin-button { min-width:125px; }
-.luth-product-cancel { border:1px solid #65656d; background:transparent; color:#e2e3e7; }
-.luth-product-edit-page-panel { display:grid; grid-template-columns:minmax(280px,.95fr) minmax(0,1.05fr); gap:1.5rem; padding:1.5rem; border:1px solid #383840; border-radius:8px; background:#29292e; }
-.luth-product-edit-page-image, .luth-product-edit-page-fields { display:grid; align-content:start; gap:.75rem; min-width:0; }
-.luth-product-edit-page-image > label:first-child, .luth-product-edit-page-grid label { color:#ffb000; font-weight:800; }
-.luth-product-edit-page-image .luth-product-image-drop { aspect-ratio:4/4.7; border:0; border-radius:4px; background:#17171c; }
-.luth-product-edit-page-image .luth-product-image-drop img { object-fit:contain; }
-.luth-product-edit-page-fields h2 { margin:0 0 .2rem; color:#ffb000; font-size:1.05rem; }
-.luth-product-edit-page-grid { display:grid; gap:1rem; }
-.luth-product-edit-page-grid label { display:grid; gap:.45rem; font-size:.88rem; }
-.luth-product-edit-page-grid input, .luth-product-edit-page-grid textarea { width:100%; min-height:46px; padding:.7rem .85rem; border:1px solid #414149; border-radius:5px; background:#202024; color:#f4f4f6; font:inherit; font-weight:400; box-sizing:border-box; }
-.luth-product-edit-page-grid textarea { min-height:115px; resize:vertical; }
-.luth-product-edit-page-description { grid-column:1; }
-.luth-product-edit-page-form :focus-visible { outline:3px solid #ffd27a; outline-offset:2px; }
 .luth-confirm-dialog { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:min(440px,calc(100vw - 2rem)); max-height:calc(100vh - 2rem); overflow:auto; margin:0; padding:1.4rem; border:1px solid #494952; border-radius:14px; background:#202026; color:#f4f4f6; box-shadow:0 24px 80px #000b; }
 .luth-confirm-dialog::backdrop { background:#050507c9; backdrop-filter:blur(3px); }
 .luth-confirm-dialog h2 { margin:0 0 .55rem; color:#ffd27a; }
@@ -41,8 +21,6 @@
 .luth-upload-feedback { margin:0; }
 .admin-luthbox-page [hidden] { display:none !important; }
 .admin-luthbox-page :focus-visible { outline:3px solid #ffd27a; outline-offset:2px; }
-@media(max-width:760px) { .luth-product-edit-page-panel { grid-template-columns:1fr; } .luth-product-edit-page-image .luth-product-image-drop { aspect-ratio:16/10; } }
-@media(max-width:560px) { .luthbox-admin-content > .sub-header { align-items:flex-start; flex-direction:column; } }
 
 /* =====================================================================
    Luthbox, Escala e Solicitações  (<body class="admin-luth-padrao">)
@@ -370,6 +348,28 @@
 .admin-luth-padrao .luth-form-acoes .btn-add {
     min-height: 44px;
     padding: 8px 16px;
+}
+
+/* ── Luthbox: página "Editar produto" (admin-luthbox-produto-form) ──
+   Usa o mesmo painel do "Novo produto"; aqui só o que é próprio dela. */
+.admin-luth-padrao .luth-form-acoes a.luth-btn-neutro {
+    text-decoration: none;
+}
+
+.admin-luth-padrao .luth-form-acoes img {
+    display: block;
+}
+
+.admin-luth-padrao .luth-product-image-editor .luth-remove-image {
+    margin-top: 4px;
+    color: #e0e0e0 !important;
+    font-size: 13px !important;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.admin-luth-padrao .luth-product-image-editor .luth-remove-image input {
+    accent-color: #ff6b6b;
 }
 
 /* ── Luthbox: cartões dos produtos (iguais aos de Ingressos) ──────── */

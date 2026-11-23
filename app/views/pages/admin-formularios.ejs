@@ -1,5 +1,7 @@
 <%
     const lista = Array.isArray(formularios) ? formularios : [];
+    // Lido = algum administrador já abriu os detalhes do formulário
+    const naoLidos = lista.filter(formulario => !formulario.lido_em).length;
 %>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -34,47 +36,186 @@
                 <span class="title">FORMUL&Aacute;RIOS</span>
             </header>
 
-            <section class="search-container">
+            <section class="search-container admin-form-busca">
                 <button class="btn-search" type="button" aria-label="Buscar"><img src="/img/lupa.png" width="20px" alt=""></button>
+                <% if (lista.length > 0) { %>
+                    <%# Filtro de leitura: o mesmo campo recolhido dos filtros de Solicitações %>
+                    <div class="admin-form-filtro" data-filtro-leitura>
+                        <label for="filtro-leitura">Leitura</label>
+                        <select id="filtro-leitura" autocomplete="off">
+                            <option value="" selected>Todos os formul&aacute;rios</option>
+                            <option value="nao-lido"<%= naoLidos ? '' : ' disabled' %>>N&atilde;o lidos</option>
+                            <option value="lido"<%= naoLidos < lista.length ? '' : ' disabled' %>>Lidos</option>
+                        </select>
+                        <p class="admin-form-filtro-resumo" data-filtro-resumo aria-live="polite"><%= lista.length %> formul&aacute;rio<%= lista.length === 1 ? '' : 's' %> &middot; <%= naoLidos %> n&atilde;o lido<%= naoLidos === 1 ? '' : 's' %></p>
+                    </div>
+                <% } %>
             </section>
 
             <section class="table-container">
                 <table class="adm-table admin-form-table">
                     <thead>
                         <tr>
-                            <th style="width: 45%;">E-MAIL</th>
-                            <th style="width: 35%;">BANDA</th>
-                            <th style="width: 20%;">A&Ccedil;&Otilde;ES</th>
+                            <th style="width: 40%;">E-MAIL</th>
+                            <th style="width: 30%;">BANDA</th>
+                            <th style="width: 15%;">SITUA&Ccedil;&Atilde;O</th>
+                            <th style="width: 15%;">A&Ccedil;&Otilde;ES</th>
                         </tr>
                     </thead>
                     <tbody>
                         <% if (lista.length > 0) { %>
                             <% lista.forEach(function(formulario) { %>
-                                <tr>
+                                <tr data-leitura="<%= formulario.lido_em ? 'lido' : 'nao-lido' %>">
                                     <td><span class="email-link"><%= formulario.email_contato %></span></td>
                                     <td><%= formulario.nome_banda %></td>
                                     <td>
-                                        <button class="btn-action" type="button" data-edit-url="/adm/formularios/<%= formulario.id %>" aria-label="Ver formulario">
-                                            <img src="/img/confg.png" width="15px" alt="">
-                                        </button>
+                                        <% if (formulario.lido_em) { %>
+                                            <span class="form-leitura form-leitura-lido">Lido</span>
+                                        <% } else { %>
+                                            <span class="form-leitura form-leitura-nao-lido">N&atilde;o lido</span>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <div class="admin-form-acoes">
+                                            <button class="btn-action" type="button" data-edit-url="/adm/formularios/<%= formulario.id %>" aria-label="Ver formulario" title="Ver detalhes">
+                                                <img src="/img/confg.png" width="15px" alt="">
+                                            </button>
+                                            <button class="btn-action btn-action-excluir" type="button" data-excluir-formulario="<%= formulario.id %>" data-banda="<%= formulario.nome_banda %>" aria-label="Excluir formulario de <%= formulario.nome_banda %>" title="Excluir">
+                                                <img src="/img/x-icon.png" width="15px" alt="">
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             <% }); %>
                         <% } else { %>
                             <tr>
-                                <td colspan="3" class="admin-form-empty">Nenhum formul&aacute;rio enviado.</td>
+                                <td colspan="4" class="admin-form-empty">Nenhum formul&aacute;rio enviado.</td>
                             </tr>
                         <% } %>
 
-                        <tr class="empty-row"><td></td><td></td><td></td></tr>
-                        <tr class="empty-row"><td></td><td></td><td></td></tr>
-                        <tr class="empty-row"><td></td><td></td><td></td></tr>
+                        <tr data-filtro-vazio hidden>
+                            <td colspan="4" class="admin-form-empty"></td>
+                        </tr>
+                        <tr class="empty-row"><td></td><td></td><td></td><td></td></tr>
+                        <tr class="empty-row"><td></td><td></td><td></td><td></td></tr>
+                        <tr class="empty-row"><td></td><td></td><td></td><td></td></tr>
                     </tbody>
                 </table>
             </section>
         </main>
     </section>
 
+    <%# Mesma confirmação da exclusão de shows (Ingressos) e da página de detalhes %>
+    <dialog id="modal_exclusao" aria-labelledby="titulo_modal_exclusao">
+        <h3 id="titulo_modal_exclusao">Aten&ccedil;&atilde;o!</h3>
+        <p>Tem certeza que deseja excluir o formul&aacute;rio <strong id="banda_exclusao"></strong> do sistema? As fotos enviadas tamb&eacute;m ser&atilde;o apagadas. Esta a&ccedil;&atilde;o n&atilde;o poder&aacute; ser desfeita.</p>
+        <p class="modal-erro" id="erro_exclusao" role="alert" hidden></p>
+
+        <section class="modal-botoes">
+            <button id="btn_fechar_modal" class="btn-modal btn-modal-cancelar" type="button">Voltar</button>
+            <button id="btn_confirmar_exclusao" class="btn-modal btn-modal-excluir" type="button">Sim, Excluir</button>
+        </section>
+    </dialog>
+
     <script src="/js/admin-dashboard.js"></script>
+    <script>
+        // Filtro de leitura (lidos / não lidos). A escolha fica guardada na aba,
+        // então continua aplicada ao voltar dos detalhes ou depois de excluir.
+        (function () {
+            const filtro = document.getElementById('filtro-leitura');
+            if (!filtro) return;
+            const linhas = [...document.querySelectorAll('tr[data-leitura]')];
+            const resumo = document.querySelector('[data-filtro-resumo]');
+            const vazio = document.querySelector('[data-filtro-vazio]');
+            const CHAVE = 'admFormulariosFiltroLeitura';
+            const total = linhas.length;
+            const naoLidos = linhas.filter(linha => linha.dataset.leitura === 'nao-lido').length;
+            const plural = (n, um, varios) => n + ' ' + (n === 1 ? um : varios);
+
+            function aplicar() {
+                const valor = filtro.value;
+                let visiveis = 0;
+                linhas.forEach(function (linha) {
+                    const mostrar = !valor || linha.dataset.leitura === valor;
+                    linha.hidden = !mostrar;
+                    if (mostrar) visiveis += 1;
+                });
+                filtro.classList.toggle('is-ativo', Boolean(valor));
+                resumo.textContent = valor
+                    ? 'Mostrando ' + visiveis + ' de ' + plural(total, 'formulário', 'formulários')
+                    : plural(total, 'formulário', 'formulários') + ' · ' + plural(naoLidos, 'não lido', 'não lidos');
+                vazio.hidden = visiveis > 0;
+                vazio.firstElementChild.textContent = valor === 'nao-lido'
+                    ? 'Nenhum formulário não lido.'
+                    : 'Nenhum formulário lido.';
+                try { sessionStorage.setItem(CHAVE, valor); } catch (err) { /* sem armazenamento */ }
+            }
+
+            try {
+                const salvo = sessionStorage.getItem(CHAVE);
+                const opcao = salvo && filtro.querySelector('option[value="' + salvo + '"]:not(:disabled)');
+                if (opcao) filtro.value = salvo;
+            } catch (err) { /* sem armazenamento */ }
+
+            filtro.addEventListener('change', aplicar);
+            aplicar();
+        })();
+    </script>
+    <script>
+        (function () {
+            const modal = document.getElementById('modal_exclusao');
+            const btnConfirmar = document.getElementById('btn_confirmar_exclusao');
+            const erro = document.getElementById('erro_exclusao');
+            const banda = document.getElementById('banda_exclusao');
+            let idParaExcluir = null;
+
+            document.querySelectorAll('[data-excluir-formulario]').forEach(function (botao) {
+                botao.addEventListener('click', function () {
+                    idParaExcluir = botao.dataset.excluirFormulario;
+                    banda.textContent = botao.dataset.banda ? 'da banda ' + botao.dataset.banda : '';
+                    erro.hidden = true;
+                    modal.showModal();
+                });
+            });
+
+            document.getElementById('btn_fechar_modal').addEventListener('click', function () {
+                modal.close();
+            });
+
+            modal.addEventListener('close', function () {
+                idParaExcluir = null;
+            });
+
+            btnConfirmar.addEventListener('click', async function () {
+                if (!idParaExcluir) return;
+                btnConfirmar.disabled = true;
+                btnConfirmar.textContent = 'Excluindo...';
+                erro.hidden = true;
+
+                try {
+                    const resposta = await fetch('/adm/formularios/' + encodeURIComponent(idParaExcluir) + '/excluir', {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+                    const resultado = await resposta.json().catch(function () { return {}; });
+
+                    if (resposta.ok && resultado.sucesso) {
+                        window.location.reload();
+                        return;
+                    }
+                    erro.textContent = resultado.mensagem || 'Não foi possível excluir o formulário.';
+                } catch (err) {
+                    erro.textContent = 'Falha ao comunicar com o servidor. Tente novamente.';
+                }
+
+                erro.hidden = false;
+                btnConfirmar.disabled = false;
+                btnConfirmar.textContent = 'Sim, Excluir';
+            });
+        })();
+    </script>
 </body>
 </html>

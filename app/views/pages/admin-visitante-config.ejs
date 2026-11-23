@@ -162,37 +162,10 @@
 
                     <section class="vc-section">
                         <h2 class="category-title">Modera&ccedil;&atilde;o</h2>
-                        <input type="hidden" name="suspender_conta" id="suspender_conta" value="<%= estaSuspenso ? 'sim' : 'nao' %>">
 
+                        <%# Visitantes não podem ser suspensos por aqui: a moderação tem só a exclusão
+                            da conta e o status atual (que ainda mostra uma suspensão antiga, se houver). %>
                         <div class="vc-moderation-grid">
-                            <article class="vc-moderation-card">
-                                <button class="vc-moderation-toggle" type="button" aria-expanded="<%= estaSuspenso ? 'true' : 'false' %>" aria-controls="painel-suspensao" data-moderation-toggle>
-                                    <span>Suspender conta</span>
-                                    <span class="vc-toggle-icon" aria-hidden="true">+</span>
-                                </button>
-
-                                <div class="vc-moderation-panel <%= estaSuspenso ? 'is-open' : '' %>" id="painel-suspensao" <%= estaSuspenso ? '' : 'hidden' %>>
-                                    <div class="vc-option-buttons">
-                                        <button type="button" class="vc-option-btn <%= estaSuspenso ? 'is-selected' : '' %>" data-suspension-option="sim">
-                                            Aplicar suspens&atilde;o
-                                        </button>
-                                        <button type="button" class="vc-option-btn <%= estaSuspenso ? '' : 'is-selected' %>" data-suspension-option="nao">
-                                            Manter ativa
-                                        </button>
-                                    </div>
-
-                                    <div class="vc-field vc-suspension-days" id="campo-dias-suspensao" <%= estaSuspenso ? '' : 'hidden' %>>
-                                        <label for="dias_suspensao">Dias de suspens&atilde;o</label>
-                                        <select id="dias_suspensao" name="dias_suspensao">
-                                            <option value="10">10 dias</option>
-                                            <option value="15">15 dias</option>
-                                            <option value="30">30 dias</option>
-                                            <option value="60">60 dias</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </article>
-
                             <article class="vc-moderation-card">
                                 <button class="vc-moderation-toggle vc-moderation-danger" type="button" id="abrir-modal-excluir">
                                     <span>Excluir conta</span>
@@ -235,36 +208,6 @@
 
     <script>
         const formVisitante = document.getElementById('form-visitante-config');
-        const campoSuspensao = document.getElementById('suspender_conta');
-        const campoDiasSuspensao = document.getElementById('campo-dias-suspensao');
-        const botoesSuspensao = document.querySelectorAll('[data-suspension-option]');
-
-        document.querySelectorAll('[data-moderation-toggle]').forEach((botao) => {
-            const painel = document.getElementById(botao.getAttribute('aria-controls'));
-
-            botao.addEventListener('click', () => {
-                const abrir = painel.hidden;
-                painel.hidden = !abrir;
-                painel.classList.toggle('is-open', abrir);
-                botao.setAttribute('aria-expanded', String(abrir));
-            });
-        });
-
-        function selecionarSuspensao(valor) {
-            campoSuspensao.value = valor;
-            campoDiasSuspensao.hidden = valor !== 'sim';
-
-            botoesSuspensao.forEach((botao) => {
-                botao.classList.toggle('is-selected', botao.dataset.suspensionOption === valor);
-            });
-        }
-
-        botoesSuspensao.forEach((botao) => {
-            botao.addEventListener('click', () => selecionarSuspensao(botao.dataset.suspensionOption));
-        });
-
-        selecionarSuspensao(campoSuspensao.value);
-
         const modalExcluir = document.getElementById('modal-excluir-conta');
         const botaoAbrirExclusao = document.getElementById('abrir-modal-excluir');
         const botaoCancelarExclusao = document.getElementById('cancelar-exclusao');

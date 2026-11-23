@@ -99,11 +99,38 @@ CREATE TABLE IF NOT EXISTS formulario_seletivas (
     clipe_video_url  VARCHAR(255),
     clipe_video_nome VARCHAR(255),
     fotos_banda_json TEXT,
+    lido_em          DATETIME NULL,      -- primeira vez que um admin abriu os detalhes (NULL = não lido)
 
     -- Status e data
     status           ENUM('pendente','aprovado','reprovado') DEFAULT 'pendente',
     enviado_em       TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- ── Fotos enviadas nas inscrições ────────────────────────────────────
+-- Cada foto fica no banco, dividida em partes de até 1 MB (respeita o
+-- max_allowed_packet do MySQL). O admin abre cada uma por
+-- /adm/formularios/:id/arquivos/:arquivoId. O site também cria estas
+-- tabelas sozinho (app/models/formularioModel.js).
+CREATE TABLE IF NOT EXISTS formulario_arquivos (
+    id            INT AUTO_INCREMENT PRIMARY KEY,
+    formulario_id INT NOT NULL,
+    campo         VARCHAR(20)  NOT NULL,   -- 'foto'
+    nome          VARCHAR(255) NULL,       -- nome original do arquivo
+    tipo          VARCHAR(100) NOT NULL,   -- ex.: image/jpeg
+    tamanho       INT UNSIGNED NOT NULL,   -- bytes
+    criado_em     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_formulario_arquivos_formulario (formulario_id)
+);
+
+CREATE TABLE IF NOT EXISTS formulario_arquivo_partes (
+    arquivo_id INT NOT NULL,
+    ordem      INT NOT NULL,
+    dados      MEDIUMBLOB NOT NULL,
+    PRIMARY KEY (arquivo_id, ordem),
+    CONSTRAINT fk_formulario_arquivo_partes_arquivo
+        FOREIGN KEY (arquivo_id) REFERENCES formulario_arquivos(id) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS shows (
     id INT AUTO_INCREMENT PRIMARY KEY,
     titulo VARCHAR(155) NOT NULL,

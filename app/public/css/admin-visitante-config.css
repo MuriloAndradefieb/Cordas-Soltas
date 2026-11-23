@@ -207,7 +207,8 @@
     border-radius: 4px;
     padding: 18px;
     display: grid;
-    grid-template-columns: repeat(2, minmax(220px, 1fr)) 180px;
+    /* "Excluir conta" e o status atual (visitante e artista não têm mais "Suspender conta") */
+    grid-template-columns: minmax(220px, 1fr) 180px;
     gap: 16px;
     align-items: start;
 }
@@ -236,8 +237,7 @@
     transition: background-color 0.2s, border-color 0.2s, color 0.2s;
 }
 
-.vc-moderation-toggle:hover,
-.vc-moderation-toggle[aria-expanded="true"] {
+.vc-moderation-toggle:hover {
     border-color: #ffb800;
     background-color: #262626;
 }
@@ -269,44 +269,6 @@
 .vc-moderation-danger .vc-toggle-icon {
     background-color: #ff4a4a;
     color: #ffffff;
-}
-
-.vc-moderation-panel {
-    margin-top: 10px;
-    padding: 14px;
-    border: 1px solid #383838;
-    border-radius: 4px;
-    background-color: #242424;
-}
-
-.vc-option-buttons {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-}
-
-.vc-option-btn {
-    min-height: 38px;
-    border: 1px solid #444444;
-    border-radius: 4px;
-    background-color: #1a1a1a;
-    color: #d9d9d9;
-    padding: 8px 10px;
-    font-size: 12px;
-    font-weight: 800;
-    cursor: pointer;
-    transition: background-color 0.2s, border-color 0.2s, color 0.2s;
-}
-
-.vc-option-btn:hover,
-.vc-option-btn.is-selected {
-    border-color: #ffb800;
-    background-color: rgba(255, 184, 0, 0.12);
-    color: #ffffff;
-}
-
-.vc-suspension-days {
-    margin-top: 14px;
 }
 
 .vc-status-pill {
@@ -416,8 +378,7 @@
     }
 
     .vc-header-actions,
-    .vc-dialog-actions,
-    .vc-option-buttons {
+    .vc-dialog-actions {
         grid-template-columns: 1fr;
         flex-direction: column;
         width: 100%;

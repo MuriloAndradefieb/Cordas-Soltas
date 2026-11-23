@@ -1,6 +1,9 @@
 <%
     const f = formulario || {};
-    const fotos = Array.isArray(f.fotos_banda) ? f.fotos_banda : [];
+    const todasFotos = Array.isArray(f.fotos_banda) ? f.fotos_banda : [];
+    // Fotos de envios antigos que nunca foram gravadas no servidor (não podem ser exibidas)
+    const fotos = todasFotos.filter(foto => !foto.perdida);
+    const fotosPerdidas = todasFotos.length - fotos.length;
     const integrantes = {
         solo: 'Artista solo',
         '2a4': '2 a 4 integrantes',
@@ -50,6 +53,9 @@
             </header>
 
             <section class="form-detail-actions">
+                <button type="button" class="btn-topo-excluir" id="abrir_modal_exclusao">
+                    <img src="/img/x-icon.png" width="18px" alt=""> Excluir
+                </button>
                 <button type="button" class="btn-topo-cancela" onclick="window.location.href='/adm/formularios'">
                     <img src="/img/x-icon.png" width="18px" alt=""> Cancelar
                 </button>
@@ -145,17 +151,78 @@
                             <div class="form-photo-grid">
                                 <% fotos.forEach(function(foto) { %>
                                     <a href="<%= foto.url %>" target="_blank" rel="noopener noreferrer">
-                                        <img src="<%= foto.url %>" alt="<%= foto.nome || 'Foto enviada' %>">
+                                        <img src="<%= foto.url %>" alt="<%= foto.nome || 'Foto enviada' %>" loading="lazy">
                                     </a>
                                 <% }); %>
                             </div>
                         </section>
-                    <% } else { %>
+                    <% } %>
+                    <% if (fotosPerdidas > 0) { %>
+                        <p class="form-media-empty"><%= fotosPerdidas === 1 ? '1 foto foi enviada' : fotosPerdidas + ' fotos foram enviadas' %> nesta inscri&ccedil;&atilde;o, mas uma falha antiga no envio impediu que fossem salvas. Pe&ccedil;a &agrave; banda para envi&aacute;-las de novo.</p>
+                    <% } else if (fotos.length === 0) { %>
                         <p class="form-media-empty">Nenhuma foto foi enviada neste formul&aacute;rio.</p>
                     <% } %>
                 </fieldset>
             </article>
         </main>
     </section>
+
+    <%# Mesma confirmação da exclusão de shows (Ingressos) %>
+    <dialog id="modal_exclusao" aria-labelledby="titulo_modal_exclusao">
+        <h3 id="titulo_modal_exclusao">Aten&ccedil;&atilde;o!</h3>
+        <p>Tem certeza que deseja excluir este formul&aacute;rio do sistema? As fotos enviadas tamb&eacute;m ser&atilde;o apagadas. Esta a&ccedil;&atilde;o n&atilde;o poder&aacute; ser desfeita.</p>
+        <p class="modal-erro" id="erro_exclusao" role="alert" hidden></p>
+
+        <section class="modal-botoes">
+            <button id="btn_fechar_modal" class="btn-modal btn-modal-cancelar" type="button">Voltar</button>
+            <button id="btn_confirmar_exclusao" class="btn-modal btn-modal-excluir" type="button">Sim, Excluir</button>
+        </section>
+    </dialog>
+
+    <script>
+        (function () {
+            const modal = document.getElementById('modal_exclusao');
+            const btnConfirmar = document.getElementById('btn_confirmar_exclusao');
+            const erro = document.getElementById('erro_exclusao');
+
+            document.getElementById('abrir_modal_exclusao').addEventListener('click', function () {
+                erro.hidden = true;
+                modal.showModal();
+            });
+
+            document.getElementById('btn_fechar_modal').addEventListener('click', function () {
+                modal.close();
+            });
+
+            btnConfirmar.addEventListener('click', async function () {
+                btnConfirmar.disabled = true;
+                btnConfirmar.textContent = 'Excluindo...';
+                erro.hidden = true;
+
+                try {
+                    const resposta = await fetch('/adm/formularios/<%= f.id %>/excluir', {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+                    const resultado = await resposta.json().catch(function () { return {}; });
+
+                    if (resposta.ok && resultado.sucesso) {
+                        window.location.href = '/adm/formularios';
+                        return;
+                    }
+                    erro.textContent = resultado.mensagem || 'Não foi possível excluir o formulário.';
+                } catch (err) {
+                    erro.textContent = 'Falha ao comunicar com o servidor. Tente novamente.';
+                }
+
+                erro.hidden = false;
+                btnConfirmar.disabled = false;
+                btnConfirmar.textContent = 'Sim, Excluir';
+            });
+        })();
+    </script>
 </body>
 </html>

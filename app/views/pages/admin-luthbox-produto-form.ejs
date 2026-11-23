@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/luthbox-operacao.css">
     <link rel="stylesheet" href="/css/luthbox-admin.css">
 </head>
-<body class="admin-luthbox-page admin-luthbox-produto-form-page">
+<body class="admin-luthbox-page admin-luth-padrao admin-luthbox-produto-form-page">
     <hr class="top-line">
     <header class="main-header"><img src="/img/LOGO ALTERNATIVA CORDAS SOLTAS SITE.png" width="50" alt="Logo Cordas Soltas" class="logo"></header>
     <div class="app-container">
@@ -23,40 +23,41 @@
             </ul>
         </nav>
         <main class="content-area">
-            <div class="luthbox-admin-content">
-                <header class="sub-header"><span class="title">LUTHBOX &gt; EDITAR ITEM</span><span class="luth-admin-subtitle"><%= produto.nome %></span></header>
-                <form class="luth-product-edit-page-form" method="post" enctype="multipart/form-data" action="/adm/luthbox/produtos/<%= produto.id %>">
-                    <div class="luth-product-edit-page-actions">
-                        <a class="luth-admin-button luth-product-cancel" href="/adm/luthbox">Cancelar</a>
-                        <button class="luth-admin-button" type="submit">Salvar alterações</button>
+            <%# Mesmo visual da página Luthbox: barra de título, título de seção dourado e o
+                painel do formulário "Novo produto" (imagem à esquerda, campos em duas colunas). %>
+            <header class="sub-header">
+                <span class="title">LUTHBOX &gt; EDITAR PRODUTO</span>
+            </header>
+
+            <h2 class="category-title" id="luth-editar-titulo"><%= produto.nome %></h2>
+            <form class="luth-product-editor-form luth-admin-painel" method="post" enctype="multipart/form-data" action="/adm/luthbox/produtos/<%= produto.id %>" aria-labelledby="luth-editar-titulo">
+                <div class="luth-product-image-editor">
+                    <span class="luth-campo-rotulo">Imagem do item</span>
+                    <label class="luth-product-image-drop" for="luthbox-editar-imagem">
+                        <span id="luthbox-editar-placeholder" <%= produto.imagem_url ? 'hidden' : '' %>>Clique para escolher a imagem</span>
+                        <img id="luthbox-editar-preview" src="<%= produto.imagem_url || '' %>" alt="Prévia de <%= produto.nome %>" <%= produto.imagem_url ? '' : 'hidden' %>>
+                    </label>
+                    <input class="luth-image-input" id="luthbox-editar-imagem" type="file" name="image_file" accept="image/jpeg,image/png,image/webp,image/avif,image/gif">
+                    <small>Clique na imagem para trocar · JPG, PNG, WebP, AVIF ou GIF · até 5 MB.</small>
+                    <p class="luth-upload-feedback luth-feedback luth-feedback-error" id="luthbox-image-error" role="alert" hidden></p>
+                    <% if (produto.imagem_url) { %><label class="luth-remove-image"><input type="checkbox" name="remover_imagem" value="sim"> Remover imagem atual</label><% } %>
+                </div>
+                <div class="luth-product-editor-fields">
+                    <div class="luth-product-editor-grid">
+                        <label>Nome<input name="nome" maxlength="160" value="<%= produto.nome %>" required></label>
+                        <label>Classificação<input name="classificacao" maxlength="80" value="<%= produto.classificacao %>" list="luth-categorias" required></label>
+                        <label>Compatibilidade<input name="compatibilidade" maxlength="160" value="<%= produto.compatibilidade %>" required></label>
+                        <label>Diária (R$)<input type="number" name="preco" min="0" max="100000" step="0.01" value="<%= produto.preco.toFixed(2) %>" required></label>
+                        <label>Unidades disponíveis<input type="number" name="quantidade_disponivel" min="0" max="1000" value="<%= produto.quantidade_disponivel %>" required></label>
+                        <label class="luth-product-description">Descrição<textarea name="descricao" maxlength="500" rows="3" required><%= produto.descricao %></textarea></label>
                     </div>
-                    <section class="luth-product-edit-page-panel" aria-label="Dados do produto">
-                        <div class="luth-product-edit-page-image">
-                            <label for="luthbox-editar-imagem">Imagem do item</label>
-                            <label class="luth-product-image-drop" for="luthbox-editar-imagem">
-                                <span id="luthbox-editar-placeholder" <%= produto.imagem_url ? 'hidden' : '' %>>Clique para escolher uma imagem</span>
-                                <img id="luthbox-editar-preview" src="<%= produto.imagem_url || '' %>" alt="Prévia de <%= produto.nome %>" <%= produto.imagem_url ? '' : 'hidden' %>>
-                            </label>
-                            <input class="luth-image-input" id="luthbox-editar-imagem" type="file" name="image_file" accept="image/jpeg,image/png,image/webp,image/avif,image/gif">
-                            <small>JPG, PNG, WebP, AVIF ou GIF · até 5 MB.</small>
-                            <p class="luth-upload-feedback luth-feedback luth-feedback-error" id="luthbox-image-error" role="alert" hidden></p>
-                            <% if (produto.imagem_url) { %><label class="luth-remove-image"><input type="checkbox" name="remover_imagem" value="sim"> Remover imagem atual</label><% } %>
-                        </div>
-                        <div class="luth-product-edit-page-fields">
-                            <h2>Informações do item</h2>
-                            <div class="luth-product-edit-page-grid">
-                                <label>Nome<input name="nome" maxlength="160" value="<%= produto.nome %>" required></label>
-                                <label>Classificação<input name="classificacao" maxlength="80" value="<%= produto.classificacao %>" list="luth-categorias" required></label>
-                                <label>Compatibilidade<input name="compatibilidade" maxlength="160" value="<%= produto.compatibilidade %>" required></label>
-                                <label>Diária (R$)<input type="number" name="preco" min="0" max="100000" step="0.01" value="<%= produto.preco.toFixed(2) %>" required></label>
-                                <label>Unidades disponíveis<input type="number" name="quantidade_disponivel" min="0" max="1000" value="<%= produto.quantidade_disponivel %>" required></label>
-                                <label class="luth-product-edit-page-description">Descrição<textarea name="descricao" maxlength="500" rows="5" required><%= produto.descricao %></textarea></label>
-                            </div>
-                            <datalist id="luth-categorias"><option value="Instrumentos"><option value="Acessórios"><option value="Bateria avulsa"><option value="Áudio"><option value="Kits"></datalist>
-                        </div>
-                    </section>
-                </form>
-            </div>
+                    <div class="luth-form-acoes">
+                        <a class="luth-btn-neutro" href="/adm/luthbox"><img src="/img/x-icon.png" width="16" alt=""> Voltar</a>
+                        <button class="btn-add" type="submit"><img src="/img/salvar-icon.png" width="16" alt=""> Salvar</button>
+                    </div>
+                </div>
+                <datalist id="luth-categorias"><option value="Instrumentos"><option value="Acessórios"><option value="Bateria avulsa"><option value="Áudio"><option value="Kits"></datalist>
+            </form>
         </main>
     </div>
     <script>

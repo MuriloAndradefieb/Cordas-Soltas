@@ -79,7 +79,6 @@ async function buscarAssinaturaLuthboxAtiva(usuarioId) {
         'SELECT id, preapproval_id, preapproval_plan_id, status, pagamento_status FROM assinaturas_luthbox WHERE usuario_id = ? AND (preapproval_id IS NOT NULL OR preapproval_plan_id IS NOT NULL) ORDER BY criado_em DESC LIMIT 10',
         [usuarioId]
     );
-    if (assinaturas.some(item => item.status === 'authorized' && item.pagamento_status === 'approved')) return true;
     if (!process.env.MP_ACCESS_TOKEN) return false;
 
     for (const assinatura of assinaturas) {
@@ -285,6 +284,8 @@ const LIMITE_SELETIVAS_BYTES = 200 * 1024 * 1024;
 
 const uploadSeletivas = multer({
     storage: multer.memoryStorage(),
+    // Nomes de arquivo com acento chegam em UTF-8 (o padrão do multer é latin1)
+    defParamCharset: 'utf8',
     limits: {
         fileSize:    LIMITE_SELETIVAS_BYTES,
         fieldSize:   LIMITE_SELETIVAS_BYTES,
@@ -368,12 +369,6 @@ function montarUsuarioFormulario(usuarioAtual, dados = {}) {
         nome_completo:   dados.nome_completo   !== undefined ? dados.nome_completo   : usuarioAtual.nome_completo,
         num_integrantes: dados.num_integrantes !== undefined ? dados.num_integrantes : usuarioAtual.num_integrantes
     });
-}
-
-function somarDiasDataIso(dias) {
-    const data = new Date();
-    data.setDate(data.getDate() + dias);
-    return data.toISOString().split('T')[0];
 }
 
 // =========================================================================
@@ -716,8 +711,7 @@ router.post('/adm/visitantes/editar/:id', async (req, res) => {
 
         const {
             username, email, telefone, nome_completo, cpf,
-            novaSenha, excluir_conta, confirmacao_exclusao,
-            suspender_conta, dias_suspensao
+            novaSenha, excluir_conta, confirmacao_exclusao
         } = req.body;
 
         if (excluir_conta === 'sim') {
@@ -733,14 +727,10 @@ router.post('/adm/visitantes/editar/:id', async (req, res) => {
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.redirect(`/adm/visitantes/editar/${id}?erro=${encodeURIComponent('Informe um e-mail valido.')}`);
         if (novaSenha && novaSenha.length < 6) return res.redirect(`/adm/visitantes/editar/${id}?erro=${encodeURIComponent('A nova senha deve ter pelo menos 6 caracteres.')}`);
 
-        const diasSuspensao = Math.max(1, Number.parseInt(dias_suspensao, 10) || 10);
-        const estaSuspenso  = suspender_conta === 'sim';
-
+        // Visitantes não são suspensos por esta tela: o status da conta não é alterado ao salvar
         await UsuariosModel.atualizar(id, {
             username, email, telefone, nome_completo, cpf,
-            role: 'visitante',
-            status_conta: estaSuspenso ? 'suspenso' : 'ativo',
-            suspenso_ate: estaSuspenso ? somarDiasDataIso(diasSuspensao) : null
+            role: 'visitante'
         });
 
         if (novaSenha) {
@@ -782,7 +772,7 @@ router.post('/adm/artistas/editar/:id', requireAdminLuthbox, async (req, res) =>
 
         const {
             nome_banda, email, telefone, num_integrantes, estilo_musical, instagram,
-            novaSenha, excluir_conta, confirmacao_exclusao, suspender_conta, dias_suspensao
+            novaSenha, excluir_conta, confirmacao_exclusao
         } = req.body;
 
         if (excluir_conta === 'sim') {
@@ -798,14 +788,10 @@ router.post('/adm/artistas/editar/:id', requireAdminLuthbox, async (req, res) =>
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.redirect(`/adm/artistas/editar/${id}?erro=${encodeURIComponent('Informe um e-mail valido.')}`);
         if (novaSenha && novaSenha.length < 6) return res.redirect(`/adm/artistas/editar/${id}?erro=${encodeURIComponent('A nova senha deve ter pelo menos 6 caracteres.')}`);
 
-        const diasSuspensao = Math.max(1, Number.parseInt(dias_suspensao, 10) || 10);
-        const estaSuspenso  = suspender_conta === 'sim';
-
+        // Artistas não são suspensos por esta tela: o status da conta não é alterado ao salvar
         await UsuariosModel.atualizar(id, {
             username: nome_banda, email, telefone, role: 'artista',
-            nome_banda, num_integrantes, estilo_musical, instagram,
-            status_conta: estaSuspenso ? 'suspenso' : 'ativo',
-            suspenso_ate: estaSuspenso ? somarDiasDataIso(diasSuspensao) : null
+            nome_banda, num_integrantes, estilo_musical, instagram
         });
 
         if (novaSenha) {
@@ -1040,6 +1026,8 @@ router.post('/adm/ingressos/excluir/:id', async (req, res) => {
 
 router.get('/adm/formularios',     FormularioController.listarAdmin);
 router.get('/adm/formularios/:id', FormularioController.detalharAdmin);
+router.get('/adm/formularios/:id/arquivos/:arquivoId', FormularioController.arquivoAdmin);
+router.post('/adm/formularios/:id/excluir', FormularioController.excluirAdmin);
 
 // =========================================================================
 // DEMAIS PÁGINAS E MIDDLEWARES

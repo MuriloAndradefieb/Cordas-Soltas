@@ -193,12 +193,12 @@
                         <span class="f-label-obs">
                             Use alta qualidade para os arquivos em alta resolução.
                             Recomendamos fotos do show ou ensaio, que serão utilizadas na divulgação caso
-                            a banda seja selecionada.
+                            a banda seja selecionada. JPG, PNG, WebP, GIF ou AVIF, até 5 MB cada.
                         </span>
                     </label>
                     <div class="f-upload-area" id="upload-fotos-area">
                         <input type="file" name="fotos_banda"
-                               accept="image/*"
+                               accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
                                multiple
                                id="upload-fotos">
                         <div class="f-upload-placeholder" id="upload-fotos-placeholder">
@@ -387,7 +387,7 @@
         function resetFotosArea() {
             area.classList.remove('tem-arquivo');
             area.innerHTML = `
-                <input type="file" name="fotos_banda" accept="image/*" multiple id="upload-fotos">
+                <input type="file" name="fotos_banda" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" multiple id="upload-fotos">
                 <div class="f-upload-placeholder">
                     <div class="f-upload-icone">&#8681;</div>
                     <span class="f-upload-txt">Adicionar fotos (até ${MAX_FOTOS})</span>
