@@ -79,7 +79,6 @@ async function buscarAssinaturaLuthboxAtiva(usuarioId) {
         'SELECT id, preapproval_id, preapproval_plan_id, status, pagamento_status FROM assinaturas_luthbox WHERE usuario_id = ? AND (preapproval_id IS NOT NULL OR preapproval_plan_id IS NOT NULL) ORDER BY criado_em DESC LIMIT 10',
         [usuarioId]
     );
-    if (assinaturas.some(item => item.status === 'authorized' && item.pagamento_status === 'approved')) return true;
     if (!process.env.MP_ACCESS_TOKEN) return false;
 
     for (const assinatura of assinaturas) {

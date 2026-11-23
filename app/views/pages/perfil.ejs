@@ -80,9 +80,11 @@
                 <%= isArtist ? 'Conta Artista' : 'Conta Visitante' %>
             </p>
             <% if (isArtist) { %>
-                <p id="assinatura-luthbox-status" class="assinatura-luthbox-tag <%= assinanteLuthbox ? 'assinante' : 'nao-assinante' %>">
-                    <%= assinanteLuthbox ? 'Assinante Luthbox' : 'Não assinante Luthbox' %>
-                </p>
+                <button type="button" id="assinatura-luthbox-status" class="assinatura-luthbox-tag <%= assinanteLuthbox ? 'assinante' : 'nao-assinante' %>" aria-live="polite" title="Clique para verificar novamente">
+                    <i class="fas <%= assinanteLuthbox ? 'fa-circle-check' : 'fa-circle-exclamation' %>" aria-hidden="true"></i>
+                    <span><%= assinanteLuthbox ? 'Assinante Luthbox' : 'Não assinante Luthbox' %></span>
+                    <i class="fas fa-rotate-right assinatura-luthbox-refresh" aria-hidden="true"></i>
+                </button>
             <% } %>
 
             <input type="file" id="upload-foto" style="display: none;" accept="image/*">
@@ -482,16 +484,31 @@
         });
 
         <% if (isArtist) { %>
-        fetch('/api/luthbox/assinatura/status', { headers: { Accept: 'application/json' } })
-            .then(resposta => resposta.json())
-            .then(resultado => {
-                if (!resultado.sucesso) return;
-                const statusAssinatura = document.getElementById('assinatura-luthbox-status');
-                statusAssinatura.textContent = resultado.ativa ? 'Assinante Luthbox' : 'Não assinante Luthbox';
-                statusAssinatura.classList.toggle('assinante', resultado.ativa);
-                statusAssinatura.classList.toggle('nao-assinante', !resultado.ativa);
-            })
-            .catch(() => {});
+        const botaoStatusLuthbox = document.getElementById('assinatura-luthbox-status');
+        const rotuloStatusLuthbox = botaoStatusLuthbox.querySelector('span');
+        const iconeStatusLuthbox = botaoStatusLuthbox.querySelector(':scope > i:first-child');
+        async function verificarAssinaturaLuthbox() {
+            if (botaoStatusLuthbox.disabled) return;
+            botaoStatusLuthbox.disabled = true;
+            botaoStatusLuthbox.classList.add('verificando');
+            try {
+                const resposta = await fetch('/api/luthbox/assinatura/status', { headers: { Accept: 'application/json' } });
+                const resultado = await resposta.json();
+                if (!resposta.ok || !resultado.sucesso) throw new Error(resultado.mensagem || 'Não foi possível verificar agora.');
+                rotuloStatusLuthbox.textContent = resultado.ativa ? 'Assinante Luthbox' : 'Não assinante Luthbox';
+                iconeStatusLuthbox.className = `fas ${resultado.ativa ? 'fa-circle-check' : 'fa-circle-exclamation'}`;
+                botaoStatusLuthbox.classList.toggle('assinante', resultado.ativa);
+                botaoStatusLuthbox.classList.toggle('nao-assinante', !resultado.ativa);
+                botaoStatusLuthbox.title = resultado.ativa ? 'Assinatura ativa. Clique para verificar novamente.' : 'Sem assinatura ativa. Clique para verificar novamente.';
+            } catch (erro) {
+                botaoStatusLuthbox.title = erro.message;
+            } finally {
+                botaoStatusLuthbox.disabled = false;
+                botaoStatusLuthbox.classList.remove('verificando');
+            }
+        }
+        botaoStatusLuthbox.addEventListener('click', verificarAssinaturaLuthbox);
+        verificarAssinaturaLuthbox();
         <% } %>
     </script>
 </body>

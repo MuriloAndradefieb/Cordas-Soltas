@@ -388,16 +388,30 @@ dialog.modal-caixa::backdrop {
 .assinatura-luthbox-tag {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
+    gap: 9px;
+    min-height: 42px;
     margin: 8px 0 0;
-    padding: 8px 14px;
+    padding: 8px 16px;
     border: 1px solid currentColor;
     border-radius: 999px;
+    background: rgba(255, 255, 255, .04);
+    font: inherit;
     font-size: 13px;
     font-weight: 700;
+    letter-spacing: .025em;
+    cursor: pointer;
+    transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
 }
 
-.assinatura-luthbox-tag.assinante { color: #8fe0a1; background: rgba(41, 132, 65, .15); }
-.assinatura-luthbox-tag.nao-assinante { color: #ffd27a; background: rgba(245, 166, 35, .1); }
+.assinatura-luthbox-tag.assinante { color: #a9f2b7; background: linear-gradient(135deg, rgba(41, 132, 65, .24), rgba(41, 132, 65, .1)); box-shadow: 0 5px 18px rgba(41, 132, 65, .12); }
+.assinatura-luthbox-tag.nao-assinante { color: #ffd27a; background: linear-gradient(135deg, rgba(245, 166, 35, .17), rgba(245, 166, 35, .07)); box-shadow: 0 5px 18px rgba(245, 166, 35, .1); }
+.assinatura-luthbox-tag:not(:disabled):hover { transform: translateY(-1px); background-color: rgba(255, 255, 255, .09); }
+.assinatura-luthbox-tag:focus-visible { outline: 3px solid rgba(255, 210, 122, .55); outline-offset: 3px; }
+.assinatura-luthbox-tag:disabled { cursor: wait; opacity: .85; }
+.assinatura-luthbox-refresh { margin-left: 2px; font-size: 11px; opacity: .72; }
+.assinatura-luthbox-tag.verificando .assinatura-luthbox-refresh { animation: assinatura-luthbox-spin .8s linear infinite; }
+@keyframes assinatura-luthbox-spin { to { transform: rotate(360deg); } }
 
 .perfil-alerta {
     width: 100%;
