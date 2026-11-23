@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= titulo %> - Cordas Soltas</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/meus-ingressos.css">
+</head>
+<body class="meus-ingressos-page">
+    <%- include("../partials/header"); %>
+    <main class="meus-ingressos-main">
+        <header class="tickets-heading">
+            <a class="tickets-back" href="/perfil">&larr; Minha conta</a>
+            <p class="tickets-eyebrow">Cordas Soltas</p>
+            <h1>Meus ingressos</h1>
+            <p>Esta lista é atualizada depois que confirmamos o pagamento com o Mercado Pago.</p>
+        </header>
+
+        <% if (ingressos.length) { %>
+            <section class="tickets-list" aria-label="Ingressos comprados">
+                <% ingressos.forEach(ingresso => { %>
+                    <article class="ticket-card">
+                        <img class="ticket-poster" src="<%= ingresso.imagem_url || '/img/pexels-wendywei-1190297.jpg' %>" alt="" loading="lazy" onerror="this.onerror=null;this.src='/img/pexels-wendywei-1190297.jpg';">
+                        <div class="ticket-info">
+                            <span class="ticket-status"><span aria-hidden="true">✓</span> Pagamento confirmado</span>
+                            <h2><%= ingresso.titulo || 'Ingresso' %></h2>
+                            <p class="ticket-type"><%= ingresso.tipo_ingresso %></p>
+                            <dl>
+                                <% if (ingresso.data_show) { %>
+                                    <div><dt>Data</dt><dd><%= new Date(`${String(ingresso.data_show).slice(0, 10)}T12:00:00`).toLocaleDateString('pt-BR', { dateStyle: 'long' }) %></dd></div>
+                                <% } %>
+                                <% if (ingresso.local) { %><div><dt>Local</dt><dd><%= ingresso.local %></dd></div><% } %>
+                                <div><dt>Quantidade</dt><dd><%= ingresso.quantidade %></dd></div>
+                                <div><dt>Valor por ingresso</dt><dd><%= Number(ingresso.preco || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) %></dd></div>
+                                <div><dt>Confirmado em</dt><dd><%= new Date(ingresso.confirmado_em).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) %></dd></div>
+                            </dl>
+                        </div>
+                    </article>
+                <% }); %>
+            </section>
+        <% } else { %>
+            <section class="tickets-empty" role="status">
+                <span class="tickets-empty-mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v13a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 18.5z"/><path d="M8 3v18M16 3v18"/></svg></span>
+                <h2>Nenhum ingresso confirmado ainda</h2>
+                <p>Quando o Mercado Pago confirmar um pagamento, seus ingressos aparecerão aqui.</p>
+                <a href="/" class="tickets-shop-link">Explorar eventos</a>
+            </section>
+        <% } %>
+    </main>
+    <%- include("../partials/menu"); %>
+</body>
+</html>

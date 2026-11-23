@@ -57,6 +57,7 @@ async function listarPorUsuario(usuarioId) {
              p.id,
              s.titulo,
              s.local,
+             s.data_show,
              s.estilo,
              s.imagem_url,
              p.tipo_ingresso,
@@ -74,4 +75,30 @@ async function listarPorUsuario(usuarioId) {
     return rows;
 }
 
-module.exports = { confirmar, listarPorUsuario, garantirTabela };
+async function listarIngressosMercadoPago(usuarioId) {
+    await garantirTabela();
+
+    const [rows] = await pool.query(
+        `SELECT
+             p.id,
+             s.titulo,
+             s.local,
+             s.data_show,
+             s.estilo,
+             s.imagem_url,
+             p.tipo_ingresso,
+             p.quantidade,
+             p.preco_unitario AS preco,
+             p.forma_pagamento,
+             p.confirmado_em
+         FROM pedidos p
+         JOIN shows s ON p.show_id = s.id
+         WHERE p.usuario_id = ? AND p.forma_pagamento = 'checkout_pro'
+         ORDER BY p.confirmado_em DESC`,
+        [usuarioId]
+    );
+
+    return rows;
+}
+
+module.exports = { confirmar, listarPorUsuario, listarIngressosMercadoPago, garantirTabela };
