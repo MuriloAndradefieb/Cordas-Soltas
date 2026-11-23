@@ -213,10 +213,11 @@
                 <div class="bloco-cta-conteudo">
                     <h2>faça sua assinatura</h2>
                     <p>Com apenas um valor adicional, você garante a tranquilidade de tocar sabendo que, se algo acontecer, terá um instrumento à sua disposição, veja os planos abaixo:</p>
-                    <a href="#" id="buy-luthbox-btn" class="button-planos">
-                        <span class="btn-icone"><img src="img/assinatura-icon.png" width="40px"></span>
-                        <span>PLANOS</span>
+                    <p class="luthbox-assinatura-preco">Assinatura mensal: R$ <%= Number(precoAssinaturaLuthbox).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %></p>
+                    <a href="#" id="buy-luthbox-btn" class="button-planos buy-button luthbox-mp-button">
+                        <span>Ir ao Mercado Pago</span>
                     </a>
+                    <p id="luthbox-assinatura-feedback" class="luthbox-assinatura-feedback" role="alert" hidden></p>
                 </div>
             </section>
 
@@ -262,6 +263,29 @@
         const modalTexto   = document.getElementById('modal-luth-texto');
         const modalHint    = document.getElementById('modal-luth-hint');
         const btnPlanos    = document.getElementById('buy-luthbox-btn');
+        const assinaturaFeedback = document.getElementById('luthbox-assinatura-feedback');
+
+        const estadoAssinatura = new URLSearchParams(window.location.search).get('assinatura');
+        if (estadoAssinatura === 'necessaria') {
+            assinaturaFeedback.textContent = 'O catálogo Luthbox fica disponível após a confirmação do pagamento da assinatura mensal.';
+            assinaturaFeedback.hidden = false;
+        } else if (estadoAssinatura === 'retorno') {
+            assinaturaFeedback.textContent = 'Conferindo a confirmação do Mercado Pago...';
+            assinaturaFeedback.hidden = false;
+            fetch('/api/luthbox/assinatura/status', { headers: { 'Accept': 'application/json' } })
+                .then(response => response.json())
+                .then(resultado => {
+                    if (!resultado.sucesso) throw new Error(resultado.mensagem || 'Não foi possível confirmar sua assinatura agora.');
+                    if (resultado.ativa) {
+                        window.location.replace('/luthbox-seguros');
+                        return;
+                    }
+                    assinaturaFeedback.textContent = 'O Mercado Pago ainda não confirmou o pagamento. O catálogo será liberado assim que a confirmação chegar; você pode voltar a esta página mais tarde.';
+                })
+                .catch(() => {
+                    assinaturaFeedback.textContent = 'Não foi possível confirmar o pagamento agora. Atualize esta página para tentar novamente.';
+                });
+        }
 
         function abrirModalBloqueio(tipo) {
             modalAcoes.innerHTML = '';
@@ -315,7 +339,7 @@
             if (e.key === 'Escape') fecharModal();
         }
 
-        btnPlanos.addEventListener('click', (e) => {
+        btnPlanos.addEventListener('click', async (e) => {
             e.preventDefault();
 
             if (!usuarioLogado) {
@@ -327,8 +351,29 @@
                 abrirModalBloqueio('visitante');
                 return;
             }
-
-            window.location.href = '/luthbox-seguros';
+            if (btnPlanos.getAttribute('aria-busy') === 'true') return;
+            assinaturaFeedback.hidden = true;
+            btnPlanos.setAttribute('aria-busy', 'true');
+            btnPlanos.style.pointerEvents = 'none';
+            const rotulo = btnPlanos.querySelector('span:last-child');
+            rotulo.textContent = 'CONECTANDO...';
+            try {
+                const response = await fetch('/api/luthbox/assinatura', {
+                    method: 'POST',
+                    headers: { 'Accept': 'application/json' }
+                });
+                const resultado = await response.json();
+                if (!response.ok || !resultado.sucesso || !resultado.url) {
+                    throw new Error(resultado.mensagem || 'Não foi possível iniciar a assinatura.');
+                }
+                window.location.assign(resultado.url);
+            } catch (error) {
+                assinaturaFeedback.textContent = error.message || 'Não foi possível iniciar a assinatura. Tente novamente.';
+                assinaturaFeedback.hidden = false;
+                btnPlanos.removeAttribute('aria-busy');
+                btnPlanos.style.pointerEvents = '';
+                rotulo.textContent = 'Ir ao Mercado Pago';
+            }
         });
 
         if (new URLSearchParams(window.location.search).get('acesso') === 'restrito') {

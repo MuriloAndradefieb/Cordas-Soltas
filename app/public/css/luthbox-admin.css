@@ -31,6 +31,13 @@
 .luth-product-edit-page-grid textarea { min-height:115px; resize:vertical; }
 .luth-product-edit-page-description { grid-column:1; }
 .luth-product-edit-page-form :focus-visible { outline:3px solid #ffd27a; outline-offset:2px; }
+.luth-confirm-dialog { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:min(440px,calc(100vw - 2rem)); max-height:calc(100vh - 2rem); overflow:auto; margin:0; padding:1.4rem; border:1px solid #494952; border-radius:14px; background:#202026; color:#f4f4f6; box-shadow:0 24px 80px #000b; }
+.luth-confirm-dialog::backdrop { background:#050507c9; backdrop-filter:blur(3px); }
+.luth-confirm-dialog h2 { margin:0 0 .55rem; color:#ffd27a; }
+.luth-confirm-dialog p { color:#c5c7ce; line-height:1.55; }
+.luth-confirm-dialog > div { display:flex; justify-content:flex-end; gap:.65rem; margin-top:1.2rem; }
+.luth-confirm-cancel { min-height:44px; padding:.6rem 1rem; border:1px solid #55555e; border-radius:9px; background:transparent; color:#f4f4f6; font:inherit; cursor:pointer; }
+.luth-confirm-dialog :focus-visible { outline:3px solid #ffd27a; outline-offset:2px; }
 .luth-upload-feedback { margin:0; }
 .admin-luthbox-page [hidden] { display:none !important; }
 .admin-luthbox-page :focus-visible { outline:3px solid #ffd27a; outline-offset:2px; }

@@ -29,8 +29,35 @@ async function garantirTabelaPagamentosMP() {
     )`);
 }
 
+async function garantirTabelaAssinaturasLuthbox() {
+    await db.query(`CREATE TABLE IF NOT EXISTS assinaturas_luthbox (
+        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+        usuario_id INT NOT NULL,
+        external_reference VARCHAR(100) NOT NULL UNIQUE,
+        preapproval_plan_id VARCHAR(100) DEFAULT NULL UNIQUE,
+        preapproval_id VARCHAR(100) DEFAULT NULL UNIQUE,
+        checkout_url TEXT DEFAULT NULL,
+        status VARCHAR(30) NOT NULL DEFAULT 'pending',
+        pagamento_status VARCHAR(30) DEFAULT NULL,
+        criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        atualizado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        INDEX idx_assinaturas_luthbox_usuario (usuario_id)
+    )`);
+    const [colunas] = await db.query('SHOW COLUMNS FROM assinaturas_luthbox');
+    if (!colunas.some(coluna => coluna.Field === 'preapproval_plan_id')) {
+        await db.query('ALTER TABLE assinaturas_luthbox ADD COLUMN preapproval_plan_id VARCHAR(100) DEFAULT NULL UNIQUE');
+    }
+    if (!colunas.some(coluna => coluna.Field === 'checkout_url')) {
+        await db.query('ALTER TABLE assinaturas_luthbox ADD COLUMN checkout_url TEXT DEFAULT NULL');
+    }
+}
+
 function mpBaseUrl() {
-    const configurada = String(process.env.APP_BASE_URL || process.env.RENDER_EXTERNAL_URL || '').trim();
+    const configurada = String(
+        process.env.APP_BASE_URL ||
+        process.env.RENDER_EXTERNAL_URL ||
+        'https://cordas-soltas.onrender.com'
+    ).trim();
     if (!configurada) return null;
     let url;
     try { url = new URL(configurada); } catch { throw new Error('APP_BASE_URL precisa ser uma URL HTTPS pública.'); }
@@ -38,6 +65,90 @@ function mpBaseUrl() {
         throw new Error('APP_BASE_URL precisa ser uma URL HTTPS pública, não localhost.');
     }
     return configurada.replace(/\/$/, '');
+}
+
+function valorAssinaturaLuthbox() {
+    const valor = Number(process.env.LUTHBOX_MONTHLY_PRICE || 159.99);
+    if (!Number.isFinite(valor) || valor <= 0) throw new Error('LUTHBOX_MONTHLY_PRICE precisa ser um valor maior que zero.');
+    return Math.round(valor * 100) / 100;
+}
+
+async function buscarAssinaturaLuthboxAtiva(usuarioId, permitirCacheLocal = false) {
+    await garantirTabelaAssinaturasLuthbox();
+    const [assinaturas] = await db.query(
+        'SELECT id, preapproval_id, preapproval_plan_id, status, pagamento_status FROM assinaturas_luthbox WHERE usuario_id = ? AND (preapproval_id IS NOT NULL OR preapproval_plan_id IS NOT NULL) ORDER BY criado_em DESC LIMIT 10',
+        [usuarioId]
+    );
+    if (permitirCacheLocal && assinaturas.some(item => item.status === 'authorized' && item.pagamento_status === 'approved')) return true;
+    if (!process.env.MP_ACCESS_TOKEN) throw new Error('MP_ACCESS_TOKEN não configurado.');
+
+    for (const assinatura of assinaturas) {
+        let dados;
+        if (assinatura.preapproval_id) {
+            const resposta = await fetch(`https://api.mercadopago.com/preapproval/${encodeURIComponent(assinatura.preapproval_id)}`, {
+                headers: { Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}` }
+            });
+            dados = await resposta.json().catch(() => ({}));
+            if (!resposta.ok) throw new Error(dados.message || 'Não foi possível confirmar a assinatura Luthbox.');
+        } else {
+            const parametros = new URLSearchParams({ preapproval_plan_id: String(assinatura.preapproval_plan_id), limit: '20', offset: '0' });
+            const resposta = await fetch(`https://api.mercadopago.com/preapproval/search?${parametros}`, {
+                headers: { Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}` }
+            });
+            const resultado = await resposta.json().catch(() => ({}));
+            if (!resposta.ok) throw new Error(resultado.message || 'Não foi possível localizar a assinatura Luthbox.');
+            dados = Array.isArray(resultado.results) ? resultado.results.find(item => String(item.preapproval_plan_id) === String(assinatura.preapproval_plan_id)) : null;
+            if (dados?.id) {
+                assinatura.preapproval_id = String(dados.id);
+                await db.query('UPDATE assinaturas_luthbox SET preapproval_id = ?, status = ? WHERE id = ?', [assinatura.preapproval_id, String(dados.status || 'pending'), assinatura.id]);
+            }
+        }
+        if (!dados) continue;
+
+        let pagamentoStatus = null;
+        if (dados.status === 'authorized') {
+            const parametros = new URLSearchParams({ preapproval_id: String(assinatura.preapproval_id), limit: '20', offset: '0' });
+            const respostaFaturas = await fetch(`https://api.mercadopago.com/authorized_payments/search?${parametros}`, {
+                headers: { Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}` }
+            });
+            const faturas = await respostaFaturas.json().catch(() => ({}));
+            if (!respostaFaturas.ok) throw new Error(faturas.message || 'Não foi possível confirmar o pagamento da assinatura.');
+            const cobrancas = Array.isArray(faturas.results) ? faturas.results : [];
+            pagamentoStatus = cobrancas.some(cobranca => cobranca.payment?.status === 'approved') ? 'approved' : (cobrancas[0]?.payment?.status || null);
+        }
+
+        await db.query(
+            'UPDATE assinaturas_luthbox SET status = ?, pagamento_status = ? WHERE preapproval_id = ?',
+            [String(dados.status || 'unknown'), pagamentoStatus, assinatura.preapproval_id]
+        );
+        if (dados.status === 'authorized' && pagamentoStatus === 'approved') return true;
+    }
+    return false;
+}
+
+async function requireAssinaturaLuthbox(req, res, next) {
+    const usuarioArtista = req.session?.usuario?.role === 'artista';
+    const api = req.path.startsWith('/api/');
+    if (!usuarioArtista) {
+        return api
+            ? res.status(403).json({ sucesso: false, mensagem: 'Acesse com uma conta artista para usar a Luthbox.' })
+            : res.redirect('/luthbox?acesso=restrito');
+    }
+    try {
+        const acessoLocal = ['localhost', '127.0.0.1', '::1'].includes(req.hostname);
+        if (await buscarAssinaturaLuthboxAtiva(req.session.usuario.id, acessoLocal)) return next();
+        return api
+            ? res.status(403).json({ sucesso: false, assinaturaNecessaria: true, mensagem: 'A assinatura mensal da Luthbox precisa estar paga para acessar o catálogo.' })
+            : res.redirect('/luthbox?assinatura=necessaria');
+    } catch (err) {
+        console.error('Erro ao validar assinatura Luthbox:', err.message);
+        const mensagem = process.env.NODE_ENV === 'production'
+            ? 'Não foi possível confirmar sua assinatura Luthbox agora. Tente novamente.'
+            : `Não foi possível confirmar sua assinatura Luthbox. Detalhe local: ${err.message}`;
+        return api
+            ? res.status(503).json({ sucesso: false, mensagem })
+            : res.status(503).send(mensagem);
+    }
 }
 
 async function buscarPagamentoMP(pagamentoId) {
@@ -1015,10 +1126,10 @@ async function renderizarCatalogoLuthbox(req, res, tituloPagina = 'Luthbox') {
     }
 }
 
-router.get('/estilos', requireArtista, (req, res) => renderizarCatalogoLuthbox(req, res, 'Luthbox'));
-router.get('/luthbox',              (req, res) => res.render('pages/luthbox',              { titulo: 'Luthbox',      usuario: u(req) }));
-router.get('/luthbox-seguros', requireArtista, (req, res) => renderizarCatalogoLuthbox(req, res, 'Luthbox'));
-router.get('/api/luthbox/catalogo', requireArtistaApi, async (req, res) => {
+router.get('/estilos', requireAssinaturaLuthbox, (req, res) => renderizarCatalogoLuthbox(req, res, 'Luthbox'));
+router.get('/luthbox',              (req, res) => res.render('pages/luthbox',              { titulo: 'Luthbox',      usuario: u(req), precoAssinaturaLuthbox: valorAssinaturaLuthbox() }));
+router.get('/luthbox-seguros', requireAssinaturaLuthbox, (req, res) => renderizarCatalogoLuthbox(req, res, 'Luthbox'));
+router.get('/api/luthbox/catalogo', requireAssinaturaLuthbox, async (req, res) => {
     try {
         return res.json(await LuthboxModel.listarCatalogo());
     } catch (err) {
@@ -1026,7 +1137,7 @@ router.get('/api/luthbox/catalogo', requireArtistaApi, async (req, res) => {
         return res.status(500).json({ sucesso: false, mensagem: 'Não foi possível carregar o catálogo.' });
     }
 });
-router.post('/api/luthbox/solicitacoes', requireArtistaApi, async (req, res) => {
+router.post('/api/luthbox/solicitacoes', requireAssinaturaLuthbox, async (req, res) => {
     try {
         const itens = Array.isArray(req.body.itens)
             ? req.body.itens.map(item => ({ codigo: item.id, quantidade: item.quantidade }))
@@ -1275,6 +1386,68 @@ router.post('/pagamentos/mercadopago/preferencia', requireAuth, async (req, res)
     } catch (err) {
         console.error('Erro ao criar preferência do Mercado Pago:', err.code || '', err.message);
         return res.status(502).json({ sucesso: false, mensagem: err.message.includes('APP_BASE_URL') ? err.message : 'Não foi possível preparar o checkout. Confira o log do servidor para identificar a causa.' });
+    }
+});
+
+router.post('/api/luthbox/assinatura', requireArtistaApi, async (req, res) => {
+    let referencia = null;
+    try {
+        if (!process.env.MP_ACCESS_TOKEN) {
+            return res.status(503).json({ sucesso: false, mensagem: 'O pagamento da Luthbox ainda não está configurado no servidor.' });
+        }
+        await garantirTabelaAssinaturasLuthbox();
+        const acessoLocal = ['localhost', '127.0.0.1', '::1'].includes(req.hostname);
+        if (await buscarAssinaturaLuthboxAtiva(req.session.usuario.id, acessoLocal)) {
+            return res.json({ sucesso: true, url: '/luthbox-seguros' });
+        }
+        const [pendentes] = await db.query(
+            'SELECT checkout_url FROM assinaturas_luthbox WHERE usuario_id = ? AND status = ? AND checkout_url IS NOT NULL ORDER BY criado_em DESC LIMIT 1',
+            [req.session.usuario.id, 'pending']
+        );
+        if (pendentes[0]?.checkout_url) return res.json({ sucesso: true, url: pendentes[0].checkout_url });
+
+        referencia = `luthbox-${req.session.usuario.id}-${crypto.randomUUID()}`;
+        await db.query('INSERT INTO assinaturas_luthbox (usuario_id, external_reference, status) VALUES (?, ?, ?)', [req.session.usuario.id, referencia, 'creating']);
+
+        const baseUrl = mpBaseUrl();
+        const valor = valorAssinaturaLuthbox();
+        const resposta = await fetch('https://api.mercadopago.com/preapproval_plan', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                reason: 'Assinatura mensal Luthbox',
+                back_url: `${baseUrl}/luthbox?assinatura=retorno`,
+                auto_recurring: { frequency: 1, frequency_type: 'months', transaction_amount: valor, currency_id: 'BRL' }
+            })
+        });
+        const plano = await resposta.json().catch(() => ({}));
+        if (!resposta.ok || !plano.init_point || !plano.id) {
+            console.error('Mercado Pago recusou o plano Luthbox:', resposta.status, plano.message || '');
+            await db.query('UPDATE assinaturas_luthbox SET status = ? WHERE external_reference = ?', ['rejected', referencia]);
+            const mensagem = plano.message ? `Mercado Pago: ${plano.message}` : 'Não foi possível iniciar a assinatura no Mercado Pago.';
+            return res.status(502).json({ sucesso: false, mensagem });
+        }
+        await db.query(
+            'UPDATE assinaturas_luthbox SET preapproval_plan_id = ?, checkout_url = ?, status = ? WHERE external_reference = ?',
+            [String(plano.id), plano.init_point, 'pending', referencia]
+        );
+        return res.json({ sucesso: true, url: plano.init_point });
+    } catch (err) {
+        console.error('Erro ao criar assinatura Luthbox:', err.code || '', err.message);
+        if (referencia) {
+            try { await db.query('UPDATE assinaturas_luthbox SET status = ? WHERE external_reference = ?', ['error', referencia]); } catch {}
+        }
+        return res.status(502).json({ sucesso: false, mensagem: err.message.includes('APP_BASE_URL') || err.message.includes('LUTHBOX_MONTHLY_PRICE') ? err.message : 'Não foi possível preparar a assinatura. Tente novamente.' });
+    }
+});
+
+router.get('/api/luthbox/assinatura/status', requireArtistaApi, async (req, res) => {
+    try {
+        const acessoLocal = ['localhost', '127.0.0.1', '::1'].includes(req.hostname);
+        return res.json({ sucesso: true, ativa: await buscarAssinaturaLuthboxAtiva(req.session.usuario.id, acessoLocal) });
+    } catch (err) {
+        console.error('Erro ao consultar assinatura Luthbox:', err.message);
+        return res.status(503).json({ sucesso: false, mensagem: 'Não foi possível confirmar sua assinatura agora.' });
     }
 });
 

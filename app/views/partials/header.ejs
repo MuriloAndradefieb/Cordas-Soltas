@@ -9,7 +9,9 @@
             <a href="/"           class="nav-link" data-page="inicio">INGRESSOS</a>
             <a href="/seletivas"  class="nav-link" data-page="seletivas">CONCURSO</a>
             <a href="/luthbox"    class="nav-link" data-page="luthbox">LUTHBOX</a>
-            <a href="/luthbox-seguros" class="nav-link" data-page="luthbox-catalogo">CATÁLOGO LUTHBOX</a>
+            <% if (usuario && usuario.role === 'artista') { %>
+                <a href="/luthbox-seguros" class="nav-link" data-page="luthbox-catalogo">CATÁLOGO LUTHBOX</a>
+            <% } %>
             <a href="/sobre"      class="nav-link" data-page="sobre">SOBRE</a>
         </nav>
 

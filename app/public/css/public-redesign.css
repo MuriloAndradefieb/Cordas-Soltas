@@ -1002,6 +1002,16 @@ body.index-page .card-link:focus-visible {
         rgba(255, 255, 255, 0.05) !important;
 }
 
+.luthbox-page .button-planos.luthbox-mp-button {
+    justify-content: center;
+    background: linear-gradient(135deg, var(--cs-gold), var(--cs-gold-2)) !important;
+    color: #151006 !important;
+    box-shadow: 0 14px 28px rgba(245, 166, 35, 0.18) !important;
+    font-size: 1rem;
+    letter-spacing: normal;
+    text-transform: none;
+}
+
 .seletivas-page .btn-inscricao:hover,
 .luthbox-page .button-planos:hover {
     background: linear-gradient(135deg, var(--cs-gold), var(--cs-gold-2)) !important;

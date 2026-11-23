@@ -61,7 +61,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <button type="button" class="luth-finalizar" id="luth-finalizar" disabled>Enviar para aprovação</button>
                     <p class="luth-resumo-nota">Ao enviar, você segue para o pagamento. Depois, acompanhe a aprovação e o código de retirada em Minhas solicitações.</p>
                 </aside>
-                <a href="/luthbox/solicitacoes" class="luth-resumo-solicitacoes">Minhas solicitações Luthbox <span aria-hidden="true">→</span></a>
                 </div>
             </div>
             <dialog class="luth-item-dialog" id="luth-item-dialog" aria-labelledby="luth-dialog-title">

@@ -123,6 +123,18 @@ body {
     margin: 0;
 }
 
+.luthbox-bloco-cta .bloco-cta-conteudo .luthbox-assinatura-preco {
+    margin-top: .7rem;
+    color: #ffd27a;
+    font-weight: 700;
+}
+
+.luthbox-assinatura-feedback {
+    margin-top: .8rem !important;
+    color: #ffb4ab !important;
+    font-size: .9rem !important;
+}
+
 /* ── Botão PLANOS ─────────────────────────────────────────────── */
 .button-planos {
     display: inline-flex;
