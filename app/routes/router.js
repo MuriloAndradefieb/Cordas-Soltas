@@ -896,11 +896,14 @@ router.post('/adm/usuarios/editar/:id', async (req, res) => {
 // =========================================================================
 router.get('/adm/ingressos', async (req, res) => {
     try {
-        const [todosOsShows] = await db.query("SELECT * FROM shows ORDER BY data_show ASC");
+        // Não carregue banners MEDIUMTEXT/base64 junto da listagem do painel.
+        const [todosOsShows] = await db.query(
+            "SELECT id, titulo, estilo, data_show, local, preco FROM shows ORDER BY data_show ASC"
+        );
         const showsAgrupados = todosOsShows.reduce((grupos, show) => {
             const estiloChave = show.estilo ? show.estilo : 'Outro';
             if (!grupos[estiloChave]) grupos[estiloChave] = [];
-            grupos[estiloChave].push(show);
+            grupos[estiloChave].push({ ...show, imagem_url: `/shows/${show.id}/imagem` });
             return grupos;
         }, {});
         return res.render('pages/admin-ingressos', { showsPorEstilo: showsAgrupados });
@@ -1112,6 +1115,9 @@ router.post('/api/luthbox/solicitacoes', requireArtistaApi, async (req, res) => 
         });
         return res.status(201).json({ sucesso: true, ...solicitacao });
     } catch (err) {
+        if (err.code === 'LUTHBOX_DEVOLUCAO_PENDENTE') {
+            return res.status(409).json({ sucesso: false, mensagem: err.message });
+        }
         const status = /Selecione|Adicione|Revise|quantidade máxima|show escolhido|show futuro|itens não estão|Estoque insuficiente|Solicitação imediata|vinculado à sua banda/.test(err.message) ? 400 : 500;
         return res.status(status).json({ sucesso: false, mensagem: err.message || 'Não foi possível registrar a solicitação.' });
     }

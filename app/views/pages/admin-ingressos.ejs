@@ -41,7 +41,7 @@
                 <div class="tickets-grid">
                     <% showsPorEstilo[estilo].forEach(function(show) { %>
                         <div class="ticket-card">
-                            <img class="ticket-card-image" src="<%= show.imagem_url || '/img/pexels-wendywei-1190297.jpg' %>" alt="Banner" onerror="this.onerror=null;this.src='/img/pexels-wendywei-1190297.jpg';">
+                            <img class="ticket-card-image" src="<%= show.imagem_url || '/img/pexels-wendywei-1190297.jpg' %>" alt="Banner" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='/img/pexels-wendywei-1190297.jpg';">
                             <h4 class="ticket-card-title"><%= show.titulo %></h4>
                             <p class="ticket-card-location"><%= show.local %></p>
                             <p class="ticket-card-price">R$ <%= show.preco %></p>
