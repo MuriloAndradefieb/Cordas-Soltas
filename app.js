@@ -3,6 +3,20 @@ const session = require('express-session');
 const path    = require('path');
 const dotenv  = require('dotenv').config();
 const app     = express();
+const db      = require('./config/pool_conexoes');
+const MySQLSessionStore = require('./app/services/mysqlSessionStore');
+
+const sessionStore = new MySQLSessionStore(db);
+const sessionCookie = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production' ? 'auto' : false,
+    sameSite: 'lax',
+    maxAge: 1000 * 60 * 60 * 24 * 30
+};
+
+// O Render fica atrás de um proxy HTTPS; isso permite que o Express reconheça
+// a conexão segura e emita o cookie de sessão com a configuração correta.
+app.set('trust proxy', 1);
 
 const LIMITE_UPLOAD = '200mb';
 
@@ -30,10 +44,9 @@ const sessaoSite = session({
     secret:             process.env.SESSION_SECRET || 'cordas_soltas_secret',
     resave:            false,
     saveUninitialized: false,
-    cookie: {
-        secure:   false,
-        maxAge:   1000 * 60 * 60 * 24  // 24 horas
-    }
+    rolling: true,
+    store: sessionStore,
+    cookie: { ...sessionCookie }
 });
 
 const sessaoAdmin = session({
@@ -41,11 +54,9 @@ const sessaoAdmin = session({
     secret:             process.env.ADMIN_SESSION_SECRET || process.env.SESSION_SECRET || 'cordas_soltas_admin_secret',
     resave:             false,
     saveUninitialized:  false,
-    cookie: {
-        secure: false,
-        path: '/adm',
-        maxAge: 1000 * 60 * 60 * 24
-    }
+    rolling: true,
+    store: sessionStore,
+    cookie: { ...sessionCookie, path: '/adm' }
 });
 
 app.use((req, res, next) => {
