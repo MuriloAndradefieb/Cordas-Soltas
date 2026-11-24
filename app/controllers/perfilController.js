@@ -1,7 +1,6 @@
 const UsuariosModel = require('../models/Usuariosmodel');
 const LuthboxModel = require('../models/LuthboxModel');
 const bcrypt       = require('bcryptjs');
-const db           = require('../../config/pool_conexoes');
 
 const camposPermitidosPorRole = {
     visitante: ['username', 'email', 'telefone', 'nome_completo', 'cpf'],
@@ -36,33 +35,10 @@ const PerfilController = {
             const agendaArtista = usuarioBanco.role === 'artista'
                 ? await LuthboxModel.listarAgendaArtista(id)
                 : [];
-            let assinanteLuthbox = false;
-            if (usuarioBanco.role === 'artista') {
-                await db.query(`CREATE TABLE IF NOT EXISTS assinaturas_luthbox (
-                    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                    usuario_id INT NOT NULL,
-                    external_reference VARCHAR(100) NOT NULL UNIQUE,
-                    preapproval_plan_id VARCHAR(100) DEFAULT NULL UNIQUE,
-                    preapproval_id VARCHAR(100) DEFAULT NULL UNIQUE,
-                    checkout_url TEXT DEFAULT NULL,
-                    status VARCHAR(30) NOT NULL DEFAULT 'pending',
-                    pagamento_status VARCHAR(30) DEFAULT NULL,
-                    criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                    atualizado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                    INDEX idx_assinaturas_luthbox_usuario (usuario_id)
-                )`);
-                const [assinaturas] = await db.query(
-                    'SELECT id FROM assinaturas_luthbox WHERE usuario_id = ? AND status = ? AND pagamento_status = ? LIMIT 1',
-                    [id, 'authorized', 'approved']
-                );
-                assinanteLuthbox = assinaturas.length > 0;
-            }
-
             return res.render('pages/perfil', {
                 titulo: 'Meu Perfil',
                 usuario: usuarioBanco,
                 agendaArtista,
-                assinanteLuthbox,
                 erro: req.query.erro || null,
                 sucesso: req.query.sucesso || null
             });
