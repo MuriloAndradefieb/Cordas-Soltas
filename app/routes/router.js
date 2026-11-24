@@ -125,30 +125,6 @@ async function buscarAssinaturaLuthboxAtiva(usuarioId) {
     return false;
 }
 
-async function requireAssinaturaLuthbox(req, res, next) {
-    const usuarioArtista = req.session?.usuario?.role === 'artista';
-    const api = req.path.startsWith('/api/');
-    if (!usuarioArtista) {
-        return api
-            ? res.status(403).json({ sucesso: false, mensagem: 'Acesse com uma conta artista para usar a Luthbox.' })
-            : res.redirect('/luthbox?acesso=restrito');
-    }
-    try {
-        if (await buscarAssinaturaLuthboxAtiva(req.session.usuario.id)) return next();
-        return api
-            ? res.status(403).json({ sucesso: false, assinaturaNecessaria: true, mensagem: 'A assinatura mensal da Luthbox precisa estar paga para acessar o catálogo.' })
-            : res.redirect('/luthbox?assinatura=necessaria');
-    } catch (err) {
-        console.error('Erro ao validar assinatura Luthbox:', err.message);
-        const mensagem = process.env.NODE_ENV === 'production'
-            ? 'Não foi possível confirmar sua assinatura Luthbox agora. Tente novamente.'
-            : `Não foi possível confirmar sua assinatura Luthbox. Detalhe local: ${err.message}`;
-        return api
-            ? res.status(503).json({ sucesso: false, mensagem })
-            : res.redirect('/luthbox?assinatura=verificacao');
-    }
-}
-
 async function buscarPagamentoMP(pagamentoId) {
     if (!process.env.MP_ACCESS_TOKEN) throw new Error('MP_ACCESS_TOKEN não configurado.');
     const resposta = await fetch(`https://api.mercadopago.com/v1/payments/${encodeURIComponent(pagamentoId)}`, {
@@ -1113,10 +1089,10 @@ async function renderizarCatalogoLuthbox(req, res, tituloPagina = 'Luthbox') {
     }
 }
 
-router.get('/estilos', requireAssinaturaLuthbox, (req, res) => renderizarCatalogoLuthbox(req, res, 'Luthbox'));
-router.get('/luthbox',              (req, res) => res.render('pages/luthbox',              { titulo: 'Luthbox',      usuario: u(req), precoAssinaturaLuthbox: valorAssinaturaLuthbox() }));
-router.get('/luthbox-seguros', requireAssinaturaLuthbox, (req, res) => renderizarCatalogoLuthbox(req, res, 'Luthbox'));
-router.get('/api/luthbox/catalogo', requireAssinaturaLuthbox, async (req, res) => {
+router.get('/estilos', requireArtista, (req, res) => renderizarCatalogoLuthbox(req, res, 'Luthbox'));
+router.get('/luthbox',              (req, res) => res.render('pages/luthbox',              { titulo: 'Luthbox',      usuario: u(req) }));
+router.get('/luthbox-seguros', requireArtista, (req, res) => renderizarCatalogoLuthbox(req, res, 'Luthbox'));
+router.get('/api/luthbox/catalogo', requireArtistaApi, async (req, res) => {
     try {
         return res.json(await LuthboxModel.listarCatalogo());
     } catch (err) {
@@ -1124,7 +1100,7 @@ router.get('/api/luthbox/catalogo', requireAssinaturaLuthbox, async (req, res) =
         return res.status(500).json({ sucesso: false, mensagem: 'Não foi possível carregar o catálogo.' });
     }
 });
-router.post('/api/luthbox/solicitacoes', requireAssinaturaLuthbox, async (req, res) => {
+router.post('/api/luthbox/solicitacoes', requireArtistaApi, async (req, res) => {
     try {
         const itens = Array.isArray(req.body.itens)
             ? req.body.itens.map(item => ({ codigo: item.id, quantidade: item.quantidade }))
