@@ -30,8 +30,11 @@ const PerfilController = {
                 return res.redirect('/login?erro=Usuario+nao+encontrado');
             }
 
-            // Atualiza a sessão com os dados reais do banco
-            req.session.usuario = usuarioBanco;
+            // Atualiza a sessão com os dados reais do banco, sem a senha e sem a
+            // foto de perfil: a sessão fica gravada no banco e é lida a cada
+            // página, e a foto (imagem inteira em base64) só é usada aqui no perfil.
+            const { senha, foto_perfil, fotoPerfil, ...dadosSessao } = usuarioBanco;
+            req.session.usuario = dadosSessao;
             const agendaArtista = usuarioBanco.role === 'artista'
                 ? await LuthboxModel.listarAgendaArtista(id)
                 : [];

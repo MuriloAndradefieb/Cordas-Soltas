@@ -67,6 +67,19 @@ function mpBaseUrl() {
     return configurada.replace(/\/$/, '');
 }
 
+// Endereço do site que o usuário está usando agora (o .onrender.com ou um
+// domínio próprio). O cookie de login só vale nesse endereço: se o Mercado Pago
+// devolvesse o usuário para outro (APP_BASE_URL), ele chegaria deslogado.
+// Fora de HTTPS público (ex.: localhost) usa o endereço configurado.
+function urlRetornoMP(req) {
+    const padrao = mpBaseUrl();
+    const protocolo = String(req.get('x-forwarded-proto') || (req.secure ? 'https' : '')).split(',')[0].trim().toLowerCase();
+    const host = String(req.get('host') || '').trim().toLowerCase();
+    const nome = host.replace(/:\d{1,5}$/, '');
+    if (protocolo !== 'https' || !/^[a-z0-9-]+(\.[a-z0-9-]+)+(:\d{1,5})?$/.test(host) || /^[\d.]+$/.test(nome)) return padrao;
+    return `https://${host}`;
+}
+
 function valorAssinaturaLuthbox() {
     const valor = Number(process.env.LUTHBOX_MONTHLY_PRICE || 159.99);
     if (!Number.isFinite(valor) || valor <= 0) throw new Error('LUTHBOX_MONTHLY_PRICE precisa ser um valor maior que zero.');
@@ -458,6 +471,9 @@ router.post('/carrinho/adicionar', async (req, res) => {
             await CarrinhoModel.adicionar(usuarioId, showIdNumerico, CarrinhoModel.TIPOS_INGRESSO.MEIA,    qtdMeia);
         } else {
             if (!req.session.carrinho) req.session.carrinho = [];
+            // A sessão fica gravada no banco: guarda o endereço da imagem do show,
+            // e não a imagem inteira (data URL), que pode ter vários MB.
+            const imagemShow = `/shows/${showIdNumerico}/imagem`;
 
             const dataFormato = showItem.data_show instanceof Date
                 ? showItem.data_show.toLocaleDateString('pt-BR')
@@ -473,7 +489,7 @@ router.post('/carrinho/adicionar', async (req, res) => {
                         cartId: idItemInteira, id: showItem.id, titulo: showItem.titulo,
                         tipo_ingresso: CarrinhoModel.TIPOS_INGRESSO.INTEIRA, local: showItem.local,
                         data_formatada: dataFormato, estilo: showItem.estilo,
-                        preco: parseFloat(showItem.preco), imagem_url: showItem.imagem_url,
+                        preco: parseFloat(showItem.preco), imagem_url: imagemShow,
                         quantidade: qtdInteira
                     });
                 }
@@ -489,7 +505,7 @@ router.post('/carrinho/adicionar', async (req, res) => {
                         cartId: idItemMeia, id: showItem.id, titulo: showItem.titulo,
                         tipo_ingresso: CarrinhoModel.TIPOS_INGRESSO.MEIA, local: showItem.local,
                         data_formatada: dataFormato, estilo: showItem.estilo,
-                        preco: parseFloat(showItem.preco) / 2, imagem_url: showItem.imagem_url,
+                        preco: parseFloat(showItem.preco) / 2, imagem_url: imagemShow,
                         quantidade: qtdMeia
                     });
                 }
@@ -1357,7 +1373,9 @@ router.post('/pagamentos/mercadopago/preferencia', requireAuth, async (req, res)
         }
         await garantirTabelaPagamentosMP();
         await db.query('INSERT INTO pagamentos_mercadopago (referencia, usuario_id, itens_json, total) VALUES (?, ?, ?, ?)', [referencia, req.session.usuario.id, JSON.stringify(itens), total]);
-        const retorno = solicitacaoLuthbox ? `${baseUrl}/feedback?mp=return&luthbox=${solicitacaoLuthbox.id}` : `${baseUrl}/feedback?mp=return`;
+        // Volta para o mesmo endereço em que o usuário fez login, para continuar logado
+        const baseRetorno = urlRetornoMP(req);
+        const retorno = solicitacaoLuthbox ? `${baseRetorno}/feedback?mp=return&luthbox=${solicitacaoLuthbox.id}` : `${baseRetorno}/feedback?mp=return`;
         const corpo = {
             items: itens.map(item => ({
                 id: String(item.id),
@@ -1415,7 +1433,7 @@ router.post('/api/luthbox/assinatura', requireArtistaApi, async (req, res) => {
             headers: { Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 reason: 'Assinatura mensal Luthbox',
-                back_url: `${baseUrl}/luthbox?assinatura=retorno`,
+                back_url: `${urlRetornoMP(req)}/luthbox?assinatura=retorno`,
                 auto_recurring: { frequency: 1, frequency_type: 'months', transaction_amount: valor, currency_id: 'BRL' }
             })
         });

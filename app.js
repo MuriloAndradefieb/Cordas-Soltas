@@ -2,6 +2,8 @@ const express = require('express');
 const session = require('express-session');
 const path    = require('path');
 const dotenv  = require('dotenv').config();
+const db      = require('./config/pool_conexoes');
+const SessaoMySQLStore = require('./config/sessao_mysql');
 const app     = express();
 
 const LIMITE_UPLOAD = '200mb';
@@ -25,13 +27,20 @@ app.use(express.urlencoded({ extended: true, limit: LIMITE_UPLOAD }));
 // ─── Sessões separadas: conta do site e administração ─────────────────────────
 // Cookies distintos permitem que o administrador e um artista usem o mesmo
 // navegador sem que o login de um substitua ou encerre a sessão do outro.
+// As sessões ficam no banco (tabela `sessoes`), e não na memória do servidor:
+// assim o login continua valendo quando o Render reinicia o app, inclusive
+// enquanto o usuário está pagando no Mercado Pago. Cada sessão precisa da sua
+// própria instância (o express-session guarda nela as opções do cookie).
+
 const sessaoSite = session({
     name:               'connect.sid',
     secret:             process.env.SESSION_SECRET || 'cordas_soltas_secret',
+    store:              new SessaoMySQLStore(db),
     resave:            false,
     saveUninitialized: false,
     cookie: {
         secure:   false,
+        sameSite: 'lax',                // enviado na volta do Mercado Pago (navegação de outro site)
         maxAge:   1000 * 60 * 60 * 24  // 24 horas
     }
 });
@@ -39,10 +48,12 @@ const sessaoSite = session({
 const sessaoAdmin = session({
     name:               'cordas.admin.sid',
     secret:             process.env.ADMIN_SESSION_SECRET || process.env.SESSION_SECRET || 'cordas_soltas_admin_secret',
+    store:              new SessaoMySQLStore(db),
     resave:             false,
     saveUninitialized:  false,
     cookie: {
         secure: false,
+        sameSite: 'lax',
         path: '/adm',
         maxAge: 1000 * 60 * 60 * 24
     }

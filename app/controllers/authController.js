@@ -147,6 +147,8 @@ const AuthController = {
                 }
             }
 
+            // A foto de perfil (imagem em base64) não vai para a sessão: ela fica
+            // gravada no banco e é lida a cada página. O perfil busca a foto no banco.
             req.session.usuario = {
                 id:            usuario.id,
                 username:      usuario.username,
@@ -156,7 +158,6 @@ const AuthController = {
                 estiloMusical: usuario.estiloMusical,
                 instagram:     usuario.instagram,
                 telefone:      usuario.telefone,
-                fotoPerfil:    usuario.fotoPerfil,
                 nomeCompleto:  usuario.nomeCompleto,
                 cpf:           usuario.cpf,
                 numIntegrantes: usuario.numIntegrantes,
