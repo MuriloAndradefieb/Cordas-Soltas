@@ -171,6 +171,13 @@ async function listarCatalogo() {
     return rows.map(item => ({ ...item, preco: Number(item.preco) }));
 }
 
+// Foto de um item do catálogo (usada em "Minhas solicitações"): imagem_url e categoria
+async function buscarImagemProduto(id) {
+    await garantirTabelas();
+    const [rows] = await db.query('SELECT imagem_url, classificacao FROM luthbox_produtos WHERE id = ? LIMIT 1', [id]);
+    return rows[0] || null;
+}
+
 async function listarProdutosAdmin() {
     await garantirTabelas();
     const [rows] = await db.query('SELECT * FROM luthbox_produtos ORDER BY classificacao, nome');
@@ -474,7 +481,7 @@ async function listarSolicitacoes(usuarioId = null) {
     if (!rows.length) return [];
     const ids = rows.map(row => row.id);
     const [itens] = await db.query(
-        `SELECT solicitacao_id, nome_item, classificacao, compatibilidade, quantidade, preco_unitario
+        `SELECT solicitacao_id, produto_id, nome_item, classificacao, compatibilidade, quantidade, preco_unitario
            FROM luthbox_solicitacao_itens WHERE solicitacao_id IN (${ids.map(() => '?').join(',')}) ORDER BY id`, ids
     );
     const porSolicitacao = new Map();
@@ -620,4 +627,4 @@ async function atualizarStatus(id, acao, codigoInformado = '', adminId = null) {
     throw new Error('Ação administrativa inválida.');
 }
 
-module.exports = { garantirTabelas, listarCatalogo, listarProdutosAdmin, vincularArtistaAoShow, desvincularArtistaDoShow, listarEscalasAdmin, listarShowsDoArtistaAdmin, listarAgendaArtista, sincronizarShowsArtista, criarProduto, atualizarProdutoCompleto, alterarAtivoProduto, atualizarProduto, criarSolicitacao, listarSolicitacoes, limparHistoricoSolicitacoes, confirmarPagamentoOnline, aprovarSolicitacao, atualizarStatus };
+module.exports = { garantirTabelas, listarCatalogo, listarProdutosAdmin, buscarImagemProduto, vincularArtistaAoShow, desvincularArtistaDoShow, listarEscalasAdmin, listarShowsDoArtistaAdmin, listarAgendaArtista, sincronizarShowsArtista, criarProduto, atualizarProdutoCompleto, alterarAtivoProduto, atualizarProduto, criarSolicitacao, listarSolicitacoes, limparHistoricoSolicitacoes, confirmarPagamentoOnline, aprovarSolicitacao, atualizarStatus };

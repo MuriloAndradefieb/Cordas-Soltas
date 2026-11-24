@@ -1116,6 +1116,41 @@ router.post('/api/luthbox/solicitacoes', requireArtistaApi, async (req, res) => 
         return res.status(status).json({ sucesso: false, mensagem: err.message || 'Não foi possível registrar a solicitação.' });
     }
 });
+// Foto de um item do catálogo Luthbox (miniaturas de "Minhas solicitações").
+// As fotos ficam no banco como data URL; sem foto, usa a mesma imagem padrão
+// da categoria que o catálogo mostra (public/js/estilos.js).
+const IMAGENS_PADRAO_LUTHBOX = {
+    'Instrumentos': '/img/luthrock.jpg',
+    'Acessórios': '/img/luthrock.jpg',
+    'Áudio': '/img/luthpagode.webp',
+    'Bateria avulsa': '/img/luthrock.jpg',
+    'Kits': '/img/luthjazz.jpg'
+};
+router.get('/luthbox/produtos/:id/imagem', requireArtista, async (req, res) => {
+    try {
+        const id = Number(req.params.id);
+        if (!Number.isInteger(id) || id < 1) return res.sendStatus(404);
+        const produto = await LuthboxModel.buscarImagemProduto(id);
+        if (!produto) return res.sendStatus(404);
+
+        const padrao = IMAGENS_PADRAO_LUTHBOX[produto.classificacao] || '/img/luthrock.jpg';
+        const imagem = String(produto.imagem_url || '');
+        const dataUrl = imagem.match(/^data:(image\/(?:jpe?g|png|webp|avif|gif));base64,([a-z0-9+/=\s]+)$/i);
+        res.set('Cache-Control', 'private, max-age=300');
+        if (dataUrl) {
+            res.type(dataUrl[1]);
+            res.set('X-Content-Type-Options', 'nosniff');
+            return res.send(Buffer.from(dataUrl[2].replace(/\s/g, ''), 'base64'));
+        }
+        if (/^\/img\/[a-z0-9 _().-]+\.(?:jpe?g|png|webp|avif|gif)$/i.test(imagem)) return res.redirect(302, imagem);
+        if (/^https:\/\//i.test(imagem)) return res.redirect(302, imagem);
+        return res.redirect(302, padrao);
+    } catch (err) {
+        console.error('Erro ao carregar imagem do item Luthbox:', err.message);
+        return res.sendStatus(500);
+    }
+});
+
 router.get('/luthbox/solicitacoes', requireArtista, async (req, res) => {
     try {
         // Registra pagamentos do Mercado Pago que o aviso automático (webhook) ainda não confirmou
