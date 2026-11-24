@@ -404,6 +404,17 @@ async function criarSolicitacao(usuarioId, dados) {
     const connection = await db.getConnection();
     try {
         await connection.beginTransaction();
+        // Serializa novas solicitações do mesmo artista e impede duas requisições
+        // simultâneas de ignorarem a locação ainda não devolvida.
+        await connection.query('SELECT id FROM usuarios WHERE id = ? FOR UPDATE', [usuarioId]);
+        const [itensNaoDevolvidos] = await connection.query(
+            "SELECT id FROM luthbox_solicitacoes WHERE usuario_id = ? AND status = 'retirada' LIMIT 1 FOR UPDATE", [usuarioId]
+        );
+        if (itensNaoDevolvidos.length) {
+            const erro = new Error('Você tem um item da Luthbox que ainda não foi marcado como devolvido. Devolva o item e aguarde a confirmação da administração antes de solicitar outros instrumentos.');
+            erro.code = 'LUTHBOX_DEVOLUCAO_PENDENTE';
+            throw erro;
+        }
         const [dividas] = await connection.query(
             "SELECT id FROM luthbox_solicitacoes WHERE usuario_id = ? AND pagamento_status IN ('informado','nao_pago') LIMIT 1 FOR UPDATE", [usuarioId]
         );

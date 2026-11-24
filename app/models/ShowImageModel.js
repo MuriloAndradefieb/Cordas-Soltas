@@ -19,7 +19,14 @@ let colunaImagemGarantida = false;
 async function garantirColunaImagem() {
     if (colunaImagemGarantida) return;
 
-    await pool.query('ALTER TABLE shows MODIFY COLUMN imagem_url MEDIUMTEXT');
+    const [colunas] = await pool.query("SHOW COLUMNS FROM shows LIKE 'imagem_url'");
+    if (!colunas.length) {
+        await pool.query('ALTER TABLE shows ADD COLUMN imagem_url MEDIUMTEXT NULL');
+    } else if (String(colunas[0].Type || '').toLowerCase() !== 'mediumtext') {
+        // ALTER só quando o tipo realmente precisa mudar: executar MODIFY em toda
+        // instância do Render pode bloquear a tabela durante a criação do show.
+        await pool.query('ALTER TABLE shows MODIFY COLUMN imagem_url MEDIUMTEXT');
+    }
     colunaImagemGarantida = true;
 }
 
