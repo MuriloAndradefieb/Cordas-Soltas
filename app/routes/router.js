@@ -1116,9 +1116,10 @@ router.post('/api/luthbox/solicitacoes', requireArtistaApi, async (req, res) => 
         return res.status(status).json({ sucesso: false, mensagem: err.message || 'Não foi possível registrar a solicitação.' });
     }
 });
-// Foto de um item do catálogo Luthbox (miniaturas de "Minhas solicitações").
-// As fotos ficam no banco como data URL; sem foto, usa a mesma imagem padrão
-// da categoria que o catálogo mostra (public/js/estilos.js).
+// Foto de um item do catálogo Luthbox (itens de "Minhas solicitações" e dos
+// detalhes das solicitações no admin). As fotos ficam no banco como data URL;
+// sem foto, usa a mesma imagem padrão da categoria que o catálogo mostra
+// (public/js/estilos.js).
 const IMAGENS_PADRAO_LUTHBOX = {
     'Instrumentos': '/img/luthrock.jpg',
     'Acessórios': '/img/luthrock.jpg',
@@ -1126,7 +1127,7 @@ const IMAGENS_PADRAO_LUTHBOX = {
     'Bateria avulsa': '/img/luthrock.jpg',
     'Kits': '/img/luthjazz.jpg'
 };
-router.get('/luthbox/produtos/:id/imagem', requireArtista, async (req, res) => {
+async function enviarImagemProdutoLuthbox(req, res) {
     try {
         const id = Number(req.params.id);
         if (!Number.isInteger(id) || id < 1) return res.sendStatus(404);
@@ -1149,7 +1150,9 @@ router.get('/luthbox/produtos/:id/imagem', requireArtista, async (req, res) => {
         console.error('Erro ao carregar imagem do item Luthbox:', err.message);
         return res.sendStatus(500);
     }
-});
+}
+router.get('/luthbox/produtos/:id/imagem', requireArtista, enviarImagemProdutoLuthbox);
+router.get('/adm/luthbox/produtos/:id/imagem', requireAdminLuthbox, enviarImagemProdutoLuthbox);
 
 router.get('/luthbox/solicitacoes', requireArtista, async (req, res) => {
     try {
