@@ -17,7 +17,7 @@
 .tickets-heading h1 { margin: 0; color: #ffd27a; font: 400 clamp(2.8rem, 8vw, 4.5rem)/1 'Bebas Neue', 'Arial Narrow', sans-serif; text-transform: uppercase; }
 .tickets-heading > p:last-child { max-width: 42rem; margin: .85rem 0 0; color: #b7bac4; line-height: 1.6; }
 .tickets-list { display: grid; gap: 1rem; }
-.ticket-card { display: grid; grid-template-columns: 170px minmax(0, 1fr); overflow: hidden; border: 1px solid rgba(255,255,255,.12); border-radius: 18px; background: linear-gradient(145deg, rgba(245,166,35,.08), transparent 55%), #17171c; }
+.ticket-card { display: grid; grid-template-columns: 170px minmax(0, 1fr) 210px; overflow: hidden; border: 1px solid rgba(255,255,255,.12); border-radius: 18px; background: linear-gradient(145deg, rgba(245,166,35,.08), transparent 55%), #17171c; }
 .ticket-poster { width: 100%; height: 100%; min-height: 230px; object-fit: cover; background: #24242a; }
 .ticket-info { padding: 1.25rem clamp(1rem, 3vw, 1.75rem); }
 .ticket-status { display: inline-flex; align-items: center; gap: .4rem; color: #9ee3b2; font-size: .82rem; font-weight: 800; }
@@ -28,6 +28,16 @@
 .ticket-info dl div { min-width: 0; }
 .ticket-info dt { color: #aeb1bb; font-size: .78rem; }
 .ticket-info dd { margin: .12rem 0 0; overflow-wrap: anywhere; font-weight: 700; }
+.ticket-qr-panel { box-sizing: border-box; display: grid; min-width: 0; align-content: center; justify-items: center; gap: .45rem; margin: .75rem; padding: .65rem; border-radius: 12px; background: #fff; color: #17120a; text-align: center; }
+.ticket-qr { box-sizing: border-box; display: grid; width: 156px; height: 156px; min-width: 0; min-height: 0; place-items: center; aspect-ratio: 1; }
+.ticket-qr img, .ticket-qr canvas { display: block; width: 156px; height: 156px; max-width: 100%; object-fit: contain; }
+.ticket-qr-panel strong { font-size: .78rem; }
+.ticket-qr-panel code { color: #4b5563; font-size: .72rem; overflow-wrap: anywhere; }
+.ticket-download-button { width: 100%; min-height: 44px; padding: .55rem .7rem; border: 0; border-radius: 999px; background: linear-gradient(135deg, #f5a623, #ffd27a); color: #17120a; font: inherit; font-size: .82rem; font-weight: 800; line-height: 1.25; cursor: pointer; }
+.ticket-download-button:hover { filter: brightness(1.06); }
+.ticket-download-button:focus-visible { outline: 3px solid #17120a; outline-offset: 2px; }
+.ticket-pdf-feedback { margin: 0; color: #754300; font-size: .75rem; line-height: 1.35; }
+.ticket-qr-fallback { font-weight: 800; }
 .tickets-empty { padding: clamp(1.5rem, 5vw, 3rem); text-align: center; border: 1px solid rgba(255,255,255,.12); border-radius: 18px; background: #17171c; }
 .tickets-empty-mark { display: inline-grid; width: 3rem; height: 3rem; place-items: center; margin-bottom: .8rem; border-radius: 50%; background: rgba(245,166,35,.14); color: #ffd27a; font-size: 1.5rem; }
 .tickets-empty h2 { margin: 0; }
@@ -39,8 +49,9 @@
 .perfil-ingressos-link small { color: #aaa; }
 .perfil-ingressos-link > span:last-child { color: #f9af11; font-weight: 700; white-space: nowrap; }
 
-@media (max-width: 560px) {
+@media (max-width: 720px) {
     .ticket-card { grid-template-columns: 1fr; }
     .ticket-poster { height: 190px; min-height: 0; }
     .ticket-info dl { grid-template-columns: 1fr; }
+    .ticket-qr-panel { width: calc(100% - 1.5rem); max-width: 240px; justify-self: center; }
 }

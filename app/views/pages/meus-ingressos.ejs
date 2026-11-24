@@ -6,6 +6,8 @@
     <title><%= titulo %> - Cordas Soltas</title>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/meus-ingressos.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 </head>
 <body class="meus-ingressos-page">
     <%- include("../partials/header"); %>
@@ -19,8 +21,12 @@
 
         <% if (ingressos.length) { %>
             <section class="tickets-list" aria-label="Ingressos comprados">
-                <% ingressos.forEach(ingresso => { %>
-                    <article class="ticket-card">
+                <% ingressos.forEach(ingresso => {
+                    const quantidadeUnidades = Math.max(1, Number.parseInt(ingresso.quantidade, 10) || 1);
+                    for (let unidade = 1; unidade <= quantidadeUnidades; unidade++) {
+                        const codigoIngresso = `CS-${ingresso.id}-${unidade}`;
+                %>
+                    <article class="ticket-card" data-ticket-title="<%= ingresso.titulo || 'Ingresso' %>" data-ticket-type="<%= ingresso.tipo_ingresso || 'Ingresso' %>" data-ticket-id="<%= codigoIngresso %>">
                         <img class="ticket-poster" src="<%= ingresso.imagem_url || '/img/pexels-wendywei-1190297.jpg' %>" alt="" loading="lazy" onerror="this.onerror=null;this.src='/img/pexels-wendywei-1190297.jpg';">
                         <div class="ticket-info">
                             <span class="ticket-status"><span aria-hidden="true">✓</span> Pagamento confirmado</span>
@@ -31,13 +37,20 @@
                                     <div><dt>Data</dt><dd><%= new Date(`${String(ingresso.data_show).slice(0, 10)}T12:00:00`).toLocaleDateString('pt-BR', { dateStyle: 'long' }) %></dd></div>
                                 <% } %>
                                 <% if (ingresso.local) { %><div><dt>Local</dt><dd><%= ingresso.local %></dd></div><% } %>
-                                <div><dt>Quantidade</dt><dd><%= ingresso.quantidade %></dd></div>
+                                <div><dt>Ingresso</dt><dd><%= unidade %> de <%= quantidadeUnidades %></dd></div>
                                 <div><dt>Valor por ingresso</dt><dd><%= Number(ingresso.preco || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) %></dd></div>
                                 <div><dt>Confirmado em</dt><dd><%= new Date(ingresso.confirmado_em).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) %></dd></div>
                             </dl>
                         </div>
+                        <aside class="ticket-qr-panel" aria-label="QR Code do ingresso <%= codigoIngresso %>">
+                            <div class="ticket-qr" data-ticket-code="<%= codigoIngresso %>"></div>
+                            <strong>Apresente este QR Code</strong>
+                            <code><%= codigoIngresso %></code>
+                            <button type="button" class="ticket-download-button">Baixar este ingresso em PDF</button>
+                            <p class="ticket-pdf-feedback" role="status" hidden></p>
+                        </aside>
                     </article>
-                <% }); %>
+                <% } }); %>
             </section>
         <% } else { %>
             <section class="tickets-empty" role="status">
@@ -49,5 +62,107 @@
         <% } %>
     </main>
     <%- include("../partials/menu"); %>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('[data-ticket-code]').forEach((element) => {
+                const code = element.dataset.ticketCode;
+                if (window.QRCode) {
+                    new QRCode(element, {
+                        text: code,
+                        width: 156,
+                        height: 156,
+                        colorDark: '#111111',
+                        colorLight: '#ffffff',
+                        correctLevel: QRCode.CorrectLevel.M
+                    });
+                } else {
+                    element.textContent = code;
+                    element.classList.add('ticket-qr-fallback');
+                }
+            });
+
+            document.querySelectorAll('.ticket-card').forEach((ticket) => {
+                const botaoPDF = ticket.querySelector('.ticket-download-button');
+                const feedback = ticket.querySelector('.ticket-pdf-feedback');
+                botaoPDF.addEventListener('click', () => {
+                const Pdf = window.jspdf?.jsPDF;
+                if (!Pdf) {
+                    feedback.textContent = 'Não foi possível carregar o gerador do PDF. Atualize a página e tente novamente.';
+                    feedback.hidden = false;
+                    return;
+                }
+
+                const imagemQR = ticket.querySelector('.ticket-qr img');
+                const qrIndisponivel = !ticket.querySelector('.ticket-qr canvas') && !imagemQR?.src.startsWith('data:image/');
+                if (qrIndisponivel) {
+                    feedback.textContent = 'O QR code ainda está sendo carregado. Aguarde um instante e tente novamente.';
+                    feedback.hidden = false;
+                    return;
+                }
+                const pdf = new Pdf({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+                const largura = pdf.internal.pageSize.getWidth();
+                pdf.setFillColor(11, 11, 14);
+                pdf.rect(0, 0, largura, pdf.internal.pageSize.getHeight(), 'F');
+                pdf.setFillColor(245, 166, 35);
+                pdf.rect(0, 0, largura, 5, 'F');
+
+                pdf.setTextColor(245, 166, 35);
+                pdf.setFont('helvetica', 'bold');
+                pdf.setFontSize(11);
+                pdf.text('CORDAS SOLTAS', 18, 22);
+                pdf.setTextColor(255, 255, 255);
+                pdf.setFontSize(23);
+                pdf.text('INGRESSO', 18, 34);
+
+                const titulo = ticket.dataset.ticketTitle || 'Ingresso';
+                const tipo = ticket.dataset.ticketType || 'Ingresso';
+                const codigo = ticket.dataset.ticketId || '';
+                pdf.setFontSize(17);
+                const tituloLinhas = pdf.splitTextToSize(titulo, 112);
+                pdf.text(tituloLinhas, 18, 53);
+                pdf.setTextColor(255, 210, 122);
+                pdf.setFontSize(12);
+                const yTipo = 53 + tituloLinhas.length * 8;
+                pdf.text(tipo, 18, yTipo);
+
+                pdf.setFillColor(255, 255, 255);
+                pdf.roundedRect(137, 42, 55, 66, 3, 3, 'F');
+                const qrCanvas = ticket.querySelector('.ticket-qr canvas');
+                const qrImage = ticket.querySelector('.ticket-qr img');
+                const qrData = qrCanvas?.toDataURL('image/png') || (qrImage?.src.startsWith('data:image/') ? qrImage.src : null);
+                if (qrData) pdf.addImage(qrData, 'PNG', 143, 48, 43, 43);
+                pdf.setTextColor(35, 35, 35);
+                pdf.setFontSize(8);
+                pdf.text(codigo, 164.5, 101, { align: 'center' });
+
+                let y = Math.max(91, yTipo + 24);
+                ticket.querySelectorAll('.ticket-info dl div').forEach((linha) => {
+                    const rotulo = linha.querySelector('dt')?.textContent.trim() || '';
+                    const valor = linha.querySelector('dd')?.textContent.trim() || '';
+                    pdf.setTextColor(170, 174, 187);
+                    pdf.setFontSize(10);
+                    pdf.text(rotulo, 18, y);
+                    pdf.setTextColor(255, 255, 255);
+                    pdf.setFont('helvetica', 'bold');
+                    pdf.setFontSize(12);
+                    const linhasValor = pdf.splitTextToSize(valor, 108);
+                    pdf.text(linhasValor, 18, y + 6);
+                    y += 17 + (linhasValor.length - 1) * 5;
+                });
+
+                pdf.setDrawColor(75, 75, 82);
+                pdf.line(18, 258, largura - 18, 258);
+                pdf.setTextColor(174, 177, 187);
+                pdf.setFont('helvetica', 'normal');
+                pdf.setFontSize(9);
+                pdf.text('Apresente este QR code na entrada do evento.', 18, 270);
+                pdf.text('Pagamento confirmado', 18, 278);
+                pdf.save(`ingresso-${ticket.dataset.ticketId}.pdf`);
+                feedback.textContent = 'Este ingresso foi baixado em PDF.';
+                feedback.hidden = false;
+                });
+            });
+        });
+    </script>
 </body>
 </html>

@@ -5,6 +5,8 @@
         const nomeBanda = artista.nomeBanda || artista.nome_banda || artista.username || '';
         const estiloMusical = artista.estiloMusical || artista.estilo_musical || '';
         const numIntegrantes = artista.numIntegrantes || artista.num_integrantes || '';
+        const compras = Array.isArray(historicoCompra) ? historicoCompra : [];
+        const formatarMoeda = (valor) => Number(valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
         const parseDataLocal = (valor) => {
             if (!valor) return null;
@@ -127,6 +129,36 @@
                                     <label for="novaSenha">Nova senha</label>
                                     <input id="novaSenha" name="novaSenha" type="password" placeholder="Manter senha atual">
                                 </div>
+                            </div>
+                        </section>
+
+                        <section class="vc-section">
+                            <h2 class="category-title">Hist&oacute;rico de compra</h2>
+                            <div class="table-container">
+                                <table class="adm-table vc-history">
+                                    <thead>
+                                        <tr><th>INGRESSO</th><th>QUANTIDADE</th><th>VALOR</th><th>PAGAMENTO</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <% if (compras.length) { %>
+                                            <% compras.forEach(function(compra) { %>
+                                                <tr>
+                                                    <td class="vc-ingresso-cell">
+                                                        <div class="vc-ticket-info">
+                                                            <img class="vc-poster" src="<%= compra.imagem_url || '/img/pexels-wendywei-1190297.jpg' %>" alt="<%= compra.titulo || 'Ingresso' %>" loading="lazy" onerror="this.onerror=null;this.src='/img/pexels-wendywei-1190297.jpg';">
+                                                            <div><span class="vc-ticket-name"><%= compra.titulo || 'Ingresso sem nome' %></span><% if (compra.tipo_ingresso) { %><span class="vc-ticket-type"><%= compra.tipo_ingresso %></span><% } %></div>
+                                                        </div>
+                                                    </td>
+                                                    <td><%= compra.quantidade || 0 %></td>
+                                                    <td><span class="vc-price-main"><%= formatarMoeda(compra.preco) %></span><span class="vc-price-note">cada</span></td>
+                                                    <td><%= compra.forma_pagamento === 'checkout_pro' ? 'APROVADO · MERCADO PAGO' : 'APROVADO' %></td>
+                                                </tr>
+                                            <% }); %>
+                                        <% } else { %>
+                                            <tr><td colspan="4" class="vc-empty-history">Nenhuma compra encontrada.</td></tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
                             </div>
                         </section>
 

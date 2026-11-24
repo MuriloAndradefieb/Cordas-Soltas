@@ -745,8 +745,15 @@ router.get('/adm/artistas/editar/:id', requireAdminLuthbox, async (req, res) => 
     try {
         const artista = await UsuariosModel.buscarPorId(req.params.id);
         if (!artista || artista.role !== 'artista') return res.status(404).send("Artista nao encontrado.");
+        let historicoCompra = [];
+        try {
+            historicoCompra = await PedidosModel.listarPorUsuario(artista.id);
+        } catch (err) {
+            console.error('Erro ao buscar histórico de compras do artista:', err.message);
+        }
         return res.render('pages/admin-artista-config', {
             artista,
+            historicoCompra,
             erro:    req.query.erro    || null,
             sucesso: req.query.sucesso || null
         });
